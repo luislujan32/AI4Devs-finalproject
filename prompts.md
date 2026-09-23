@@ -1,125 +1,125 @@
-> Detalla en esta sección los prompts principales utilizados durante la creación del proyecto, que justifiquen el uso de asistentes de código en todas las fases del ciclo de vida del desarrollo. Esperamos un máximo de 3 por sección, principalmente los de creación inicial o  los de corrección o adición de funcionalidades que consideres más relevantes.
-Puedes añadir adicionalmente la conversación completa como link o archivo adjunto si así lo consideras
+# Registro de uso de IA — Screeningroom
 
+**Autor:** Luis Lujan (LL). **Etapa:** entrega 1, definición, planificación y documentación. **Actualización:** 23 de septiembre de 2026.
 
-## Índice
+Este registro documenta cómo se utilizó la IA y qué decisiones tomó el autor. Los workflows son resúmenes del trabajo real; solo los fragmentos expresamente marcados como literales reproducen instrucciones de la conversación. No se inventan prompts de implementación ni resultados de pruebas de una aplicación aún no desarrollada.
 
-1. [Descripción general del producto](#1-descripción-general-del-producto)
-2. [Arquitectura del sistema](#2-arquitectura-del-sistema)
-3. [Modelo de datos](#3-modelo-de-datos)
-4. [Especificación de la API](#4-especificación-de-la-api)
-5. [Historias de usuario](#5-historias-de-usuario)
-6. [Tickets de trabajo](#6-tickets-de-trabajo)
-7. [Pull requests](#7-pull-requests)
+## Herramientas y alcance
 
----
+| Herramienta o recurso | Uso efectivo en esta etapa |
+| --- | --- |
+| ChatGPT, conversación y modo Work | Análisis de pautas, alternativas, reglas, historias y documentación |
+| Entorno de ejecución del asistente | Preparación de Markdown, YAML y wireframes; comprobaciones documentales locales |
+| Conexión con GitHub | Lectura de plantilla/fork y preparación de la documentación versionada |
+| Documentación oficial | Contraste de las opciones de React, NestJS, MongoDB, npm y controles de acceso |
+| Checkpoints del máster | Planificación verificable, documentación proporcional, límites de IA y manejo de datos |
+
+**Modelos:** la identificación exacta de los modelos empleados en las conversaciones no quedó registrada de forma verificable; no se atribuyen nombres por inferencia. En las siguientes fases se anotará el modelo visible cuando esté disponible.
+
+**Skills y agentes:** se utilizó la habilidad de gestión de archivos de Work para conservar borradores y anexos. No se utilizaron subagentes, comandos personalizados ni un harness propio instalado en este repositorio. Codex está previsto como apoyo para la implementación; no se afirma haber ejecutado el proyecto en la máquina del autor.
 
 ## 1. Descripción general del producto
 
-**Prompt 1:**
+### Workflow 1 — Acotar el MVP
 
-**Prompt 2:**
+**Entrada:** pautas académicas, necesidad de un screening independiente y alternativas de experiencia del candidato.
 
-**Prompt 3:**
+**Trabajo con IA:** comparar el recorrido web con opciones como mensajería, audio y lectura de CV; describir actores, valor, alcance y cinco capacidades principales.
 
----
+**Intervención humana:** el autor priorizó un producto sencillo de usar, confirmó que todo el cuestionario debe poder completarse y que el recruiter toma la decisión final. Eligió el nombre Screeningroom y aportó su repositorio.
 
-## 2. Arquitectura del Sistema
+**Resultado:** [README, producto](readme.md#1-descripción-general-del-producto).
 
-### **2.1. Diagrama de arquitectura:**
+### Workflow 2 — Refinar pesos y excluyentes
 
-**Prompt 1:**
+**Fragmento literal del autor:**
 
-**Prompt 2:**
+> el postulante debe responder todo y luego el reclutador con el informe en la mano decide
 
-**Prompt 3:**
+**Trabajo con IA:** separar puntuación ponderada, incumplimiento excluyente, faltantes y revisión humana; concretar tipos de respuesta, escala, umbral y ejemplos.
 
-### **2.2. Descripción de componentes principales:**
+**Intervención humana:** incorporación de pesos y preguntas excluyentes al MVP; conservar fortalezas declaradas aunque un requisito no se cumpla; permitir continuar con justificación. El autor delegó el refinamiento P-01 a P-08.
 
-**Prompt 1:**
+**Resultado:** [Contrato funcional](docs/producto.md). El cálculo es determinista; la IA no decide si un candidato supera el screening.
 
-**Prompt 2:**
+## 2. Arquitectura del sistema
 
-**Prompt 3:**
+### Workflow 1 — Elegir una estructura proporcionada
 
-### **2.3. Descripción de alto nivel del proyecto y estructura de ficheros**
+**Fragmento literal del autor:**
 
-**Prompt 1:**
+> NO hacer sobreingenieria aqui.
 
-**Prompt 2:**
+**Contexto:** acceso del recruiter y validación del postulante sin cuenta. El autor propuso un stack web con React, framework backend, monorepo y MongoDB como posibilidad.
 
-**Prompt 3:**
+**Trabajo con IA:** comparar opciones y elegir React + Vite + TypeScript, NestJS y MongoDB/Mongoose; definir un monolito modular con una única unidad de despliegue. Consultar documentación oficial y justificar el encaje con el producto.
 
-### **2.4. Infraestructura y despliegue**
+**Resultado:** [Arquitectura](readme.md#2-arquitectura-del-sistema), con componentes, costes de la elección y estructura prevista.
 
-**Prompt 1:**
+### Workflow 2 — Delimitar acceso y manejo de datos
 
-**Prompt 2:**
+**Trabajo con IA:** proponer sesión del recruiter, códigos de un solo uso para candidatos, ownership, límites de solicitudes, minimización, retención y borrado. Distinguir control del buzón de certificación de identidad.
 
-**Prompt 3:**
+**Intervención humana:** requisito de validación sencilla para candidatos y referencia al módulo de ética. La generación de preguntas usa contexto del puesto, sin identidades ni respuestas de candidatos.
 
-### **2.5. Seguridad**
+**Resultado:** flujo de acceso y [seguridad prevista](readme.md#25-seguridad). Son decisiones de diseño, no controles ya implantados ni una certificación legal.
 
-**Prompt 1:**
+### Workflow 3 — Planear verificación y despliegue
 
-**Prompt 2:**
+**Trabajo con IA:** definir pruebas unitarias del cálculo, integración con persistencia, componentes y un E2E del recorrido principal; describir infraestructura y despliegue futuro. Preparar bocetos de configuración, cuestionario e informe.
 
-**Prompt 3:**
+**Resultado:** [infraestructura](readme.md#24-infraestructura-y-despliegue), [tests previstos](readme.md#26-tests) y [wireframes](docs/wireframes.svg). Los bocetos son ilustraciones, no capturas de software ejecutado.
 
-### **2.6. Tests**
+## 3. Modelo de datos
 
-**Prompt 1:**
+### Workflow 1 — Modelar configuración, intento y revisión
 
-**Prompt 2:**
+**Trabajo con IA:** distinguir usuario recruiter, screening, banco, invitación y sesión; elegir preguntas embebidas y un intento con respuestas/informe/revisión; explicitar ownership, restricciones, índices y conservación.
 
-**Prompt 3:**
+**Criterio humano aplicado:** conservar las reglas de cada screening publicado y separar el resultado calculado de la decisión del recruiter.
 
----
+**Resultado:** [modelo de datos](readme.md#3-modelo-de-datos). La decisión de inmutabilidad evita construir un sistema complejo de versionado para el MVP.
 
-### 3. Modelo de Datos
+## 4. Especificación de la API
 
-**Prompt 1:**
+### Workflow 1 — Seleccionar operaciones representativas
 
-**Prompt 2:**
+**Trabajo con IA:** describir publicación, envío final y consulta del informe en OpenAPI 3.0.3; definir actores, errores, revisión de concurrencia y respuesta idempotente al repetir un envío.
 
-**Prompt 3:**
+**Revisión:** limitar la entrega a tres operaciones representativas como pide la plantilla; reconocer que la implementación tendrá endpoints adicionales. El candidato no recibe el informe interno ni la configuración de scoring.
 
----
+**Resultado:** [OpenAPI](docs/openapi.yaml).
 
-### 4. Especificación de la API
+## 5. Historias de usuario
 
-**Prompt 1:**
+### Workflow 1 — Traducir capacidades en aceptación observable
 
-**Prompt 2:**
+**Trabajo con IA:** redactar cinco historias y criterios Dado/Cuando/Entonces; relacionarlos con pesos, exclusiones, faltantes, acceso, reanudación e informe.
 
-**Prompt 3:**
+**Intervención humana:** confirmar el alcance general y delegar el equilibrio del primer MVP. Se destacan tres historias en el README y se conservan las otras dos en el backlog.
 
----
+**Resultado:** [historias principales](readme.md#5-historias-de-usuario) y [historias adicionales](docs/backlog.md).
 
-### 5. Historias de Usuario
+## 6. Tickets de trabajo
 
-**Prompt 1:**
+### Workflow 1 — Desglosar el trabajo
 
-**Prompt 2:**
+**Trabajo con IA:** organizar once tickets, identificar dependencias y detallar los tres ejemplos de datos, backend y frontend. Separar la API de respuestas/evaluación de su interfaz para evitar dependencias circulares.
 
-**Prompt 3:**
+**Revisión humana:** el autor pidió incluir más de tres tickets si aportaban utilidad. Se mantiene un backlog ampliado sin confundirlo con requisitos académicos adicionales.
 
----
+**Resultado:** [tickets representativos](readme.md#6-tickets-de-trabajo) y [backlog](docs/backlog.md#tickets-y-dependencias).
 
-### 6. Tickets de Trabajo
+## 7. Preparación de la entrega y pull requests
 
-**Prompt 1:**
+### Workflow 1 — Contrastar requisitos y preparar los archivos
 
-**Prompt 2:**
+**Trabajo con IA:** releer las pautas, consultar la plantilla oficial y el estado del fork; convertir el borrador en documentación de entrega, conservar su alcance y revisar enlaces, encabezados, reglas y estructura del contrato.
 
-**Prompt 3:**
+**Intervención humana:** confirmación de las iniciales LL y autorización explícita para modificar el fork y preparar la entrega. El trabajo se realiza desde Work/GitHub, sin acceso directo al clon del Mac del autor.
 
----
+**Evidencia:** los cambios de documentación se versionan en `feature/entrega-1-LL`. Los PRs de implementación y sus verificaciones se registrarán cuando existan. El formulario académico es un paso separado de la preparación del repositorio.
 
-### 7. Pull Requests
+## Qué se registrará durante el desarrollo
 
-**Prompt 1:**
-
-**Prompt 2:**
-
-**Prompt 3:**
+Por cada fase se añadirán las herramientas y modelos identificables, hasta tres prompts o workflows representativos, resultados relevantes, correcciones humanas y evidencia de verificación. No se requiere volcar todas las conversaciones ni conservar datos personales o secretos en este archivo.

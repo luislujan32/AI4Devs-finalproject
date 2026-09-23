@@ -1,0 +1,421 @@
+openapi: 3.0.3
+info:
+  title: Screeningroom — API representativa
+  version: 0.1.0
+  description: 'Diseño de entrega 1: tres operaciones representativas. No es la API
+    completa ni una implementación. Se utilizan sesiones de servidor; los permisos
+    dependen del principal y del ownership, no solo de poseer una cookie.'
+servers:
+- url: /
+  description: Mismo origen que el frontend
+security:
+- sessionCookie: []
+paths:
+  /api/screenings/{screeningId}/publish:
+    post:
+      operationId: publishScreening
+      tags:
+      - Recruiter
+      summary: Publicar un borrador válido propio
+      description: Requiere sesión de recruiter propietario. Compara expectedRevision
+        con la revisión del borrador, valida las reglas y congela la configuración
+        en una actualización condicionada. Una vez publicado, los cambios requieren
+        copiarlo a otro borrador.
+      parameters:
+      - name: screeningId
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^[a-fA-F0-9]{24}$
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 1
+        description: Token obtenido al iniciar la sesión; requerido en mutaciones
+          junto con validación de Origin.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExpectedRevision'
+      responses:
+        '200':
+          description: Screening publicado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublishedScreening'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/Unprocessable'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /api/candidate/attempt/submit:
+    post:
+      operationId: submitCandidateAttempt
+      tags:
+      - Candidate
+      summary: Enviar definitivamente el intento de la sesión
+      description: 'Solo sesión de candidato. No recibe invitationId: se obtiene de
+        la sesión. Evalúa las respuestas ya guardadas de expectedRevision. Si sigue
+        abierto, compara revisión, estado y vigencia y persiste envío e informe conjuntamente.
+        Si ya fue enviado y el acceso sigue vigente, retorna la misma confirmación
+        sin recalcular, aunque el cliente repita la revisión anterior. Una invitación
+        vencida devuelve 410 incluso si ya hubo envío. No retorna puntuación ni resultado
+        al candidato.'
+      parameters:
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 1
+        description: Token obtenido al iniciar la sesión; requerido en mutaciones
+          junto con validación de Origin.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExpectedRevision'
+      responses:
+        '200':
+          description: Envío confirmado o repetición del mismo envío
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmissionReceipt'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '410':
+          $ref: '#/components/responses/Gone'
+        '422':
+          $ref: '#/components/responses/Unprocessable'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /api/invitations/{invitationId}/report:
+    get:
+      operationId: getInvitationReport
+      tags:
+      - Recruiter
+      summary: Consultar el informe y la revisión vigente
+      description: Solo recruiter propietario. El informe conserva las reglas y evidencia
+        de la evaluación v1. La revisión humana no altera el resultado calculado.
+        Invitación ajena, eliminada o fuera de retención responde 404. Antes del envío
+        responde 409.
+      parameters:
+      - name: invitationId
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^[a-fA-F0-9]{24}$
+      responses:
+        '200':
+          description: Informe del intento
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportEnvelope'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+components:
+  securitySchemes:
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: sr_session
+      description: Cookie HttpOnly de sesión de servidor. Secure en HTTPS y SameSite=Lax.
+        El rol y alcance se comprueban en el servidor.
+  schemas:
+    ExpectedRevision:
+      type: object
+      additionalProperties: false
+      required:
+      - expectedRevision
+      properties:
+        expectedRevision:
+          type: integer
+          minimum: 0
+    PublishedScreening:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - status
+      - revision
+      - publishedAt
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+          enum:
+          - published
+        revision:
+          type: integer
+          minimum: 0
+        publishedAt:
+          type: string
+          format: date-time
+    SubmissionReceipt:
+      type: object
+      additionalProperties: false
+      required:
+      - status
+      - submittedAt
+      properties:
+        status:
+          type: string
+          enum:
+          - submitted
+        submittedAt:
+          type: string
+          format: date-time
+    Evidence:
+      type: object
+      additionalProperties: false
+      required:
+      - status
+      - source
+      - answerText
+      properties:
+        status:
+          type: string
+          enum:
+          - known
+          - unknown
+          - missing
+        source:
+          type: string
+          enum:
+          - candidate_declaration
+        answerText:
+          type: string
+          nullable: true
+    CriterionResult:
+      type: object
+      additionalProperties: false
+      required:
+      - questionId
+      - criterion
+      - question
+      - evidence
+      - optionScore
+      - weight
+      - weightedPoints
+      - exclusionStatus
+      properties:
+        questionId:
+          type: string
+        criterion:
+          type: string
+        question:
+          type: string
+        evidence:
+          $ref: '#/components/schemas/Evidence'
+        optionScore:
+          type: integer
+          nullable: true
+          minimum: 0
+          maximum: 100
+        weight:
+          type: integer
+          nullable: true
+          minimum: 1
+          maximum: 5
+        weightedPoints:
+          type: integer
+          nullable: true
+          minimum: 0
+          maximum: 500
+        exclusionStatus:
+          type: string
+          enum:
+          - met
+          - not_met
+          - unknown
+          - not_applicable
+    Review:
+      type: object
+      additionalProperties: false
+      required:
+      - decision
+      - reason
+      - reviewerId
+      - reviewedAt
+      - revision
+      properties:
+        decision:
+          type: string
+          enum:
+          - continue
+          - do_not_continue
+          - clarify
+        reason:
+          type: string
+          maxLength: 2000
+        reviewerId:
+          type: string
+        reviewedAt:
+          type: string
+          format: date-time
+        revision:
+          type: integer
+          minimum: 1
+      nullable: true
+    ReportEnvelope:
+      type: object
+      additionalProperties: false
+      required:
+      - invitationId
+      - screeningId
+      - algorithmVersion
+      - outcome
+      - reason
+      - score
+      - threshold
+      - incomplete
+      - criteria
+      - generatedAt
+      - review
+      properties:
+        invitationId:
+          type: string
+        screeningId:
+          type: string
+        algorithmVersion:
+          type: string
+          enum:
+          - v1
+        outcome:
+          type: string
+          enum:
+          - meets
+          - not_meets
+          - needs_review
+        reason:
+          type: string
+          enum:
+          - knockout
+          - score_below_threshold
+          - incomplete
+          - criteria_met
+        score:
+          type: number
+          minimum: 0
+          maximum: 100
+          nullable: true
+          description: Media ponderada sin redondear para comparación. Null si falta
+            cualquier respuesta puntuable; no se calcula con un denominador reducido.
+        threshold:
+          type: integer
+          minimum: 0
+          maximum: 100
+        incomplete:
+          type: boolean
+        criteria:
+          type: array
+          minItems: 1
+          maxItems: 20
+          items:
+            $ref: '#/components/schemas/CriterionResult'
+        generatedAt:
+          type: string
+          format: date-time
+        review:
+          $ref: '#/components/schemas/Review'
+    Error:
+      type: object
+      additionalProperties: false
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        fields:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required:
+            - path
+            - message
+            properties:
+              path:
+                type: string
+              message:
+                type: string
+  responses:
+    Unauthorized:
+      description: Sesión ausente o expirada.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: Principal no autorizado para esta operación o control CSRF/origen
+        fallido.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Recurso inexistente, ajeno, eliminado o fuera del plazo de retención.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Conflict:
+      description: Revisión o estado incompatible; recargar antes de sobrescribir.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Gone:
+      description: Invitación vencida; no se permite leer ni cambiar su intento mediante
+        el acceso de candidato.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unprocessable:
+      description: Datos o configuración inválidos; fields identifica los campos corregibles.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    RateLimited:
+      description: Límite temporal de solicitudes alcanzado.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
