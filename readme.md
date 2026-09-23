@@ -261,7 +261,7 @@ Todos los documentos de dominio tienen `_id: ObjectId`, `createdAt: Date` y `upd
 
 | Objeto | Atributos y reglas |
 | --- | --- |
-| `Question` | `id: string` único en screening; `bankQuestionId: ObjectId?`; `criterion`, `text: string` hasta 120/500; `type`; `required: boolean`; `scored: boolean`; `weight: integer 1–5` solo si puntúa; `options: {id,label,score?}[]`; `exclusion: {acceptedOptionIds: string[]}?`. Opciones de pregunta puntuable llevan `score: integer 0–100` |
+| `Question` | `id: string` único en screening; `bankQuestionId: ObjectId?`; `criterion`, `text: string` hasta 120/500; `type`; `required: boolean`; `scored: boolean`; `weight: integer 1–5` solo si puntúa; `options: {id,label,score?}[]`; `guidance: string?` (orientación copiada del banco, conservada en la pregunta); `exclusion: {acceptedOptionIds: string[]}?`. Opciones de pregunta puntuable llevan `score: integer 0–100` |
 | `Answer` | `questionId: string`; `kind: option/text/unknown`; `optionId: string?`; `text: string?` hasta 2000. Una sola respuesta por pregunta; la forma y la opción deben corresponder al tipo de pregunta |
 | `Report` | `algorithmVersion: "v1"`; `outcome: meets/not_meets/needs_review`; `reason: knockout/score_below_threshold/incomplete/criteria_met`; `score: number?`; `threshold: number`; `incomplete: boolean`; `criteria: CriterionResult[]`; `generatedAt: Date`. Null score significa cálculo incompleto, nunca cero implícito |
 | `CriterionResult` | `questionId`, criterio, pregunta y evidencia declarada; `status: known/unknown/missing`; `optionScore`, `weight`, `weightedPoints` opcionales; `exclusionStatus: met/not_met/unknown/not_applicable` |
