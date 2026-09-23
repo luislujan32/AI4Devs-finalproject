@@ -2,7 +2,7 @@
 
 [Volver al README](../readme.md). Las historias HU-01, HU-03 y HU-04 y los tres tickets representativos se documentan allí. Este anexo conserva las dos historias adicionales y la planificación completa.
 
-### HU-02 — Obtener sugerencias de IA
+## HU-02 — Obtener sugerencias de IA
 
 **Como** recruiter, **quiero** propuestas relacionadas con el puesto y el área, **para** reducir el trabajo de redacción.
 
@@ -12,7 +12,7 @@
 - **Dado** un fallo del proveedor o salida inválida, **cuando** finaliza la solicitud, **entonces** se comunica el fallo y siguen disponibles edición manual y banco.
 - **Dado** un texto con instrucciones maliciosas en la vacante, **cuando** se usa como contexto, **entonces** el generador carece de herramientas y credenciales para publicar o consultar candidatos.
 
-### HU-05 — Registrar revisión humana
+## HU-05 — Registrar revisión humana
 
 **Como** recruiter, **quiero** registrar mi decisión después de leer el informe, **para** conservar el criterio aplicado al candidato.
 
