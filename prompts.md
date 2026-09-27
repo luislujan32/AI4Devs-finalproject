@@ -4,7 +4,7 @@
 
 Este registro documenta cómo se utilizó la IA y qué decisiones tomó el autor. Los workflows son resúmenes del trabajo real; solo los fragmentos expresamente marcados como literales reproducen instrucciones de la conversación. No se inventan prompts de implementación ni resultados de pruebas de una aplicación aún no desarrollada.
 
-Los apartados 1–7 conservan el registro histórico de la entrega 1. El trabajo local posterior se registra en «Entrega 2 — Workflow 1» al final del documento.
+Los apartados 1–7 conservan el registro histórico de la entrega 1. El trabajo local posterior se registra en los workflows de entrega 2 al final del documento. Cada workflow describe el estado de ese momento; los posteriores registran sus resoluciones.
 
 ## Herramientas y alcance
 
@@ -143,3 +143,16 @@ Por cada fase se añadirán las herramientas y modelos identificables, hasta tre
 **Evidencia local:** instalación npm ci y checks desde una copia limpia; tipos, lint, build y OpenSpec estrictos; readiness HTTP 200 con MongoDB real; frontend compilado y recursos; 404 JSON de una ruta API inexistente; escritura recuperada tras reconexión en una base de prueba aislada y limpiada al terminar; contrato 503 con conexión aislada. Además se pausó el MongoDB local propio, se verificó 503 por HTTP y estado de fallo en navegador, se restauró y se recuperó con reintento. npm no reportó vulnerabilidades en la instalación. La configuración CI se incorpora; solo se afirmará ejecución remota cuando exista evidencia.
 
 **Límites:** todavía no hay autenticación, screenings, banco, códigos, respuestas, evaluación ni informes. Estas comprobaciones no acreditan el flujo principal de la entrega 2 ni el E2E final. No se hizo despliegue público ni se contrataron servicios.
+
+
+## Entrega 2 — Workflow 2: reconciliar checkpoints y separar ramas
+
+**Entrada:** el autor aportó el directorio con trece checkpoints del máster, confirmó haber fusionado el PR 1 del fork y eliminado su rama, y autorizó commits en su fork prohibiéndolos en el repositorio académico.
+
+**Trabajo con IA:** verificar metadatos del PR y árboles Git; recuperar entrega 2 con el código íntegro; revertir T-00 solo en entrega 1 para preservar su entrega documental, sin reescribir historial. Leer principios, conclusiones y secciones pertinentes de los checkpoints; adaptar planificación, documentación, privacidad, persistencia y evidencia al alcance de Screeningroom. Incorporar la restricción de publicación y base de PR en AGENTS/config/guía.
+
+**OpenSpec:** validar y archivar bootstrap-workspace mediante la CLI, sincronizando cuatro requisitos a workspace-runtime. Preparar propuesta, diseño, escenarios y tareas de persist-domain-model (T-01); sus diez tareas siguen abiertas y no se afirma implementación de negocio.
+
+**Validación ejecutada:** comparación exacta del árbol restaurado de entrega 1 con c2fc032; comparación del código preservado en entrega 2 con T-00 fusionado; consulta confirmó que el PR académico vuelve a mostrar seis archivos. La validación estricta OpenSpec pasó para la spec viva y el siguiente cambio; git diff --check sin errores. Las pruebas de runtime del workflow anterior conservan su evidencia histórica; no se presentan como nuevas ejecuciones ni como CI remoto.
+
+**Decisiones humanas y límites:** directorio de referencia y restricción del fork aportados por Luis. Los checkpoints se tratan como conocimiento, sin trasladar contratos de otros proyectos o introducir herramientas por requisito pedagógico. No se usaron subagentes. No se publicaron commits, PRs ni comentarios en el repositorio académico; su PR existente refleja automáticamente los cambios de su rama fuente en el fork. La reconciliación de principios resuelve la consulta del workflow anterior; no afirma auditar una instalación completa de harness laboral.

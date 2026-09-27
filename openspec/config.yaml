@@ -9,6 +9,9 @@ context: |
   docs/backlog.md identifica historias y tickets; docs/openapi.yaml contiene tres operaciones representativas.
   Referenciar estos contratos; no duplicarlos completos ni afirmar que ya están implementados.
   La IA del producto solo sugiere preguntas; no evalúa ni recibe datos de candidatos.
+  docs/harness.md aplica selectivamente los checkpoints del máster, sin importar contratos laborales.
+  Publicar solo en el fork luislujan32/AI4Devs-finalproject; desarrollo en feature/entrega-2-LL.
+  No publicar en el repositorio académico ni fusionar desarrollo hacia entrega 1.
   Cambios pequeños, sin secretos ni datos reales. Registrar evidencia y correcciones en prompts.md.
 
 rules:
@@ -17,6 +20,7 @@ rules:
   design:
     - Distinguir contrato aprobado, decisión técnica propuesta, código verificado y pendientes.
     - Elegir evidencia proporcional al riesgo; no introducir abstracciones por ceremonia.
+    - Identificar fuentes de verdad, lifecycle y frontera atómica si el cambio afecta persistencia.
   tasks:
     - Incluir validación concreta, documentación y registro real de IA.
     - Marcar tareas completas solo después de comprobar su resultado.

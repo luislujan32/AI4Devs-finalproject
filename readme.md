@@ -1,5 +1,7 @@
 # Screeningroom — Proyecto final AI4Devs
 
+Desarrollo en el fork, rama **feature/entrega-2-LL**. [Guía local](docs/desarrollo.md) · [Aplicación de los aprendizajes del máster](docs/harness.md). La entrega 1 conserva su documentación en feature/entrega-1-LL.
+
 **Entrega 2 en desarrollo · Luis Lujan (LL) · Actualización: 27 de septiembre de 2026.**
 
 La entrega 1 definió el MVP y su diseño. La rama `feature/entrega-2-LL` incorpora la base T-00: frontend, API y MongoDB conectados, ejecución local y comprobaciones de infraestructura. El flujo principal todavía está pendiente; las reglas de producto de este documento describen el comportamiento previsto.
