@@ -60,12 +60,19 @@ La CLI está fijada como dependencia del proyecto. Las skills locales de Codex e
 
 ```bash
 npx openspec list
-npx openspec status --change bootstrap-workspace
-npx openspec instructions apply --change bootstrap-workspace
+npx openspec show workspace-runtime
 npm run spec:validate
 ```
 
-El cambio bootstrap-workspace conserva propuesta, diseño, escenarios y tareas de T-00. El contrato funcional previsto continúa en docs/producto.md. La reconciliación con la configuración canónica del harness anterior sigue pendiente de la información que aporte Luis.
+T-00 está cerrado en openspec/changes/archive/2026-09-27-bootstrap-workspace; su contrato de infraestructura vive en openspec/specs/workspace-runtime/spec.md. El contrato funcional previsto continúa en docs/producto.md. [Aplicación de los checkpoints y evidencia por ticket](harness.md).
+
+El cambio siguiente es persist-domain-model (T-01). Propuesta, diseño, escenarios y tareas están preparados; su implementación está pendiente. Para consultar sus instrucciones: `npx openspec instructions apply --change persist-domain-model`. Sus tareas abiertas no significan que T-01 esté implementado.
+
+## Ramas de trabajo
+
+El remoto origin debe ser el fork luislujan32/AI4Devs-finalproject. Trabajar sobre feature/entrega-2-LL o una rama de tarea creada desde ella. Antes de publicar comprobar remoto, rama y cambios; antes de un PR confirmar que la base es feature/entrega-2-LL en el fork.
+
+feature/entrega-1-LL conserva la documentación entregada. No fusionar su revert de T-00 hacia entrega 2: ese revert solo separó la documentación del desarrollo ya preservado. Borrar ramas temporales después de fusionarlas es normal; conservar las ramas estables de cada entrega. No publicar commits, PRs ni comentarios en el repositorio académico dentro del trabajo de desarrollo.
 
 ## Evidencia del 27/09/2026
 

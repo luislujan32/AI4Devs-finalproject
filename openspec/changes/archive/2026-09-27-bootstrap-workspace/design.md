@@ -32,4 +32,8 @@ Instalar con npm ci; iniciar Compose; compilar y comprobar; ejecutar desarrollo.
 
 ## Open Questions
 
-Ruta y configuración canónica del harness OpenSpec anterior; la consulta al usuario está pendiente. No bloquea esta base técnica. Hosting, SMTP y proveedor/modelo IA se resuelven en los cambios pertinentes.
+Resuelto el 27/09: Luis aportó trece checkpoints del máster. Se reconciliaron sus principios en docs/harness.md; no se trasladan restricciones laborales ni se añaden schemas personalizados. Hosting, SMTP y proveedor/modelo IA se resuelven en los cambios pertinentes.
+
+## Closing Evidence
+
+T-00 se fusionó en el PR 1 del fork. Su base era entrega 1: se preservó el código íntegro en entrega 2 y se revirtió solo en entrega 1, sin reescribir historial. La entrega 1 volvió al árbol documental de c2fc032. El cierre sincroniza workspace-runtime a las specs vivas; las comprobaciones locales figuran en docs/desarrollo.md. No acredita CI remoto ni un MVP completo.

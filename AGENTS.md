@@ -9,6 +9,13 @@ Proyecto individual AI4Devs. Stack aprobado: React/Vite/TypeScript, NestJS/Expre
 - docs/openapi.yaml: tres operaciones representativas; no es la API completa.
 - openspec/changes/: cambios propuestos y su evidencia; openspec/specs/: comportamiento incorporado al cerrar cambios.
 - prompts.md: registro del uso real de IA.
+- docs/harness.md: aplicación selectiva de los checkpoints del máster y evidencia por ticket.
+
+## Repositorio y ramas
+
+Trabajar y publicar únicamente en el fork luislujan32/AI4Devs-finalproject. El usuario prohíbe commits o publicaciones en LIDR-academy/AI4Devs-finalproject. Verificar remoto, rama y destino antes de publicar.
+
+feature/entrega-1-LL conserva la entrega documental. feature/entrega-2-LL integra el desarrollo. Los PRs de desarrollo del fork deben apuntar a feature/entrega-2-LL; no usar entrega 1 como base. No fusionar su revert de T-00 en entrega 2. La entrega académica por PR/formulario es una acción distinta, que se acordará con Luis.
 
 ## Explore → Plan → Execute → Verify
 
@@ -30,4 +37,4 @@ Ejecutar comprobaciones aplicables; documentar sus resultados y límites reales.
 
 Comandos de trabajo: npm run check, npm run smoke, npm run spec:validate. La comprobación de infraestructura no sustituye el E2E del producto.
 
-El harness mínimo local queda sujeto a reconciliación con la configuración canónica anterior que aporte Luis. No trasladar contratos empresariales al proyecto académico.
+Los checkpoints aportados se reconciliaron como conocimiento de referencia en docs/harness.md. No trasladar contratos empresariales al proyecto académico ni convertir recomendaciones pedagógicas en nuevos requisitos. La autorización actual del usuario para avanzar prevalece sobre gates históricos de otros proyectos.
