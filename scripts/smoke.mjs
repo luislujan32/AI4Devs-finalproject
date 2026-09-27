@@ -4,7 +4,7 @@ import { once } from 'node:events';
 import { createServer } from 'node:net';
 import { setTimeout as delay } from 'node:timers/promises';
 import { fileURLToPath } from 'node:url';
-import { randomUUID } from 'node:crypto';
+import { randomUUID, randomBytes } from 'node:crypto';
 import mongoose from 'mongoose';
 
 // Only this randomly named test database is written and cleaned by this check.
@@ -18,7 +18,7 @@ await new Promise((resolve) => probe.close(resolve));
 const origin = `http://127.0.0.1:${port}`;
 const api = spawn(process.execPath, ['apps/api/dist/main.js'], {
   cwd: fileURLToPath(new URL('../', import.meta.url)),
-  env: { ...process.env, API_PORT: String(port), MONGODB_URI: uri },
+  env: { ...process.env, API_PORT: String(port), MONGODB_URI: uri, SESSION_SECRET: randomBytes(32).toString('base64url'), NODE_ENV: 'test' },
   stdio: 'ignore',
 });
 let connection;

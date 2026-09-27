@@ -11,6 +11,7 @@ Proyecto individual AI4Devs. Stack aprobado: React/Vite/TypeScript, NestJS/Expre
 - prompts.md: registro del uso real de IA.
 - docs/harness.md: aplicación selectiva de los checkpoints del máster y evidencia por ticket.
 - docs/datos.md: semántica de persistencia, fixtures y límites de T-01.
+- docs/acceso.md: sesiones, cuentas ficticias, rutas implementadas y límites de T-02.
 
 ## Repositorio y ramas
 
@@ -36,6 +37,6 @@ La IA solo propone preguntas, con revisión del recruiter. No enviar respuestas 
 
 Ejecutar comprobaciones aplicables; documentar sus resultados y límites reales. No presentar un scaffold como flujo principal completo ni intención como implementación. Actualizar README/prompts.md cuando cambie el estado o el workflow.
 
-Comandos de trabajo: npm run check, npm run test:persistence, npm run smoke, npm run spec:validate. La comprobación de infraestructura o persistencia no sustituye el E2E del producto.
+Comandos de trabajo: npm run check, npm run test:persistence, npm run test:auth, npm run smoke, npm run spec:validate. La comprobación de infraestructura o persistencia no sustituye el E2E del producto.
 
 Los checkpoints aportados se reconciliaron como conocimiento de referencia en docs/harness.md. No trasladar contratos empresariales al proyecto académico ni convertir recomendaciones pedagógicas en nuevos requisitos. La autorización actual del usuario para avanzar prevalece sobre gates históricos de otros proyectos.

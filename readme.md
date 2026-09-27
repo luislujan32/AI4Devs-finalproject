@@ -4,7 +4,7 @@ Desarrollo en el fork, rama **feature/entrega-2-LL**. [Guía local](docs/desarro
 
 **Entrega 2 en desarrollo · Luis Lujan (LL) · Actualización: 27 de septiembre de 2026.**
 
-La entrega 1 definió el MVP y su diseño. Entrega 2 cuenta con T-00 (frontend, API y MongoDB conectados) y el cambio T-01 de persistencia, preparado en una rama de trabajo para integrar en entrega 2. El flujo principal todavía está pendiente; las reglas de producto de este documento describen el comportamiento previsto. [Persistencia implementada y sus límites](docs/datos.md).
+La entrega 1 definió el MVP y su diseño. El desarrollo cuenta con T-00 (frontend, API y MongoDB conectados), T-01 (persistencia) y T-02 (acceso del recruiter y consulta de screenings propios con cuentas ficticias). T-01/T-02 están preparados en ramas de trabajo para integrar en entrega 2. El flujo principal todavía está pendiente; las reglas de producto de este documento describen el comportamiento previsto. [Persistencia y sus límites](docs/datos.md) · [Acceso implementado y demo](docs/acceso.md).
 
 ## Índice
 
@@ -35,7 +35,7 @@ Aplicación web de screening de candidatos. El recruiter prepara preguntas y cri
 
 ### 0.4. URL de la aplicación
 
-Se incorporará cuando exista un despliegue. Para esta primera entrega se presenta el diseño.
+Se incorporará cuando exista un despliegue público. La aplicación actual se ejecuta localmente siguiendo la guía de desarrollo.
 
 ### 0.5. Repositorio
 
