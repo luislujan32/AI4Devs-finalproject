@@ -4,7 +4,7 @@ Desarrollo en el fork, rama **feature/entrega-2-LL**. [Guía local](docs/desarro
 
 **Entrega 2 en desarrollo · Luis Lujan (LL) · Actualización: 27 de septiembre de 2026.**
 
-La entrega 1 definió el MVP y su diseño. La rama `feature/entrega-2-LL` incorpora la base T-00: frontend, API y MongoDB conectados, ejecución local y comprobaciones de infraestructura. El flujo principal todavía está pendiente; las reglas de producto de este documento describen el comportamiento previsto.
+La entrega 1 definió el MVP y su diseño. Entrega 2 cuenta con T-00 (frontend, API y MongoDB conectados) y el cambio T-01 de persistencia, preparado en una rama de trabajo para integrar en entrega 2. El flujo principal todavía está pendiente; las reglas de producto de este documento describen el comportamiento previsto. [Persistencia implementada y sus límites](docs/datos.md).
 
 ## Índice
 
@@ -169,8 +169,8 @@ PostgreSQL también sería válido. Se elige MongoDB porque la configuración y 
 | `docs/openapi.yaml` | Incluido | Tres operaciones representativas |
 | `docs/wireframes.svg` | Incluido | Bocetos de interfaz |
 | `apps/web` | Base T-00 incorporada durante entrega 2 | React y comprobación de conexión; flujo de producto pendiente |
-| `apps/api` | Base T-00 incorporada durante entrega 2 | NestJS/Express, conexión MongoDB y readiness |
-| `.github/workflows` | Pipeline mínimo configurado durante T-00 | Tipos, lint, build, OpenSpec y comprobación con MongoDB |
+| `apps/api` | T-00 y cambio T-01 | NestJS/Express, readiness, cinco modelos, índices y operaciones de persistencia; endpoints de producto pendientes |
+| `.github/workflows` | Pipeline configurado durante T-00/T-01 | Tipos, lint, build, OpenSpec y pruebas de infraestructura/persistencia con MongoDB |
 
 El monorepo contiene frontend y backend como npm workspaces. Cada regla se mantiene en su documento de referencia. [Comandos y workflow OpenSpec](docs/desarrollo.md).
 
@@ -266,7 +266,7 @@ Todos los documentos de dominio tienen `_id: ObjectId`, `createdAt: Date` y `upd
 | `Question` | `id: string` único en screening; `bankQuestionId: ObjectId?`; `criterion`, `text: string` hasta 120/500; `type`; `required: boolean`; `scored: boolean`; `weight: integer 1–5` solo si puntúa; `options: {id,label,score?}[]`; `guidance: string?` (orientación copiada del banco, conservada en la pregunta); `exclusion: {acceptedOptionIds: string[]}?`. Opciones de pregunta puntuable llevan `score: integer 0–100` |
 | `Answer` | `questionId: string`; `kind: option/text/unknown`; `optionId: string?`; `text: string?` hasta 2000. Una sola respuesta por pregunta; la forma y la opción deben corresponder al tipo de pregunta |
 | `Report` | `algorithmVersion: "v1"`; `outcome: meets/not_meets/needs_review`; `reason: knockout/score_below_threshold/incomplete/criteria_met`; `score: number?`; `threshold: number`; `incomplete: boolean`; `criteria: CriterionResult[]`; `generatedAt: Date`. Null score significa cálculo incompleto, nunca cero implícito |
-| `CriterionResult` | `questionId`, criterio, pregunta y evidencia declarada; `status: known/unknown/missing`; `optionScore`, `weight`, `weightedPoints` opcionales; `exclusionStatus: met/not_met/unknown/not_applicable` |
+| `CriterionResult` | `questionId`, criterio, pregunta y `evidence: {status: known/unknown/missing, source: candidate_declaration, answerText: string/null}`, conforme a OpenAPI; `optionScore`, `weight`, `weightedPoints` nullable; `exclusionStatus: met/not_met/unknown/not_applicable` |
 | `Review` | `decision: continue/do_not_continue/clarify`; `reason: string` hasta 2000; `reviewerId: ObjectId`; `reviewedAt: Date`; `revision: integer >= 1`. El MVP conserva la revisión vigente; no promete historial de revisiones anteriores |
 
 **Índices:** email único en usuarios; `{ownerId, createdAt}` en screenings e invitaciones; publicId único; `{screeningId, candidateEmail}` único para evitar doble invitación al mismo screening; `{area, active}` en banco; TTL sobre `purgeAt` en invitaciones y sobre la expiración del store de sesiones. El servidor no depende de que el TTL se ejecute inmediatamente.

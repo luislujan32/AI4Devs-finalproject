@@ -6,6 +6,8 @@
 
 T-00 prepara la base del proyecto: React/Vite, NestJS/Express, MongoDB/Mongoose y npm workspaces. La pantalla inicial comprueba disponibilidad real de la API y MongoDB. No implementa todavía el recorrido de screenings y no equivale a la entrega 2 completa.
 
+T-01 agrega [modelos, índices y operaciones de persistencia](datos.md), datos ficticios y pruebas con MongoDB real. No añade login, editor, OTP, cálculo ni endpoints de producto.
+
 ## Requisitos
 
 - Node.js 24.21.0 y npm 11; la versión está fijada en .nvmrc. Con nvm instalado: `nvm install` y `nvm use` desde la raíz.
@@ -45,6 +47,7 @@ Abrir http://127.0.0.1:3001. NestJS sirve el frontend compilado y la API bajo el
 
 ```bash
 npm run check
+npm run test:persistence
 npm run smoke
 ```
 
@@ -53,6 +56,8 @@ npm run smoke
 El contrato de indisponibilidad se comprueba también invocando el controlador real con una conexión aislada desconectada: debe devolver 503 sin URI. Esa comprobación aislada no demuestra por sí sola toda la recuperación HTTP ante una caída real del servidor.
 
 Estos checks son evidencia de infraestructura; no son pruebas de las funcionalidades todavía pendientes ni el E2E del flujo principal requerido para la final. La configuración .github/workflows/check.yml reproduce las comprobaciones con MongoDB en CI. Un resultado local no acredita ejecución remota de CI.
+
+test:persistence requiere la API compilada (incluida en check). Verifica los modelos y operaciones concretas en una BD de prueba aleatoria, incluidos índices, concurrencia y comando repetible de fixtures. La guía de [datos](datos.md) detalla límites y el comando de carga explícita en una BD separada.
 
 ## Trabajo con OpenSpec
 
@@ -66,7 +71,7 @@ npm run spec:validate
 
 T-00 está cerrado en openspec/changes/archive/2026-09-27-bootstrap-workspace; su contrato de infraestructura vive en openspec/specs/workspace-runtime/spec.md. El contrato funcional previsto continúa en docs/producto.md. [Aplicación de los checkpoints y evidencia por ticket](harness.md).
 
-El cambio siguiente es persist-domain-model (T-01). Propuesta, diseño, escenarios y tareas están preparados; su implementación está pendiente. Para consultar sus instrucciones: `npx openspec instructions apply --change persist-domain-model`. Sus tareas abiertas no significan que T-01 esté implementado.
+T-01 está cerrado en openspec/changes/archive/2026-09-27-persist-domain-model, con sus diez tareas completas y evidencia local. Su contrato está sincronizado en openspec/specs/domain-persistence/spec.md. El siguiente ticket es T-02, acceso del recruiter y autorización de endpoints.
 
 ## Ramas de trabajo
 
@@ -84,3 +89,8 @@ feature/entrega-1-LL conserva la documentación entregada. No fusionar su revert
 - El pipeline está configurado; su ejecución remota se verificará al publicar el cambio.
 
 Son resultados del entorno local descrito; no acreditan funcionalidades de screening ni un despliegue público.
+
+
+## Evidencia local de T-01
+
+Tipos, lint, compilación y OpenSpec pasaron. Las catorce pruebas de persistencia con MongoDB real y la prueba de infraestructura pasaron tras la implementación final. La integración por PR hacia entrega 2 sigue pendiente; no se acredita ejecución remota de CI. Detalles en docs/datos.md y prompts.md.

@@ -13,6 +13,7 @@
 - Usar la conexión Mongoose existente y schemas explícitos para users, screenings, question_bank, invitations y sessions. Modelos registrados mediante un módulo NestJS reutilizable. No introducir ORM ni otro motor.
 - Fuente de verdad de configuración: contenido de cada screening; una pregunta copiada conserva su contenido, no consulta dinámicamente el banco. Publicado es inmutable por contrato; su servicio de escritura se implementa en T-03. Referencias del banco son informativas, no dependencias de lectura del intento.
 - Invitación embebe respuestas, informe y revisión. Estos datos podrán guardarse de forma atómica en un solo documento en T-07/T-08. Informe captura el cálculo asociado al envío, no recalcula desde preguntas editadas; revisión humana conserva su propia revisión y no sustituye el informe.
+- Clarificación al implementar: el OpenAPI aprobado concreta Evidence como status/source/answerText. El informe persiste esa evidencia y sus aportes numéricos nullable, sin copiar Answer como su formato ni duplicar status fuera de Evidence. Las respuestas originales permanecen en answers; no se inventa un contrato alternativo de informe.
 - Validadores estructurales para ids únicos, enum, números enteros y límites del README. Borradores admiten campos incompletos; la validación completa de publicación corresponde a T-03. No exigir pesos/puntajes completos al guardar un borrador. Validar shape de Answer; correspondencia con Question requiere cargar el screening y validar en el servicio de T-07.
 - Email normalizado antes de persistir; índices únicos son la garantía frente a carreras. Probar duplicados realmente contra MongoDB, no contra un mock ni el supuesto de que unique es un validador de Mongoose.
 - Implementar acceso concreto a referencias: la creación de una invitación verifica screening existente/publicado del mismo owner; una consulta ajena no revela el documento. No fiarse de un ownerId recibido de una futura petición: el servicio HTTP deberá derivarlo de su sesión en T-02/T-05.
@@ -36,3 +37,8 @@ Crear estructuras e índices en la BD local del proyecto; ejecutar fixtures solo
 ## Open Questions
 
 Ninguna decisión de producto nueva bloquea T-01. El correo del recruiter inicial y su contraseña/provisioning se concretarán en T-02 sin compartir secretos en el chat. Hosting, SMTP y proveedor IA continúan fuera de este cambio.
+
+
+## Closing Evidence
+
+Implementación verificada en la rama feature/persistencia-T01-LL del fork, basada en entrega 2; integración por PR hacia entrega 2 pendiente. npm run check, catorce casos de MongoDB real y smoke pasaron localmente. Los casos usan y eliminan únicamente su BD aleatoria. Fixtures invocados dos veces por comando real, sin borrar documentos ajenos. Guía en docs/datos.md. No hay pruebas de endpoints de negocio ni CI remoto acreditado.
