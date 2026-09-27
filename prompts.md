@@ -1,14 +1,12 @@
 # Registro de uso de IA — Screeningroom
 
-**Autor:** Luis Lujan (LL). **Etapas:** entrega 1 documental y comienzo de entrega 2. **Actualización:** 27 de septiembre de 2026.
+**Autor:** Luis Lujan (LL). **Etapa:** entrega 1, definición, planificación y documentación. **Actualización:** 23 de septiembre de 2026.
 
 Este registro documenta cómo se utilizó la IA y qué decisiones tomó el autor. Los workflows son resúmenes del trabajo real; solo los fragmentos expresamente marcados como literales reproducen instrucciones de la conversación. No se inventan prompts de implementación ni resultados de pruebas de una aplicación aún no desarrollada.
 
-Los apartados 1–7 conservan el registro histórico de la entrega 1. El trabajo local posterior se registra en «Entrega 2 — Workflow 1» al final del documento.
-
 ## Herramientas y alcance
 
-| Herramienta o recurso | Uso efectivo en la etapa documental |
+| Herramienta o recurso | Uso efectivo en esta etapa |
 | --- | --- |
 | ChatGPT, conversación y modo Work | Análisis de pautas, alternativas, reglas, historias y documentación |
 | Entorno de ejecución del asistente | Preparación de Markdown, YAML y wireframes; comprobaciones documentales locales |
@@ -125,21 +123,3 @@ Los apartados 1–7 conservan el registro histórico de la entrega 1. El trabajo
 ## Qué se registrará durante el desarrollo
 
 Por cada fase se añadirán las herramientas y modelos identificables, hasta tres prompts o workflows representativos, resultados relevantes, correcciones humanas y evidencia de verificación. No se requiere volcar todas las conversaciones ni conservar datos personales o secretos en este archivo.
-
-## Entrega 2 — Workflow 1: base conectada y contrato de trabajo
-
-**Entrada:** los tres textos del máster aportados por el autor, documentación de entrega 1 con las correcciones de CodeRabbit y autorización para avanzar pidiendo información faltante. Se distingue T-00 del requisito académico de un flujo principal operativo.
-
-**Herramientas usadas:** Codex en el Mac, Git, OpenSpec 1.4.1 y sus skills locales de propuesta/aplicación, documentación oficial de Codex/Node/Vite/NestJS, npm, Docker Compose con OrbStack y navegador integrado para comprobar la interfaz.
-
-**Modelo:** el nombre exacto del modelo seleccionado no se verificó en la interfaz; no se inventa una identificación. Los workflows anteriores describen la etapa documental desde Work; este apartado registra el trabajo local posterior.
-
-**Trabajo con IA:** preparar propuesta, diseño, escenarios y tareas de bootstrap-workspace; construir npm workspaces React/NestJS, conexión real a MongoDB, frontend compilado servido por API y readiness; fijar runtime/dependencias e imágenes; agregar lint/tipos/build y comprobación de integración aislada; documentar comandos y límites. AGENTS.md adapta principios generales de Explore/Plan/Execute y evidencia, sin trasladar contratos empresariales. La configuración exacta del harness canónico anterior sigue pendiente de la información solicitada al autor.
-
-**Intervención humana:** el autor priorizó respetar las pautas de entrega 2 y autorizó avanzar con OpenSpec. No se usaron subagentes, orquestación personalizada ni IA de producto; las funcionalidades y elección de proveedor siguen pendientes.
-
-**Correcciones durante la ejecución:** fijar TypeScript 5.9 compatible con el analizador de lint consultado; diferenciar cancelación al desmontar la interfaz y timeout para que un fallo no deje el estado «Comprobando»; restaurar siempre servicios tras la prueba de caída; comprobar que el fallback SPA no sustituya errores API.
-
-**Evidencia local:** instalación npm ci y checks desde una copia limpia; tipos, lint, build y OpenSpec estrictos; readiness HTTP 200 con MongoDB real; frontend compilado y recursos; 404 JSON de una ruta API inexistente; escritura recuperada tras reconexión en una base de prueba aislada y limpiada al terminar; contrato 503 con conexión aislada. Además se pausó el MongoDB local propio, se verificó 503 por HTTP y estado de fallo en navegador, se restauró y se recuperó con reintento. npm no reportó vulnerabilidades en la instalación. La configuración CI se incorpora; solo se afirmará ejecución remota cuando exista evidencia.
-
-**Límites:** todavía no hay autenticación, screenings, banco, códigos, respuestas, evaluación ni informes. Estas comprobaciones no acreditan el flujo principal de la entrega 2 ni el E2E final. No se hizo despliegue público ni se contrataron servicios.
