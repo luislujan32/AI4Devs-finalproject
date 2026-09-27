@@ -4,7 +4,7 @@ Desarrollo en el fork, rama **feature/entrega-2-LL**. [Guía local](docs/desarro
 
 **Entrega 2 en desarrollo · Luis Lujan (LL) · Actualización: 27 de septiembre de 2026.**
 
-La entrega 1 definió el MVP y su diseño. El desarrollo cuenta con T-00 (frontend, API y MongoDB conectados), T-01 (persistencia) y T-02 (acceso del recruiter y consulta de screenings propios con cuentas ficticias). T-01/T-02 están preparados en ramas de trabajo para integrar en entrega 2. El flujo principal todavía está pendiente; las reglas de producto de este documento describen el comportamiento previsto. [Persistencia y sus límites](docs/datos.md) · [Acceso implementado y demo](docs/acceso.md).
+La entrega 1 definió el MVP y su diseño. El desarrollo cuenta con T-00 (frontend, API y MongoDB conectados), T-01 (persistencia) y T-02 (acceso del recruiter y consulta de screenings propios con cuentas ficticias), y autoría/publicación/copia de T-03. El catálogo inicial de T-03 está pendiente de revisión de Luis. T-01/T-02/T-03 están preparados en ramas de trabajo para integrar en entrega 2. El flujo principal todavía está pendiente; las reglas de producto de este documento describen el comportamiento previsto. [Persistencia y sus límites](docs/datos.md) · [Acceso implementado y demo](docs/acceso.md) · [Editor, publicación y límites](docs/screenings.md).
 
 ## Índice
 

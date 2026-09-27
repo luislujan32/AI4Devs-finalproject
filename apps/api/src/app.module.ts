@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { HealthController } from './health.controller.js';
 import { PersistenceModule } from './persistence/persistence.module.js';
 import { AuthModule } from './auth/auth.module.js';
+import { ScreeningsModule } from './screenings/screenings.module.js';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { AuthModule } from './auth/auth.module.js';
     }),
     PersistenceModule,
     AuthModule,
+    ScreeningsModule,
     ServeStaticModule.forRoot({
       rootPath: fileURLToPath(new URL('../../web/dist/', import.meta.url)),
       exclude: ['/api', '/api/{*path}'],

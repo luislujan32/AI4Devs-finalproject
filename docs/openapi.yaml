@@ -41,7 +41,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ExpectedRevision'
+              $ref: '#/components/schemas/PublishScreeningInput'
       responses:
         '200':
           description: Screening publicado
@@ -162,6 +162,20 @@ components:
         expectedRevision:
           type: integer
           minimum: 0
+    PublishScreeningInput:
+      type: object
+      additionalProperties: false
+      required:
+      - expectedRevision
+      - confirmConfiguration
+      properties:
+        expectedRevision:
+          type: integer
+          minimum: 0
+        confirmConfiguration:
+          type: boolean
+          const: true
+          description: El recruiter confirma preguntas, reglas y umbral para el puesto.
     PublishedScreening:
       type: object
       additionalProperties: false
