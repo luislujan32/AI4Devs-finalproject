@@ -60,6 +60,8 @@ Producción exige NODE_ENV=production, PUBLIC_ORIGIN con origen HTTPS exacto, SE
 
 ## Evidencia y límites
 
+El fallo de conexión se comprobó deteniendo temporalmente la API propia: mostró el mensaje en español y se restauró el servicio y el acceso con reintento.
+
 El 27/09 pasaron tipos/lint/build/OpenSpec, trece pruebas HTTP/MongoDB de acceso, catorce de persistencia y smoke. La demo se ejecutó dos veces sin cambiar credenciales. Navegador real: rechazo de password incorrecto, cuentas A/B con listados propios, recarga conservando sesión, logout y formulario limpio, Tab entre campos y Enter para enviar; inspección de login/listado móvil a 375 × 812 sin desbordamiento horizontal.
 
 Las pruebas aisladas acreditan expiración previa a TTL, revocación/rotación, inactivación, principal candidato, reinicio de API y límites por IP/correo. Cookie Secure/configuración HTTPS se comprobó por construcción, sin servidor TLS real. No se afirma una auditoría completa de seguridad/accesibilidad, ejecución remota de CI, paginación, OTP, publicación de screenings ni E2E del producto. T-01/T-02 están pendientes de integración por PR hacia entrega 2.
