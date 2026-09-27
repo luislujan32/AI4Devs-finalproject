@@ -156,3 +156,18 @@ Por cada fase se añadirán las herramientas y modelos identificables, hasta tre
 **Validación ejecutada:** comparación exacta del árbol restaurado de entrega 1 con c2fc032; comparación del código preservado en entrega 2 con T-00 fusionado; consulta confirmó que el PR académico vuelve a mostrar seis archivos. La validación estricta OpenSpec pasó para la spec viva y el siguiente cambio; git diff --check sin errores. Las pruebas de runtime del workflow anterior conservan su evidencia histórica; no se presentan como nuevas ejecuciones ni como CI remoto.
 
 **Decisiones humanas y límites:** directorio de referencia y restricción del fork aportados por Luis. Los checkpoints se tratan como conocimiento, sin trasladar contratos de otros proyectos o introducir herramientas por requisito pedagógico. No se usaron subagentes. No se publicaron commits, PRs ni comentarios en el repositorio académico; su PR existente refleja automáticamente los cambios de su rama fuente en el fork. La reconciliación de principios resuelve la consulta del workflow anterior; no afirma auditar una instalación completa de harness laboral.
+
+
+## Entrega 2 — Workflow 3: implementar persistencia T-01
+
+**Entrada:** Luis pidió continuar tras separar las ramas y reconciliar checkpoints. Se aplicó persist-domain-model siguiendo propuesta, diseño y escenarios existentes, en feature/persistencia-T01-LL creada desde entrega 2 del fork.
+
+**Trabajo con IA:** definir cinco schemas Mongoose y objetos embebidos; registrar modelos en NestJS; esperar inicialización de índices; implementar consulta por propietario, creación de invitaciones sobre screenings publicados propios y guardado condicionado de preguntas de borrador; añadir fixtures insert-only y pruebas con Node test runner/MongoDB real, sin dependencias nuevas.
+
+**Corrección durante el trabajo:** al contrastar el informe con OpenAPI se ajustó Evidence a status/source/answerText y campos numéricos nullable; no se conservó el formato de Answer como un contrato alternativo de evidencia. Se aclaró ese formato en el README y diseño. Se corrigieron tipos literales de TypeScript al compilar, sin debilitar validaciones.
+
+**Evidencia ejecutada:** npm run check pasó (tipos, lint, build y OpenSpec); catorce pruebas de persistencia pasaron con MongoDB real, incluidos duplicados, ownership, CAS con dos escritores, límites, evidencia declarada, informe/revisión, sesiones y TTL. El comando real de fixtures se ejecutó dos veces dentro del test y conservó datos ajenos. npm run smoke volvió a pasar tras registrar modelos y esperar índices. Los tests usan una BD aleatoria y limpian solo esa BD.
+
+**Entorno y límites:** la primera prueba recibió EPERM al conectar desde el sandbox; se ejecutó con acceso autorizado al MongoDB local y pasó. No se relajaron assertions ni se sustituyó la BD por un mock. No hubo rechazo de aprobación automática. No se afirma ejecución remota de CI, login, envío SMTP/OTP, publicación completa, algoritmo de evaluación, E2E del flujo principal ni despliegue. El usuario de fixtures está inactivo y sin credencial utilizable; no se solicita una contraseña por chat.
+
+**Control humano:** Luis autorizó continuar y limitó las publicaciones al fork. Se consultó su preferencia de cuenta inicial para T-02; no bloquea persistencia. No se usaron subagentes ni datos reales. Herramientas: Codex desktop, skill local openspec-apply-change, CLI OpenSpec, Git, npm, Node/Mongoose y documentación oficial NestJS/Mongoose. No se atribuye un modelo exacto no verificado.

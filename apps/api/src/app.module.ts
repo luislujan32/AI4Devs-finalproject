@@ -3,6 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { fileURLToPath } from 'node:url';
 import { HealthController } from './health.controller.js';
+import { PersistenceModule } from './persistence/persistence.module.js';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { HealthController } from './health.controller.js';
         connectionErrorFactory: () => new Error('MongoDB no está disponible.'),
       }),
     }),
+    PersistenceModule,
     ServeStaticModule.forRoot({
       rootPath: fileURLToPath(new URL('../../web/dist/', import.meta.url)),
       exclude: ['/api', '/api/{*path}'],
