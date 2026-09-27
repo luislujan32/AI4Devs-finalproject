@@ -1,0 +1,264 @@
+{
+  "review": {
+    "status": "pending",
+    "reviewer": null,
+    "reviewedAt": null
+  },
+  "questions": [
+    {
+      "_id": "660000000000000000000001",
+      "area": "Comercio y atención al cliente",
+      "criterion": "Escucha y aclaración",
+      "text": "¿Cómo aclararías la necesidad de una persona antes de ofrecerle una solución?",
+      "type": "text",
+      "options": [],
+      "guidance": "Pedir un ejemplo de preguntas de aclaración; valorar la evidencia con revisión humana.",
+      "active": true
+    },
+    {
+      "_id": "660000000000000000000002",
+      "area": "Comercio y atención al cliente",
+      "criterion": "Gestión de reclamos",
+      "text": "Ante un reclamo que no podés resolver directamente, ¿cuál sería tu primera acción?",
+      "type": "single_choice",
+      "options": [
+        {
+          "id": "option-1",
+          "label": "Comprender el problema y explicar el siguiente paso"
+        },
+        {
+          "id": "option-2",
+          "label": "Derivar sin recopilar información"
+        },
+        {
+          "id": "option-3",
+          "label": "Prometer una solución sin verificarla"
+        }
+      ],
+      "guidance": "Adaptar las opciones al protocolo del puesto; no asumir una respuesta aceptada universal.",
+      "active": true
+    },
+    {
+      "_id": "660000000000000000000003",
+      "area": "Comercio y atención al cliente",
+      "criterion": "Seguimiento de consultas",
+      "text": "¿Has utilizado un registro para dar seguimiento a consultas de clientes?",
+      "type": "boolean",
+      "options": [
+        {
+          "id": "option-1",
+          "label": "Sí"
+        },
+        {
+          "id": "option-2",
+          "label": "No"
+        }
+      ],
+      "guidance": "Es una declaración de experiencia, no una competencia certificada; considerar alternativas del puesto.",
+      "active": true
+    },
+    {
+      "_id": "660000000000000000000004",
+      "area": "Comercio y atención al cliente",
+      "criterion": "Organización de la atención",
+      "text": "Si coinciden varias consultas, ¿cómo priorizás habitualmente?",
+      "type": "single_choice",
+      "options": [
+        {
+          "id": "option-1",
+          "label": "Por urgencia e impacto y comunicando tiempos"
+        },
+        {
+          "id": "option-2",
+          "label": "Solo por orden de llegada"
+        },
+        {
+          "id": "option-3",
+          "label": "Según el esfuerzo que requiere cada una"
+        }
+      ],
+      "guidance": "Revisar según canales y acuerdos de servicio del puesto.",
+      "active": true
+    },
+    {
+      "_id": "660000000000000000000005",
+      "area": "Comercio y atención al cliente",
+      "criterion": "Comunicación de límites",
+      "text": "Describí cómo explicarías a un cliente una limitación del servicio sin prometer algo que no podés cumplir.",
+      "type": "text",
+      "options": [],
+      "guidance": "Buscar claridad y alternativas viables; el texto no recibe puntaje automático.",
+      "active": true
+    },
+    {
+      "_id": "660000000000000000000006",
+      "area": "Administración y operaciones",
+      "criterion": "Control de registros",
+      "text": "¿Has trabajado con registros o planillas que requieren comprobar datos antes de guardarlos?",
+      "type": "boolean",
+      "options": [
+        {
+          "id": "option-1",
+          "label": "Sí"
+        },
+        {
+          "id": "option-2",
+          "label": "No"
+        }
+      ],
+      "guidance": "No presupone una herramienta concreta; adaptar el alcance al puesto.",
+      "active": true
+    },
+    {
+      "_id": "660000000000000000000007",
+      "area": "Administración y operaciones",
+      "criterion": "Detección de diferencias",
+      "text": "Si detectás una diferencia entre dos registros, ¿qué harías primero?",
+      "type": "single_choice",
+      "options": [
+        {
+          "id": "option-1",
+          "label": "Verificar las fuentes y registrar la diferencia"
+        },
+        {
+          "id": "option-2",
+          "label": "Cambiar un valor para hacerlos coincidir"
+        },
+        {
+          "id": "option-3",
+          "label": "Continuar sin documentar la diferencia"
+        }
+      ],
+      "guidance": "Ajustar al procedimiento y permisos reales de la operación.",
+      "active": true
+    },
+    {
+      "_id": "660000000000000000000008",
+      "area": "Administración y operaciones",
+      "criterion": "Priorización operativa",
+      "text": "Cuando llegan tareas con distintos plazos, ¿qué criterio usás primero para organizarlas?",
+      "type": "single_choice",
+      "options": [
+        {
+          "id": "option-1",
+          "label": "Plazo, impacto y dependencias"
+        },
+        {
+          "id": "option-2",
+          "label": "Orden de llegada sin excepciones"
+        },
+        {
+          "id": "option-3",
+          "label": "Facilidad para terminarlas rápido"
+        }
+      ],
+      "guidance": "Las reglas del equipo pueden cambiar la prioridad; revisar antes de puntuar.",
+      "active": true
+    },
+    {
+      "_id": "660000000000000000000009",
+      "area": "Administración y operaciones",
+      "criterion": "Documentación de procesos",
+      "text": "Describí qué incluirías al documentar una tarea repetitiva para que otra persona pueda realizarla.",
+      "type": "text",
+      "options": [],
+      "guidance": "Pedir pasos, entradas, controles y resultado esperado; revisión humana sin scoring del texto.",
+      "active": true
+    },
+    {
+      "_id": "66000000000000000000000a",
+      "area": "Administración y operaciones",
+      "criterion": "Gestión de errores",
+      "text": "Contá cómo comunicarías un error detectado en un proceso y qué información dejarías registrada.",
+      "type": "text",
+      "options": [],
+      "guidance": "Usar ejemplos ficticios o sin información confidencial; no pedir datos de empleadores.",
+      "active": true
+    },
+    {
+      "_id": "66000000000000000000000b",
+      "area": "Tecnología",
+      "criterion": "Control de versiones",
+      "text": "¿Has utilizado un sistema de control de versiones para colaborar en cambios de software?",
+      "type": "boolean",
+      "options": [
+        {
+          "id": "option-1",
+          "label": "Sí"
+        },
+        {
+          "id": "option-2",
+          "label": "No"
+        }
+      ],
+      "guidance": "Aceptar experiencia equivalente según el puesto; no acredita dominio de una herramienta.",
+      "active": true
+    },
+    {
+      "_id": "66000000000000000000000c",
+      "area": "Tecnología",
+      "criterion": "Investigación de fallos",
+      "text": "Ante un fallo que aparece de forma intermitente, ¿qué harías primero?",
+      "type": "single_choice",
+      "options": [
+        {
+          "id": "option-1",
+          "label": "Recopilar condiciones y evidencia para reproducirlo"
+        },
+        {
+          "id": "option-2",
+          "label": "Modificar varias partes a la vez sin registrar cambios"
+        },
+        {
+          "id": "option-3",
+          "label": "Descartar el reporte porque no ocurre siempre"
+        }
+      ],
+      "guidance": "Adaptar a entorno y responsabilidades; el recruiter define valores y requisitos.",
+      "active": true
+    },
+    {
+      "_id": "66000000000000000000000d",
+      "area": "Tecnología",
+      "criterion": "Verificación de cambios",
+      "text": "Antes de entregar un cambio de software, ¿qué enfoque describe mejor tu verificación?",
+      "type": "single_choice",
+      "options": [
+        {
+          "id": "option-1",
+          "label": "Comprobar comportamiento esperado y casos de fallo relevantes"
+        },
+        {
+          "id": "option-2",
+          "label": "Verificar solo que el código compile"
+        },
+        {
+          "id": "option-3",
+          "label": "Confiar en que el cambio es pequeño"
+        }
+      ],
+      "guidance": "Revisar expectativas del equipo y riesgo del cambio; no imponer una metodología única.",
+      "active": true
+    },
+    {
+      "_id": "66000000000000000000000e",
+      "area": "Tecnología",
+      "criterion": "Explicación técnica",
+      "text": "Explicá cómo comunicarías una decisión técnica a una persona que no trabaja en desarrollo.",
+      "type": "text",
+      "options": [],
+      "guidance": "Valorar explicación y consecuencias con revisión humana; sin evaluación automática del texto.",
+      "active": true
+    },
+    {
+      "_id": "66000000000000000000000f",
+      "area": "Tecnología",
+      "criterion": "Diseño y límites",
+      "text": "Describí cómo decidirías qué parte de una solución implementar primero y qué dejar pendiente.",
+      "type": "text",
+      "options": [],
+      "guidance": "Pedir alcance, supuestos y evidencia; evitar información propietaria en los ejemplos.",
+      "active": true
+    }
+  ]
+}

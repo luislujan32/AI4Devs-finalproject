@@ -8,7 +8,7 @@ T-00 prepara la base del proyecto: React/Vite, NestJS/Express, MongoDB/Mongoose 
 
 T-01 agrega [modelos, índices y operaciones de persistencia](datos.md), datos ficticios y pruebas con MongoDB real. T-01 no añade login, editor, OTP, cálculo ni endpoints de producto.
 
-T-02 agrega [login/logout, sesiones persistentes y listado propio](acceso.md). La pantalla inicial ahora es el acceso del recruiter; el editor y el recorrido del candidato siguen pendientes.
+T-02 agrega [login/logout, sesiones persistentes y listado propio](acceso.md). La pantalla inicial ahora es el acceso del recruiter. T-03 agrega [editor, reglas, publicación y copia](screenings.md); el catálogo inicial está pendiente de revisión humana y el recorrido del candidato sigue pendiente.
 
 ## Requisitos
 
@@ -52,6 +52,7 @@ Abrir http://127.0.0.1:3001. NestJS sirve el frontend compilado y la API bajo el
 npm run check
 npm run test:persistence
 npm run test:auth
+npm run test:screenings
 npm run smoke
 ```
 
@@ -75,7 +76,7 @@ npm run spec:validate
 
 T-00 está cerrado en openspec/changes/archive/2026-09-27-bootstrap-workspace; su contrato de infraestructura vive en openspec/specs/workspace-runtime/spec.md. El contrato funcional previsto continúa en docs/producto.md. [Aplicación de los checkpoints y evidencia por ticket](harness.md).
 
-T-01 está cerrado en openspec/changes/archive/2026-09-27-persist-domain-model, con sus diez tareas completas y evidencia local. Su contrato está sincronizado en openspec/specs/domain-persistence/spec.md. T-02 está cerrado en openspec/changes/archive/2026-09-27-recruiter-access; sincroniza recruiter-auth y recruiter-workspace. El siguiente ticket es T-03: borradores, banco y publicación.
+T-01 está cerrado en openspec/changes/archive/2026-09-27-persist-domain-model, con sus diez tareas completas y evidencia local. Su contrato está sincronizado en openspec/specs/domain-persistence/spec.md. T-02 está cerrado en openspec/changes/archive/2026-09-27-recruiter-access; sincroniza recruiter-auth y recruiter-workspace. T-03 está activo como screening-editor: autoría y publicación verificadas; pendiente revisión/carga del banco inicial y archivo del cambio.
 
 ## Ramas de trabajo
 
@@ -102,3 +103,7 @@ Tipos, lint, compilación y OpenSpec pasaron. Las catorce pruebas de persistenci
 ## Evidencia local de T-02
 
 Tipos, lint, build, OpenSpec, trece pruebas HTTP/MongoDB de acceso, catorce de persistencia y smoke pasaron. Demo ejecutada dos veces, sin imprimir ni cambiar contraseñas. Navegador real: contraseña incorrecta, login A/B y listados aislados, recarga, logout, formulario limpio, Tab/Enter y diseño de 375 × 812 sin desbordamiento horizontal. Cookie Secure se comprobó por construcción; no se hizo un despliegue TLS ni una auditoría completa de accesibilidad. Estado de CI remoto e integración por PR pendientes. Detalles y límites en docs/acceso.md.
+
+## Evidencia local de T-03
+
+Check y 41 pruebas (14 screenings/catálogo, 13 acceso, 14 persistencia), más smoke, pasaron. Navegador verificó creación/guardado/recarga/publicación/copia, rechazo de configuración incompleta, conflicto entre pestañas y recuperación, móvil/teclado; copia del banco con fixture aislado, sin cargar el catálogo pendiente. No se cierra T-03 ni se afirma aprobación del banco/CI remoto. Detalles en screenings.md.

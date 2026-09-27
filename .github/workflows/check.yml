@@ -33,4 +33,5 @@ jobs:
       - run: npm run check
       - run: npm run test:persistence
       - run: npm run test:auth
+      - run: npm run test:screenings
       - run: npm run smoke

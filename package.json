@@ -4,8 +4,14 @@
   "private": true,
   "type": "module",
   "packageManager": "npm@11.19.0",
-  "engines": { "node": ">=24.21.0 <25", "npm": ">=11 <12" },
-  "workspaces": ["apps/api", "apps/web"],
+  "engines": {
+    "node": ">=24.21.0 <25",
+    "npm": ">=11 <12"
+  },
+  "workspaces": [
+    "apps/api",
+    "apps/web"
+  ],
   "scripts": {
     "dev": "concurrently -k -n api,web \"npm run dev -w @screeningroom/api\" \"npm run dev -w @screeningroom/web\"",
     "build": "npm run build --workspaces",
@@ -21,7 +27,9 @@
     "fixtures": "npm run build -w @screeningroom/api && node --env-file-if-exists=.env scripts/fixtures.mjs",
     "infra:up": "docker compose up -d --wait",
     "infra:down": "docker compose down",
-    "spec:validate": "openspec validate --all --strict --no-interactive"
+    "spec:validate": "openspec validate --all --strict --no-interactive",
+    "catalog": "npm run build -w @screeningroom/api && node --env-file-if-exists=.env scripts/catalog.mjs",
+    "test:screenings": "node --env-file-if-exists=.env --test scripts/screenings.test.mjs"
   },
   "devDependencies": {
     "@fission-ai/openspec": "1.4.1",

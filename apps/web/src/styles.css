@@ -44,3 +44,30 @@ form button { margin-top: 8px; }
 .notice p { margin: 0; color: #783d25; }
 .secondary { margin-top: 12px; }
 @media (max-width: 760px) { .access-layout { grid-template-columns: 1fr; gap: 0; } .access-layout .intro { padding: 44px 0 28px; } .access-layout h1 { font-size: 49px; } .access { padding: 22px; } .workspace { padding-top: 42px; } .screening-list li { padding: 18px; } }
+
+textarea, select { width: 100%; border: 1px solid #aab8aa; border-radius: 8px; padding: 12px; font: inherit; background: white; color: #172f2b; }
+textarea { resize: vertical; }
+textarea:focus-visible, select:focus-visible, summary:focus-visible { outline: 3px solid #b0822b; outline-offset: 2px; }
+.screening-list a { color: inherit; text-underline-offset: 4px; }
+.editor-heading, .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; }
+.editor-heading { justify-content: space-between; margin-bottom: 24px; }
+.editor-heading button, .actions button { margin-top: 0; }
+.editor-card { display: grid; gap: 12px; min-width: 0; margin: 24px 0; padding: 24px; border: 1px solid #dce0d4; border-radius: 12px; background: #fffdf8; }
+.editor-card legend { font-size: 18px; font-weight: 650; padding: 0 8px; }
+.editor-card:disabled input, .editor-card:disabled textarea, .editor-card:disabled select { color: #172f2b; background: #f2f1eb; opacity: 1; }
+.editor-card p { margin: 4px 0; }
+.editor-card button { justify-self: start; margin-top: 4px; }
+.check { display: flex; gap: 12px; align-items: flex-start; line-height: 1.6; margin: 10px 0; }
+.check input { width: 18px; height: 18px; flex-shrink: 0; margin: 3px 0 0; }
+.help { font-size: 14px; line-height: 1.6; color: #53645b; }
+.number-field { max-width: 150px; }
+.option-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(120px, 200px); align-items: start; gap: 14px; border-top: 1px solid #e3e6dc; padding-top: 16px; }
+.option-row > .check, .option-row > button { grid-column: 1 / -1; }
+.option-row label { display: block; margin-bottom: 8px; }
+.option-row > .check { display: flex; }
+.bank-list { list-style: none; padding: 0; display: grid; gap: 16px; }
+.bank-list li { border-top: 1px solid #e3e6dc; padding-top: 16px; }
+.bank-list h3 { margin: 0 0 8px; font-size: 18px; }
+summary { cursor: pointer; font-weight: 650; }
+.success { padding: 16px 20px; border: 1px solid #287051; border-radius: 10px; background: #eef7ef; line-height: 1.6; }
+@media (max-width: 600px) { .editor-card { padding: 18px; } .option-row { grid-template-columns: minmax(0,1fr); } .screening-list li { align-items: flex-start; } .screening-list li .badge { flex-shrink: 0; } }
