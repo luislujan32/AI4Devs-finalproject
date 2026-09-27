@@ -13,4 +13,4 @@
 ## 3. Cierre
 
 - [x] 3.1 Ejecutar tipos/lint/build, regresión de persistencia/infraestructura y OpenSpec; integrar CI.
-- [ ] 3.2 Documentar comandos, evidencia y límites; registrar IA, archivar y publicar únicamente en el fork.
+- [x] 3.2 Documentar comandos, evidencia y límites; registrar IA, archivar y publicar únicamente en el fork.
