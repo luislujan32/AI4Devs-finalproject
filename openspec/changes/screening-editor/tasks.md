@@ -14,5 +14,5 @@
 
 - [x] 3.1 Verificar reglas, ownership, CSRF, concurrencia edición/publicación, copia y catálogo con HTTP/MongoDB aislados.
 - [x] 3.2 Verificar recorrido real en navegador, persistencia al recargar, errores, móvil y teclado.
-- [ ] 3.3 Ejecutar check/regresiones, actualizar API/README/guías/IA/CI y publicar únicamente en el fork.
+- [x] 3.3 Ejecutar check/regresiones, actualizar API/README/guías/IA/CI y publicar únicamente en el fork.
 - [ ] 3.4 Archivar y sincronizar specs solo cuando todas las tareas tengan evidencia.
