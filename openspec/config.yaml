@@ -1,0 +1,22 @@
+schema: spec-driven
+
+context: |
+  Screeningroom es un proyecto individual del máster AI4Devs.
+  La entrega 1 documenta diseño pendiente; no existe aplicación de negocio todavía.
+  Objetivo de entrega 2 (22/10/2026): web, API y MongoDB conectados y flujo principal operativo.
+  Stack aprobado: React/Vite/TypeScript, NestJS/Express, MongoDB/Mongoose, npm workspaces.
+  readme.md describe arquitectura; docs/producto.md contiene las reglas P-01 a P-08;
+  docs/backlog.md identifica historias y tickets; docs/openapi.yaml contiene tres operaciones representativas.
+  Referenciar estos contratos; no duplicarlos completos ni afirmar que ya están implementados.
+  La IA del producto solo sugiere preguntas; no evalúa ni recibe datos de candidatos.
+  Cambios pequeños, sin secretos ni datos reales. Registrar evidencia y correcciones en prompts.md.
+
+rules:
+  proposal:
+    - Relacionar el cambio con los tickets existentes y el objetivo académico pertinente.
+  design:
+    - Distinguir contrato aprobado, decisión técnica propuesta, código verificado y pendientes.
+    - Elegir evidencia proporcional al riesgo; no introducir abstracciones por ceremonia.
+  tasks:
+    - Incluir validación concreta, documentación y registro real de IA.
+    - Marcar tareas completas solo después de comprobar su resultado.

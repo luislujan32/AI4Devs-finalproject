@@ -1,8 +1,8 @@
 # Screeningroom — Proyecto final AI4Devs
 
-**Entrega 1: documentación técnica · Luis Lujan (LL) · 23 de septiembre de 2026.**
+**Entrega 2 en desarrollo · Luis Lujan (LL) · Actualización: 27 de septiembre de 2026.**
 
-Esta entrega define el MVP y su diseño. El código funcional corresponde a la entrega 2; las pruebas ejecutadas y la evidencia del producto se incorporarán durante el desarrollo.
+La entrega 1 definió el MVP y su diseño. La rama `feature/entrega-2-LL` incorpora la base T-00: frontend, API y MongoDB conectados, ejecución local y comprobaciones de infraestructura. El flujo principal todavía está pendiente; las reglas de producto de este documento describen el comportamiento previsto.
 
 ## Índice
 
@@ -37,7 +37,7 @@ Se incorporará cuando exista un despliegue. Para esta primera entrega se presen
 
 ### 0.5. Repositorio
 
-[Repositorio del proyecto](https://github.com/luislujan32/AI4Devs-finalproject). Rama de esta entrega: `feature/entrega-1-LL`.
+[Repositorio del proyecto](https://github.com/luislujan32/AI4Devs-finalproject). Rama de desarrollo de la entrega 2: `feature/entrega-2-LL`. La entrega 1 se conserva en `feature/entrega-1-LL` y su [PR académico #340](https://github.com/LIDR-academy/AI4Devs-finalproject/pull/340).
 
 ## 1. Descripción general del producto
 
@@ -101,9 +101,9 @@ Los formularios tendrán etiquetas, navegación por teclado, foco visible y mens
 
 ### 1.4. Instrucciones de instalación
 
-Pendientes de la entrega 2: aún no existe una aplicación ejecutable. Se prevén Node.js LTS, npm, MongoDB y un servicio SMTP local para desarrollo. Al crear el scaffold se fijarán versiones, variables, comandos y semillas, y se verificará la instalación desde un clon limpio.
+La base del proyecto se ejecuta con Node.js 24.21.0, npm 11 y Docker/Compose. [Instalación, variables, comandos y alcance actual](docs/desarrollo.md). MongoDB y Mailpit se preparan como servicios locales; la interfaz consulta disponibilidad real mediante NestJS. Todavía no existen cuentas, screenings ni semillas de dominio.
 
-Los documentos de esta entrega pueden leerse directamente en GitHub; los diagramas usan Mermaid y la API está en OpenAPI 3.0.3.
+Los documentos pueden leerse directamente en GitHub; los diagramas usan Mermaid y las tres operaciones de producto representativas siguen previstas en OpenAPI 3.0.3. La comprobación de disponibilidad es infraestructura y se documenta aparte.
 
 ## 2. Arquitectura del sistema
 
@@ -158,7 +158,7 @@ PostgreSQL también sería válido. Se elige MongoDB porque la configuración y 
 
 ### 2.3. Estructura del proyecto
 
-| Ruta | Estado en entrega 1 | Propósito |
+| Ruta | Estado actual | Propósito |
 | --- | --- | --- |
 | `readme.md` | Incluido | Ficha y documentación técnica principal |
 | `prompts.md` | Incluido | Herramientas, workflows y ajustes humanos reales |
@@ -166,11 +166,11 @@ PostgreSQL también sería válido. Se elige MongoDB porque la configuración y 
 | `docs/backlog.md` | Incluido | Historias adicionales, tickets y dependencias |
 | `docs/openapi.yaml` | Incluido | Tres operaciones representativas |
 | `docs/wireframes.svg` | Incluido | Bocetos de interfaz |
-| `apps/web` | Previsto para entrega 2 | Rutas, formularios y componentes React |
-| `apps/api` | Previsto para entrega 2 | Módulos NestJS, persistencia y pruebas |
-| `.github/workflows` | Previsto durante implementación | Verificación automatizada |
+| `apps/web` | Base T-00 incorporada durante entrega 2 | React y comprobación de conexión; flujo de producto pendiente |
+| `apps/api` | Base T-00 incorporada durante entrega 2 | NestJS/Express, conexión MongoDB y readiness |
+| `.github/workflows` | Pipeline mínimo configurado durante T-00 | Tipos, lint, build, OpenSpec y comprobación con MongoDB |
 
-El monorepo contendrá un frontend y un backend modular. Cada regla se mantiene en su documento de referencia; los archivos operativos y el código se incorporarán en las siguientes entregas.
+El monorepo contiene frontend y backend como npm workspaces. Cada regla se mantiene en su documento de referencia. [Comandos y workflow OpenSpec](docs/desarrollo.md).
 
 ### 2.4. Infraestructura y despliegue
 
@@ -218,7 +218,7 @@ Estas son decisiones de diseño y buenas prácticas; no una declaración de cert
 
 ### 2.6. Tests
 
-Estrategia prevista; esta entrega no acredita pruebas de la aplicación ejecutadas.
+La estrategia siguiente corresponde a las funcionalidades del producto todavía pendientes. En T-00 se ejecutan tipos, lint, build y comprobaciones de infraestructura; su evidencia y límites se documentan en [desarrollo local](docs/desarrollo.md). No equivalen a la suite ni al E2E del flujo principal requerido para la final.
 
 | Nivel | Evidencia esperada para la entrega final |
 | --- | --- |
@@ -228,7 +228,7 @@ Estrategia prevista; esta entrega no acredita pruebas de la aplicación ejecutad
 | E2E, Playwright | Crear/publicar → invitar → obtener código del buzón de pruebas → responder/retomar/enviar → informe → revisión humana |
 | Calidad de IA | Casos de vacantes revisados por el autor: relevancia, fidelidad a requisitos, ausencia de preguntas improcedentes y recuperación ante fallos |
 
-CI previsto: instalación reproducible, tipos, lint y pruebas automatizadas. El E2E usa datos ficticios y un proveedor IA simulado para ser estable; la revisión semántica del generador se realiza por separado con el proveedor real. No se impone un porcentaje de cobertura ajeno a los requisitos académicos.
+CI mínimo configurado para T-00: instalación reproducible, tipos, lint, build, OpenSpec y comprobación de infraestructura con MongoDB. Se ampliará con las pruebas de producto al implementar cada cambio. El E2E previsto usará datos ficticios y un proveedor IA simulado; la revisión semántica del generador se realizará por separado con el proveedor real. No se impone un porcentaje de cobertura ajeno a los requisitos académicos.
 
 ## 3. Modelo de datos
 
@@ -356,4 +356,4 @@ Tres tickets representativos: datos, backend y frontend. [Backlog y criterio de 
 
 ## 7. Pull requests
 
-Los tres PRs de desarrollo solicitados por la plantilla se documentarán cuando existan, con su objetivo, cambios y validación. Esta primera entrega contiene documentación y se presenta mediante la rama `feature/entrega-1-LL` y su PR académico.
+La entrega 1 se presentó mediante `feature/entrega-1-LL` y el [PR académico #340](https://github.com/LIDR-academy/AI4Devs-finalproject/pull/340). La implementación avanza en `feature/entrega-2-LL`. Los PRs de desarrollo se incorporarán aquí con enlaces reales, objetivo, cambios y validación; no se contabilizan propuestas como PRs existentes.
