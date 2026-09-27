@@ -69,14 +69,14 @@ export function App() {
     const suppliedPassword = password; setPassword('');
     try {
       const response = await fetch('/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrf },
-        body: JSON.stringify({ email, password: suppliedPassword }) });
+        body: JSON.stringify({ email, password: suppliedPassword }) }).catch(() => { throw new Error('No pudimos conectar. Volvé a intentar.'); });
       if (!response.ok) {
         if (response.status === 401) throw new Error('Correo o contraseña incorrectos.');
         if (response.status === 429) throw new Error('Demasiados intentos. Volvé a intentar más tarde.');
         if (response.status === 403) { setCsrf(''); setAttempt((n) => n + 1); throw new Error('El acceso venció. Volvé a intentar.'); }
         throw new Error('No pudimos iniciar sesión. Revisá los datos e intentá nuevamente.');
       }
-      const data: unknown = await response.json();
+      const data: unknown = await response.json().catch(() => { throw new Error('No pudimos confirmar la sesión.'); });
       if (!sessionData(data)) throw new Error('No pudimos confirmar la sesión.');
       setCsrf(''); setSession(data);
     } catch (reason) { setError(reason instanceof Error ? reason.message : 'No pudimos conectar.'); }
