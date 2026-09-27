@@ -38,4 +38,3 @@ El proyecto SHALL documentar servicios locales de MongoDB y correo de prueba, li
 #### Scenario: Infrastructure verification
 - **WHEN** se ejecuta la comprobación de integración con MongoDB operativo
 - **THEN** se verifica lectura/escritura persistente tras reconexión y la integración HTTP; se limpian solo datos de la base de prueba creada por esa ejecución
-
