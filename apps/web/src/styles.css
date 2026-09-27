@@ -22,3 +22,25 @@ button { cursor: pointer; margin-top: 20px; border: 0; border-radius: 8px; paddi
 a:focus-visible, button:focus-visible { outline: 3px solid #b0822b; outline-offset: 4px; }
 footer { margin-top: 34px; color: #68746a; font-size: 12px; }
 @media (max-width: 600px) { .shell { padding: 24px 20px; } .intro { padding: 60px 0 42px; } h1 { letter-spacing: -2px; } .brand { font-size: 20px; } .connection { padding: 22px; } .description { font-size: 17px; } }
+.access-layout { display: grid; grid-template-columns: 1.25fr 1fr; gap: 54px; align-items: center; }
+.access-layout h1 { font-size: clamp(44px, 5.4vw, 70px); }
+.access { background: #fffdf8; border: 1px solid #dce0d4; border-radius: 18px; padding: 30px; }
+.access > p { color: #53645b; line-height: 1.6; }
+form { display: grid; gap: 12px; margin-top: 26px; }
+label { font-size: 14px; font-weight: 600; }
+input { width: 100%; border: 1px solid #aab8aa; border-radius: 8px; padding: 12px; font: inherit; background: white; color: #172f2b; }
+input:focus-visible { outline: 3px solid #b0822b; outline-offset: 2px; }
+button:disabled { opacity: .6; cursor: wait; }
+form button { margin-top: 8px; }
+.logout { margin-top: 0; background: transparent; color: #172f2b; border: 1px solid #aab8aa; }
+.workspace { padding-top: 70px; }
+.workspace h1 { font-size: clamp(42px, 6vw, 64px); letter-spacing: -2px; }
+.screening-list { list-style: none; margin: 36px 0; padding: 0; display: grid; gap: 14px; }
+.screening-list li { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 24px; background: #fffdf8; border: 1px solid #dce0d4; border-radius: 12px; }
+.screening-list h2 { font-size: 20px; margin-bottom: 8px; }
+.screening-list p { margin: 0; color: #53645b; }
+.empty, .loading { padding: 38px 0; color: #53645b; }
+.notice { padding: 18px 22px; border: 1px solid #a25031; border-radius: 10px; background: #fff5eb; }
+.notice p { margin: 0; color: #783d25; }
+.secondary { margin-top: 12px; }
+@media (max-width: 760px) { .access-layout { grid-template-columns: 1fr; gap: 0; } .access-layout .intro { padding: 44px 0 28px; } .access-layout h1 { font-size: 49px; } .access { padding: 22px; } .workspace { padding-top: 42px; } .screening-list li { padding: 18px; } }

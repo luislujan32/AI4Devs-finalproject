@@ -4,6 +4,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { fileURLToPath } from 'node:url';
 import { HealthController } from './health.controller.js';
 import { PersistenceModule } from './persistence/persistence.module.js';
+import { AuthModule } from './auth/auth.module.js';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { PersistenceModule } from './persistence/persistence.module.js';
       }),
     }),
     PersistenceModule,
+    AuthModule,
     ServeStaticModule.forRoot({
       rootPath: fileURLToPath(new URL('../../web/dist/', import.meta.url)),
       exclude: ['/api', '/api/{*path}'],

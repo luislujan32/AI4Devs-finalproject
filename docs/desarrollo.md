@@ -4,9 +4,11 @@
 
 ## Alcance actual
 
-T-00 prepara la base del proyecto: React/Vite, NestJS/Express, MongoDB/Mongoose y npm workspaces. La pantalla inicial comprueba disponibilidad real de la API y MongoDB. No implementa todavía el recorrido de screenings y no equivale a la entrega 2 completa.
+T-00 prepara la base del proyecto: React/Vite, NestJS/Express, MongoDB/Mongoose y npm workspaces. GET /api/health/ready comprueba disponibilidad real de la API y MongoDB. No implementa todavía el recorrido de screenings y no equivale a la entrega 2 completa.
 
-T-01 agrega [modelos, índices y operaciones de persistencia](datos.md), datos ficticios y pruebas con MongoDB real. No añade login, editor, OTP, cálculo ni endpoints de producto.
+T-01 agrega [modelos, índices y operaciones de persistencia](datos.md), datos ficticios y pruebas con MongoDB real. T-01 no añade login, editor, OTP, cálculo ni endpoints de producto.
+
+T-02 agrega [login/logout, sesiones persistentes y listado propio](acceso.md). La pantalla inicial ahora es el acceso del recruiter; el editor y el recorrido del candidato siguen pendientes.
 
 ## Requisitos
 
@@ -23,12 +25,13 @@ npm ci
 cp .env.example .env
 npm run infra:up
 npm run check
+npm run demo -- --database screeningroom_demo_local
 npm run dev
 ```
 
-Si .env ya existe, conservarlo y comparar con .env.example en lugar de reemplazarlo. Contiene configuración local y está ignorado por Git. No usar datos reales en este entorno.
+Si .env ya existe, conservarlo y comparar con .env.example en lugar de reemplazarlo. Contiene configuración local y está ignorado por Git. Antes de iniciar, generar SESSION_SECRET localmente como indica [acceso](acceso.md), y hacer coincidir la BD de MONGODB_URI con la del comando demo. No usar datos reales en este entorno.
 
-Abrir http://127.0.0.1:5173. Vite envía las peticiones /api al backend, conservando el mismo origen para el navegador. El frontend indica disponibilidad y permite reintentar ante un fallo.
+Abrir http://127.0.0.1:5173. Vite envía las peticiones /api al backend, conservando el mismo origen para el navegador. El frontend permite entrar con una cuenta ficticia y consultar sus screenings; comunica errores y permite reintentar.
 
 Mailpit está en http://127.0.0.1:8026. Su servicio SMTP está preparado en 127.0.0.1:1026; el envío de códigos se implementará en T-05.
 
@@ -48,6 +51,7 @@ Abrir http://127.0.0.1:3001. NestJS sirve el frontend compilado y la API bajo el
 ```bash
 npm run check
 npm run test:persistence
+npm run test:auth
 npm run smoke
 ```
 
@@ -71,7 +75,7 @@ npm run spec:validate
 
 T-00 está cerrado en openspec/changes/archive/2026-09-27-bootstrap-workspace; su contrato de infraestructura vive en openspec/specs/workspace-runtime/spec.md. El contrato funcional previsto continúa en docs/producto.md. [Aplicación de los checkpoints y evidencia por ticket](harness.md).
 
-T-01 está cerrado en openspec/changes/archive/2026-09-27-persist-domain-model, con sus diez tareas completas y evidencia local. Su contrato está sincronizado en openspec/specs/domain-persistence/spec.md. El siguiente ticket es T-02, acceso del recruiter y autorización de endpoints.
+T-01 está cerrado en openspec/changes/archive/2026-09-27-persist-domain-model, con sus diez tareas completas y evidencia local. Su contrato está sincronizado en openspec/specs/domain-persistence/spec.md. T-02 está cerrado en openspec/changes/archive/2026-09-27-recruiter-access; sincroniza recruiter-auth y recruiter-workspace. El siguiente ticket es T-03: borradores, banco y publicación.
 
 ## Ramas de trabajo
 
@@ -94,3 +98,7 @@ Son resultados del entorno local descrito; no acreditan funcionalidades de scree
 ## Evidencia local de T-01
 
 Tipos, lint, compilación y OpenSpec pasaron. Las catorce pruebas de persistencia con MongoDB real y la prueba de infraestructura pasaron tras la implementación final. La integración por PR hacia entrega 2 sigue pendiente; no se acredita ejecución remota de CI. Detalles en docs/datos.md y prompts.md.
+
+## Evidencia local de T-02
+
+Tipos, lint, build, OpenSpec, trece pruebas HTTP/MongoDB de acceso, catorce de persistencia y smoke pasaron. Demo ejecutada dos veces, sin imprimir ni cambiar contraseñas. Navegador real: contraseña incorrecta, login A/B y listados aislados, recarga, logout, formulario limpio, Tab/Enter y diseño de 375 × 812 sin desbordamiento horizontal. Cookie Secure se comprobó por construcción; no se hizo un despliegue TLS ni una auditoría completa de accesibilidad. Estado de CI remoto e integración por PR pendientes. Detalles y límites en docs/acceso.md.
