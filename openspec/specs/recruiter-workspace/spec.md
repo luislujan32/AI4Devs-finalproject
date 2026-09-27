@@ -12,4 +12,3 @@ La UI SHALL permitir entrar/salir y cargar screenings propios, mostrar estados d
 #### Scenario: Error and logout
 - **WHEN** falla acceso/carga o se cierra sesión
 - **THEN** comunica el estado correcto, permite reintentar y vuelve al acceso al salir sin conservar lista de otro usuario
-

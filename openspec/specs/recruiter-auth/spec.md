@@ -36,4 +36,3 @@ El servidor SHALL derivar ownership de una sesión válida y no de datos del cli
 #### Scenario: Two recruiters
 - **WHEN** un recruiter lista screenings o consulta el id de otro
 - **THEN** ve solo los propios y el ajeno devuelve 404, igual que uno inexistente
-
