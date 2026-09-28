@@ -40,6 +40,12 @@
 
 T-07 implementa la API de respuestas y evaluación; T-06 consume ese contrato. La interfaz puede avanzar con datos simulados antes de integrar el backend. Las pruebas de cada regla se realizan con su ticket, no se acumulan todas en T-10.
 
+## Ideas posteriores propuestas por Luis (28/09/2026)
+
+- Investigar cómo otras plataformas organizan y configuran sus bancos de preguntas antes de decidir cambios de producto. Esta investigación queda para una etapa posterior; no modifica el contrato P-06 ni el alcance de T-03.
+- Permitir que un recruiter guarde una pregunta propia para reutilizarla dentro de la categoría correspondiente. Antes de implementarlo, definir si el banco será personal, compartido o ambos; quién puede publicar/modificar una entrada compartida y cómo evitar duplicados. Copiarla a un screening debe seguir dejando reglas de evaluación sin preaprobar.
+- Explorar una categoría de preguntas generales, además de las tres áreas iniciales. Luis mencionó nivel de estudios, licencia de conducir y antecedentes penales como ejemplos para investigar, no como preguntas aprobadas para el banco actual. Definir pertinencia, tipo de respuesta, acceso y tratamiento de esos datos antes de incorporarlos; no convertirlos en filtros o excluyentes universales.
+
 **Criterio de terminado por ticket:** criterios observables satisfechos; control de acceso aplicable; pruebas de riesgos del cambio; tipos/lint sin errores; documentación y registro de IA actualizados cuando cambie el contrato; sin secretos ni datos reales en fixtures.
 
 **Hitos académicos:** entrega 1, 24/09, documentación; entrega 2, 22/10, flujo principal operativo con web/API/BD; final, 12/11, funcionalidades, tests, evidencia y registro de IA.

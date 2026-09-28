@@ -8,11 +8,11 @@
 
 - [x] 2.1 Implementar navegación listado/editor, campos manuales y configuración sin convertir vacíos en cero.
 - [x] 2.2 Incorporar banco por área, guardar/recargar, conflicto, confirmación y lectura/copia de publicados; teclado/móvil.
-- [ ] 2.3 Obtener revisión de Luis y cargar quince preguntas aprobadas en la demo; comprobar repetición.
+- [x] 2.3 Obtener revisión de Luis y cargar quince preguntas aprobadas en la demo; comprobar repetición.
 
 ## 3. Evidencia y cierre
 
 - [x] 3.1 Verificar reglas, ownership, CSRF, concurrencia edición/publicación, copia y catálogo con HTTP/MongoDB aislados.
 - [x] 3.2 Verificar recorrido real en navegador, persistencia al recargar, errores, móvil y teclado.
 - [x] 3.3 Ejecutar check/regresiones, actualizar API/README/guías/IA/CI y publicar únicamente en el fork.
-- [ ] 3.4 Archivar y sincronizar specs solo cuando todas las tareas tengan evidencia.
+- [x] 3.4 Archivar y sincronizar specs solo cuando todas las tareas tengan evidencia.

@@ -2,7 +2,7 @@
 
 [README](../readme.md) · [Ejecución local](desarrollo.md).
 
-El acceso y la consulta de screenings propios están implementados. Luis eligió cuentas ficticias para desarrollar; las cuentas reales se aprovisionarán después en el entorno acordado. T-02 no implementó el editor ni el flujo del candidato; [T-03](screenings.md) añade ahora autoría/publicación, con catálogo pendiente de revisión.
+El acceso y la consulta de screenings propios están implementados. Luis eligió cuentas ficticias para desarrollar; las cuentas reales se aprovisionarán después en el entorno acordado. T-02 no implementó el editor ni el flujo del candidato; [T-03](screenings.md) añadió autoría/publicación y un banco inicial revisado.
 
 ## Preparar una demo local
 

@@ -12,7 +12,7 @@ Proyecto individual AI4Devs. Stack aprobado: React/Vite/TypeScript, NestJS/Expre
 - docs/harness.md: aplicación selectiva de los checkpoints del máster y evidencia por ticket.
 - docs/datos.md: semántica de persistencia, fixtures y límites de T-01.
 - docs/acceso.md: sesiones, cuentas ficticias, rutas implementadas y límites de T-02.
-- docs/screenings.md: autoría, publicación, CAS y estado de revisión del catálogo T-03.
+- docs/screenings.md: autoría, publicación, CAS y banco inicial revisado de T-03.
 
 ## Repositorio y ramas
 

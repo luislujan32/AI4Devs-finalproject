@@ -1,5 +1,5 @@
 ## Context
-Contrato aprobado P-01/P-02/P-04/P-06/P-08 y publicación representativa OpenAPI; existente T-01/T-02 verificado, sin escrituras HTTP de screenings. Luis autorizó continuar con datos ficticios. Banco de quince preguntas preparado y revisión solicitada; no inferir aprobación del silencio.
+Contrato aprobado P-01/P-02/P-04/P-06/P-08 y publicación representativa OpenAPI; existente T-01/T-02 verificado, sin escrituras HTTP de screenings. Luis autorizó continuar con datos ficticios. Banco de quince preguntas preparado; Luis confirmó expresamente su contenido como banco inicial el 28/09/2026 antes de cargarlo. No se infirió aprobación del silencio.
 
 ## Goals / Non-Goals
 **Goals:** autoría manual/banco, persistencia, publicación validada/inmutable, copia aislada y UI usable con evidencia real.
@@ -20,4 +20,4 @@ Schema permite borradores inconsistentes entre campos → validador de publicaci
 Módulo nuevo sin borrar/migrar datos. Campos opcionales existentes; ampliar contrato documental publish aún no consumido externamente. Banco se carga solo tras revisión; publicación no revalida retrospectivamente documentos de fixtures. Mantener ramas T-01/T-02 como dependencias aún pendientes de integración en entrega 2 del fork.
 
 ## Open Questions
-Aprobación de Luis para catálogo inicial pendiente. No bloquea implementación y pruebas de autoría manual.
+La aprobación del catálogo inicial fue la única decisión de contenido abierta. Luis la resolvió el 28/09/2026. La evolución posterior del banco está registrada como propuesta separada en docs/backlog.md.

@@ -3,7 +3,7 @@ schema: spec-driven
 context: |
   Screeningroom es un proyecto individual del máster AI4Devs.
   Entrega 1 documenta el diseño. T-00 conecta aplicaciones/BD; T-01 implementa persistencia;
-  T-02 implementa acceso del recruiter; T-03 autoría/publicación, con banco inicial pendiente de revisión.
+  T-02 implementa acceso del recruiter; T-03 autoría/publicación con banco inicial revisado.
   Consultar docs para evidencia y límites; flujo principal de candidatos todavía pendiente.
   Objetivo de entrega 2 (22/10/2026): web, API y MongoDB conectados y flujo principal operativo.
   Stack aprobado: React/Vite/TypeScript, NestJS/Express, MongoDB/Mongoose, npm workspaces.
