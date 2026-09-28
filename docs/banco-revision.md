@@ -1,6 +1,6 @@
-# Banco inicial — propuesta para revisión de Luis
+# Banco inicial — revisado por Luis
 
-Estado: **pendiente de revisión humana; no cargar como catálogo aprobado**. Quince preguntas, cinco por área, sin puntajes ni excluyentes preaprobados. Las opciones estructuradas admitirán además «No puedo confirmarlo» en el cuestionario; no se almacena como opción puntuable.
+Estado: **aprobado por Luis Lujan el 28/09/2026 como banco inicial** y cargado en la demo local. Quince preguntas, cinco por área, sin puntajes ni excluyentes preaprobados. Las opciones estructuradas admitirán además «No puedo confirmarlo» en el cuestionario; no se almacena como opción puntuable.
 
 ## Comercio y atención al cliente
 
@@ -64,4 +64,4 @@ Estado: **pendiente de revisión humana; no cargar como catálogo aprobado**. Qu
 
 ## Revisión
 
-Luis debe confirmar contenido antes de cargarlo. El recruiter seguirá configurando valores, peso, obligatoriedad y excluyentes para cada puesto, y confirmará la configuración al publicar. La revisión de este catálogo no aprueba criterios de una candidatura ni certifica competencias.
+Luis confirmó estas opciones como banco inicial. El recruiter seguirá configurando valores, peso, obligatoriedad y excluyentes para cada puesto, y confirmará la configuración al publicar. La revisión de este catálogo no aprueba criterios de una candidatura ni certifica competencias.

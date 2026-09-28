@@ -1,8 +1,8 @@
 {
   "review": {
-    "status": "pending",
-    "reviewer": null,
-    "reviewedAt": null
+    "status": "approved",
+    "reviewer": "Luis Lujan",
+    "reviewedAt": "2026-09-28T12:53:26Z"
   },
   "questions": [
     {

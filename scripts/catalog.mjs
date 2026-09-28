@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 import { loadCatalog } from '../apps/api/dist/screenings/catalog.js';
 
 async function main() {
-  const { values } = parseArgs({ options: { database: { type: 'string' }, file: { type: 'string', default: 'data/question-bank.pending.json' } } });
+  const { values } = parseArgs({ options: { database: { type: 'string' }, file: { type: 'string', default: 'data/question-bank.initial.json' } } });
   if (!values.database || !/^screeningroom_demo_[a-z0-9_]+$/.test(values.database)) throw new Error('Destino inválido.');
   const catalog = JSON.parse(await readFile(values.file, 'utf8'));
   if (catalog.review?.status !== 'approved') throw new Error('Revisión pendiente.');

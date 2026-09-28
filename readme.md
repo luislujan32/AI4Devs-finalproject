@@ -2,9 +2,9 @@
 
 Desarrollo en el fork, rama **feature/entrega-2-LL**. [Guía local](docs/desarrollo.md) · [Aplicación de los aprendizajes del máster](docs/harness.md). La entrega 1 conserva su documentación en feature/entrega-1-LL.
 
-**Entrega 2 en desarrollo · Luis Lujan (LL) · Actualización: 27 de septiembre de 2026.**
+**Entrega 2 en desarrollo · Luis Lujan (LL) · Actualización: 28 de septiembre de 2026.**
 
-La entrega 1 definió el MVP y su diseño. El desarrollo cuenta con T-00 (frontend, API y MongoDB conectados), T-01 (persistencia) y T-02 (acceso del recruiter y consulta de screenings propios con cuentas ficticias), y autoría/publicación/copia de T-03. El catálogo inicial de T-03 está pendiente de revisión de Luis. T-01/T-02/T-03 están preparados en ramas de trabajo para integrar en entrega 2. El flujo principal todavía está pendiente; las reglas de producto de este documento describen el comportamiento previsto. [Persistencia y sus límites](docs/datos.md) · [Acceso implementado y demo](docs/acceso.md) · [Editor, publicación y límites](docs/screenings.md).
+La entrega 1 definió el MVP y su diseño. El desarrollo cuenta con T-00 (frontend, API y MongoDB conectados), T-01 (persistencia), T-02 (acceso del recruiter con cuentas ficticias) y T-03 (editor, banco inicial aprobado por Luis, publicación y copia). T-01/T-02/T-03 están preparados en ramas de trabajo para integrar en entrega 2. El flujo principal de candidatos todavía está pendiente; las reglas de producto de este documento describen el comportamiento previsto. [Persistencia y sus límites](docs/datos.md) · [Acceso implementado y demo](docs/acceso.md) · [Editor, publicación y límites](docs/screenings.md).
 
 ## Índice
 
@@ -66,7 +66,7 @@ Autenticación, control de acceso y conservación de datos sostienen estas capac
 
 **Deseables posteriores al flujo principal:** exportación del informe y demostración de su consumo mediante un cliente externo genérico. No se promete una integración con un sistema concreto ni webhooks en el primer MVP.
 
-**Evolución posterior:** WhatsApp, audio, interpretación de CV, certificación de competencias, assessments, entrevistas adaptativas, colaboración entre recruiters y subáreas del banco. No forman parte del compromiso inicial.
+**Evolución posterior:** WhatsApp, audio, interpretación de CV, certificación de competencias, assessments, entrevistas adaptativas, colaboración entre recruiters y subáreas del banco. Luis propuso además estudiar otras plataformas, permitir guardar preguntas propias reutilizables y explorar preguntas generales. [Ideas por definir](docs/backlog.md#ideas-posteriores-propuestas-por-luis-28092026). No forman parte del compromiso inicial.
 
 Las reglas de evaluación, publicación, banco y revisión humana se especifican en el [contrato funcional P-01 a P-08](docs/producto.md).
 

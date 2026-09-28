@@ -2,7 +2,7 @@
 
 [README](../readme.md) · [Contrato P-01 a P-08](producto.md) · [Acceso y demo](acceso.md).
 
-Crear/abrir, guardar un borrador, configurar preguntas manuales, publicar y copiar un publicado están implementados y verificados localmente. El banco se consulta desde MongoDB y permite copia aislada. Las quince preguntas iniciales están en [revisión de Luis](banco-revision.md); no se cargaron ni se afirma T-03 cerrado. No hay todavía invitaciones, cuestionario de candidato, evaluación de respuestas ni informes.
+Crear/abrir, guardar un borrador, configurar preguntas manuales, publicar y copiar un publicado están implementados y verificados localmente. El banco se consulta desde MongoDB y permite copia aislada. Luis aprobó las [quince preguntas iniciales](banco-revision.md) el 28/09/2026; se cargaron en la demo local. No hay todavía invitaciones, cuestionario de candidato, evaluación de respuestas ni informes.
 
 ## Recorrido
 
@@ -34,24 +34,24 @@ El guardado valida datos sin coerción antes del schema. No permite owner/status
 
 Ante 409, la UI conserva la edición local y pide recargar la versión persistida; descartar requiere una acción explícita. Estos controles aplican a rutas del producto: no son una restricción que impida a un administrador de MongoDB modificar documentos directamente.
 
-## Banco pendiente de revisión
+## Banco inicial revisado
 
-`data/question-bank.pending.json` contiene quince propuestas, cinco por área, con metadata de revisión pending. [banco-revision.md](banco-revision.md) permite leerlas. P-06 exige revisión del autor antes de cargarlas; el silencio no se considera aprobación. La edición manual funciona con el banco vacío.
+`data/question-bank.initial.json` contiene las quince entradas aprobadas, cinco por área, con autor y fecha de revisión. [banco-revision.md](banco-revision.md) permite leerlas. P-06 exigió revisión del autor antes de cargarlas; Luis confirmó el banco inicial. La edición manual sigue disponible para puestos o necesidades que el banco no cubra.
 
-El comando futuro, una vez registrada aprobación humana, es:
+Para cargarlo en otra base de demostración:
 
 ```bash
-npm run catalog -- --database screeningroom_demo_local --file data/question-bank.pending.json
+npm run catalog -- --database screeningroom_demo_local --file data/question-bank.initial.json
 ```
 
-Usar el mismo nombre de BD que MONGODB_URI/demo. El loader requiere review.status=approved, autor/fecha de revisión, quince entradas válidas y cinco por área; rechaza destinos fuera de screeningroom_demo_* y revisión pendiente. El archivo aún está pending: este comando falla sin escribir hasta registrar la revisión. La aplicación no carga catálogo automáticamente al arrancar.
+Usar el mismo nombre de BD que MONGODB_URI/demo. El loader requiere review.status=approved, autor/fecha de revisión, quince entradas válidas y cinco por área; rechaza destinos fuera de screeningroom_demo_* y revisión pendiente. La aplicación no carga catálogo automáticamente al arrancar.
 
 Preflight compara contenido de todos los ids antes de insertar. El loader inserta solo ausentes, conserva registros ajenos y no reemplaza entradas editadas. No promete atomicidad de quince documentos: un fallo de infraestructura intermedio puede requerir repetir para completar entradas faltantes. Copiar del banco conserva texto, tipo, opciones y orientación; obligatoriedad false, scored false, sin peso/excluyente/puntajes. Editar la copia nunca edita el catálogo. La UI exige guardar cambios propios antes de incorporar una entrada.
 
-## Evidencia del 27/09/2026
+## Evidencia del 27–28/09/2026
 
 `npm run check`, catorce pruebas HTTP/MongoDB de screenings/catálogo, trece de acceso, catorce de persistencia y smoke pasaron. Pruebas aisladas: input estricto, ausencia distinta de cero, ownership/CSRF en todas las mutaciones, negativos de publicación, confirmación/recibo OpenAPI, inmutabilidad, doble edición/publicación, copy/remapeo sin invitaciones, límites, catálogo pendiente/repetido/colisión y copias de banco simultáneas hasta veinte preguntas. Tests de catálogo usan datos ficticios propios y metadata de prueba; no acreditan revisión humana del catálogo de Luis.
 
-Navegador real con MongoDB: crear, guardar incompleto, rechazo de publicación, configurar valores/pesos/excluyentes y texto libre, recargar, publicar, lectura protegida y editar copia sin cambiar original. Dos pestañas: 409 con edición local conservada, cancelar descarte y recargar con confirmación. Inspección móvil 375 × 812 sin desbordamiento horizontal y Tab entre título/área. Banco vacío en demo; copia/edición/recarga del banco comprobadas en otro entorno aislado con un fixture, confirmando original intacto y limpiando solo ese entorno.
+Navegador real con MongoDB: crear, guardar incompleto, rechazo de publicación, configurar valores/pesos/excluyentes y texto libre, recargar, publicar, lectura protegida y editar copia sin cambiar original. Dos pestañas: 409 con edición local conservada, cancelar descarte y recargar con confirmación. Inspección móvil 375 × 812 sin desbordamiento horizontal y Tab entre título/área. Copia/edición/recarga del banco comprobadas primero en otro entorno aislado con un fixture, confirmando original intacto y limpiando solo ese entorno. Tras la aprobación de Luis, el loader se ejecutó dos veces sobre la demo sin colisión; el navegador mostró las quince entradas y el filtro de Tecnología mostró sus cinco preguntas.
 
-CI incorpora test:screenings; ejecución remota no verificada. La prueba de navegador no se presenta como suite automatizada E2E del producto. OpenSpec screening-editor sigue activo hasta aprobar/cargar el catálogo y cerrar tareas. T-01/T-02/T-03 están en ramas de trabajo pendientes de integración hacia entrega 2 del fork. Sin despliegue público ni modificaciones al repositorio académico.
+CI incorpora test:screenings; ejecución remota no verificada. La prueba de navegador no se presenta como suite automatizada E2E del producto. T-01/T-02/T-03 están en ramas de trabajo pendientes de integración hacia entrega 2 del fork. Sin despliegue público ni modificaciones al repositorio académico.
