@@ -1,16 +1,4 @@
-# question-catalog Specification
-
-## Purpose
-TBD - created by archiving change screening-editor. Update Purpose after archive.
-## Requirements
-### Requirement: Reviewed initial catalog
-El catálogo inicial MUST contener quince preguntas, cinco por área P-06, sin evaluación preaprobada; provisioning explícito valida revisión humana y preserva documentos existentes.
-#### Scenario: Pending review
-- **WHEN** se intenta cargar metadata de revisión pendiente
-- **THEN** falla sin escribir; la autoría manual sigue disponible
-#### Scenario: Repeat or collision
-- **WHEN** se carga catálogo aprobado dos veces o existe un id con contenido diferente
-- **THEN** repetir conserva registros/datos ajenos y colisión falla antes de insertar entradas restantes
+## MODIFIED Requirements
 
 ### Requirement: Isolated bank copy
 El servidor SHALL listar catálogo activo por área para recruiters y copiar texto/tipo/opciones/orientación a un borrador propio con ids nuevos y sin reglas automáticas. La interfaz SHALL permitir filtrar y buscar entre las entradas recibidas, además de mantener creación manual.

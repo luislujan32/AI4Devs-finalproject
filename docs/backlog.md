@@ -42,9 +42,9 @@ T-07 implementa la API de respuestas y evaluación; T-06 consume ese contrato. L
 
 ## UX-01 — Mejorar la creación de screenings
 
-Luis señaló que el editor actual ofrece una mala experiencia. La [investigación UX/UI del editor](ux-screening-editor-research.md) recoge una inspección de la demo, fuentes externas y una propuesta para probar. **Investigación completada; rediseño pendiente.** No cambia el alcance funcional de T-03 ni el contrato P-01 a P-08.
+Luis señaló que el editor ofrecía una mala experiencia. La [investigación UX/UI del editor](ux-screening-editor-research.md) recoge la inspección, fuentes, decisiones aplicadas y evidencia de navegador. **Primera mejora implementada en `feature/screening-editor-ux-LL`; validación con recruiters pendiente.** No cambia el alcance funcional de T-03 ni el contrato P-01 a P-08.
 
-Antes de implementar: contrastar con recruiters la navegación Puesto/Preguntas/Revisión y la edición de una pregunta activa. Priorizar evitar pérdidas al cambiar tipo o quitar preguntas, mantener guardado visible y vincular errores con campos. Comparar tareas de creación/guardado/publicación en escritorio y móvil con el editor actual; conservar ownership, CAS, validación del servidor y publicación inmutable.
+Próximo paso: observar con recruiters la navegación Puesto/Preguntas/Revisión y la edición de una pregunta activa. Comparar tareas de creación/guardado/publicación en escritorio y móvil con la versión previa; registrar dudas, errores, vueltas atrás y tiempo. Evaluar si hacen falta deshacer, reordenar/duplicar preguntas, vista previa del candidato cuando exista T-06 y mejoras del banco personal/compartido. Conservar ownership, CAS, validación del servidor y publicación inmutable.
 
 ## Ideas posteriores propuestas por Luis (28/09/2026)
 

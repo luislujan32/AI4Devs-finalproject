@@ -1,8 +1,8 @@
 # Investigación UX/UI — editor de Screeningroom
 
-**Fecha:** 28/09/2026. **Estado:** investigación y propuesta; la interfaz actual aún no fue rediseñada. Luis señaló que la creación de screenings ofrece una mala experiencia. Este documento analiza el **editor del recruiter**, no el futuro cuestionario del candidato. Se inspeccionó el borrador ficticio de Tecnología en la demo local, su recorrido visual y su implementación. Las guías externas son evidencia de patrones y ejemplos, no una prueba de que alguna solución funcionará para nuestros usuarios; falta validación con recruiters.
+**Fecha:** 28/09/2026. **Estado:** investigación aplicada en la rama `feature/screening-editor-ux-LL`; resta validarla con recruiters. Luis señaló que la creación de screenings ofrecía una mala experiencia. Este documento analiza el **editor del recruiter**, no el futuro cuestionario del candidato. Se inspeccionó el borrador ficticio de Tecnología en la demo local, su recorrido visual y su implementación previa. Las guías externas son evidencia de patrones y ejemplos, no una prueba de que alguna solución funcione para nuestros usuarios.
 
-## Diagnóstico del editor actual
+## Diagnóstico del editor previo
 
 | Hallazgo observado | Efecto probable en la tarea |
 | --- | --- |
@@ -21,11 +21,12 @@ Los primeros cuatro puntos se constataron en la interfaz y el código de `apps/w
 - La [guía de formularios complejos de NN/g](https://www.nngroup.com/articles/4-principles-reduce-cognitive-load/) enfatiza estructura, claridad, transparencia y apoyo; la [guía de asistentes](https://www.nngroup.com/articles/wizards/) reconoce que reducen información visible, pero pueden añadir muchos clics en tareas repetitivas. **Inferencia:** usar etapas amplias —puesto, preguntas, revisión— sin convertir cada campo en una pantalla.
 - El [patrón de revisión de GOV.UK](https://design-system.service.gov.uk/patterns/check-answers/) reúne respuestas por secciones y permite volver a corregir antes de confirmar. Su [resumen de errores](https://design-system.service.gov.uk/components/error-summary/) enlaza cada error al control correspondiente y conserva lo ingresado según su [guía de validación](https://design-system.service.gov.uk/patterns/validation/). **Inferencia:** antes de la publicación inmutable conviene una revisión con estado por pregunta, reglas/umbral visibles y saltos directos a cada problema.
 - [W3C WAI](https://www.w3.org/WAI/tutorials/forms/grouping/) recomienda agrupar visual y semánticamente controles relacionados. Esto es especialmente relevante para opciones, puntuaciones y respuestas que cumplen excluyentes; una mejora visual no debe perder etiquetas ni manejo por teclado.
+- El [patrón de botones de GOV.UK](https://design-system.service.gov.uk/components/button/) reserva los botones para acciones; el [texto de ayuda de inputs](https://design-system.service.gov.uk/components/text-input/) coloca instrucciones útiles junto al campo. [WCAG 2.2, tamaño mínimo de objetivo](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum) exige al menos 24 × 24 CSS px salvo excepciones. **Decisión:** los controles compactos conservan semántica de botón, foco visible y área táctil suficiente; la explicación crítica queda a la vista y la ayuda ampliada se abre también sin hover.
 - [Typeform](https://help.typeform.com/hc/en-us/articles/360052109711-Edit-your-form-in-preview-mode) ofrece una vista previa separada de la edición/publicación; [Google Forms](https://support.google.com/docs/answer/2839737?hl=en) permite añadir, duplicar, ordenar e importar preguntas; [SurveyMonkey](https://help.surveymonkey.com/en/surveymonkey/create/question-bank/) permite explorar el banco por categoría, búsqueda y filtros. Son referencias funcionales de sus productos, no un mandato para copiar su diseño. En Screeningroom la vista del candidato dependerá de T-06 y las reglas del puesto siempre requieren revisión del recruiter.
 
-## Propuesta para probar, sin cambiar P-01 a P-08
+## Propuesta implementada para probar, sin cambiar P-01 a P-08
 
-1. **Encabezado de trabajo compacto.** Mostrar nombre del screening, estado persistido/cambios sin guardar y acciones «Guardar borrador» y «Revisar publicación» a la vista durante la edición. En móvil, usar una barra inferior sencilla sin tapar campos ni teclado. Mantener guardado explícito y el control de concurrencia actuales; investigar autoguardado después con pruebas de conflicto y pérdida de red.
+1. **Encabezado de trabajo compacto.** Mostrar nombre del screening, estado persistido/cambios sin guardar y acciones «Guardar borrador» y «Revisar publicación» a la vista durante la edición. En móvil, la barra superior se integra en el flujo para no tapar campos ni teclado. Mantener guardado explícito y el control de concurrencia actuales; investigar autoguardado después con pruebas de conflicto y pérdida de red.
 2. **Puesto → Preguntas → Revisión.** En «Puesto», título, área y descripción. En «Preguntas», listado compacto con número, criterio, tipo y estado («sin completar», «por configurar», «listo»); seleccionar una abre su editor. En «Revisión», umbral, puntuación/pesos/excluyentes/obligatoriedad resumidos y la confirmación para publicar. El recruiter puede volver a cualquier etapa sin perder edición local.
 3. **Una pregunta activa.** Edición principal: criterio, texto, tipo y opciones. Mostrar puntuación/peso y exclusión bajo «Evaluación para este puesto», con explicación breve junto al control. Que los campos aparezcan cuando aplican, sin esconder el acceso a la evaluación. Conservar la diferencia entre «requiere respuesta» y «excluyente».
 4. **Banco como buscador de contenido.** Abrirlo desde «Agregar pregunta» con pestañas o filtros Manual/Banco, área y búsqueda; mostrar vista breve antes de agregar. Una pregunta del banco entra sin reglas aprobadas. Más adelante, separar preguntas propias y compartidas según la decisión pendiente de producto.
@@ -41,7 +42,15 @@ Descripción       2. Ejemplo de comunicación · Lista         Umbral y reglas 
                   Pregunta seleccionada: contenido | evaluación para este puesto
 ```
 
-Es un esquema de navegación, no un diseño visual aprobado. El orden de las etapas, la densidad de las tarjetas y la ubicación de acciones deben probarse en escritorio y móvil. No se propone alterar el backend, la validación de publicación ni la inmutabilidad del publicado.
+Es un esquema de navegación que orientó la implementación, no un diseño validado con usuarios. El orden de las etapas, la densidad y la ubicación de acciones deben contrastarse con recruiters. No se alteró el backend, la validación de publicación ni la inmutabilidad del publicado.
+
+## Aplicación y límites
+
+El editor ya separa Puesto, Preguntas y Revisión. Presenta un índice compacto con una pregunta activa; las acciones para añadir preguntas y respuestas son botones semánticos con aspecto de enlace, más pequeños que los anteriores. Los campos tienen etiquetas, estados de foco y ejemplos; criterio, peso y umbral tienen ayuda que se abre por clic, toque o teclado. La explicación imprescindible de «respuesta requerida», «excluyente» y respuesta desconocida permanece visible. La revisión muestra opciones, valores, pesos y condiciones antes de confirmar la publicación.
+
+Cambiar tipo o quitar una pregunta configurada requiere confirmación cancelable. La búsqueda del banco funciona por área y texto; añadir una entrada con edición local guarda primero con control de revisión y no preaprueba sus reglas. Los errores de publicación del servidor se muestran en un resumen que lleva al campo correspondiente. La vista móvil usa un índice de preguntas desplazable horizontalmente y la ayuda se abre en flujo, sin desbordamiento de página a 375 px.
+
+La prueba de navegador con datos ficticios cubrió creación, pregunta manual, nueva respuesta/valores, incorporación del banco con cambios locales, guardado/recarga, rechazo por umbral y foco en el campo, publicación, copia y dos pestañas con conflicto 409 y edición local preservada. Tipos/lint/build/OpenSpec y 41 pruebas de API/persistencia pasaron. Esto es verificación funcional y evaluación experta; no reemplaza una prueba observada con recruiters ni acredita accesibilidad completa. La vista previa del candidato sigue pendiente del cuestionario T-06.
 
 ## Orden de trabajo y evidencia necesaria
 
