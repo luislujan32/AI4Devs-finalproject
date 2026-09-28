@@ -1,10 +1,10 @@
 # Screeningroom — Proyecto final AI4Devs
 
-Desarrollo en el fork, rama **feature/entrega-2-LL**. [Guía local](docs/desarrollo.md) · [Aplicación de los aprendizajes del máster](docs/harness.md). La entrega 1 conserva su documentación en feature/entrega-1-LL.
+Desarrollo en el fork; **feature/entrega-2-LL** es la rama de integración prevista. [Guía local](docs/desarrollo.md) · [Aplicación de los aprendizajes del máster](docs/harness.md). La entrega 1 conserva su documentación en feature/entrega-1-LL.
 
 **Entrega 2 en desarrollo · Luis Lujan (LL) · Actualización: 28 de septiembre de 2026.**
 
-La entrega 1 definió el MVP y su diseño. El desarrollo cuenta con T-00 (frontend, API y MongoDB conectados), T-01 (persistencia), T-02 (acceso del recruiter con cuentas ficticias) y T-03 (editor, banco inicial aprobado por Luis, publicación y copia). T-01/T-02/T-03 están preparados en ramas de trabajo para integrar en entrega 2. El flujo principal de candidatos todavía está pendiente; las reglas de producto de este documento describen el comportamiento previsto. Luis señaló problemas de usabilidad del editor; la [investigación UX-01](docs/ux-screening-editor-research.md) está completa y su rediseño pendiente. [Persistencia y sus límites](docs/datos.md) · [Acceso implementado y demo](docs/acceso.md) · [Editor, publicación y límites](docs/screenings.md).
+La entrega 1 definió el MVP y su diseño. El desarrollo cuenta con T-00 (frontend, API y MongoDB conectados), T-01 (persistencia), T-02 (acceso del recruiter con cuentas ficticias) y T-03 (editor, banco inicial aprobado por Luis, publicación y copia). T-01/T-02/T-03 están preparados en ramas de trabajo para integrar en entrega 2. El flujo principal de candidatos todavía está pendiente; las reglas de producto de este documento describen el comportamiento previsto. La [mejora UX-01 del editor](docs/ux-screening-editor-research.md) ya se aplicó en una rama de trabajo y espera validación con recruiters e integración. [Persistencia y sus límites](docs/datos.md) · [Acceso implementado y demo](docs/acceso.md) · [Editor, publicación y límites](docs/screenings.md).
 
 ## Índice
 
