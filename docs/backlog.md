@@ -42,9 +42,13 @@ T-07 implementa la API de respuestas y evaluación; T-06 consume ese contrato. L
 
 ## UX-01 — Mejorar la creación de screenings
 
-Luis señaló que el editor ofrecía una mala experiencia. La [investigación UX/UI del editor](ux-screening-editor-research.md) recoge la inspección, fuentes, decisiones aplicadas y evidencia de navegador. **Primera mejora implementada en `feature/screening-editor-ux-LL`; validación con recruiters pendiente.** No cambia el alcance funcional de T-03 ni el contrato P-01 a P-08.
+Luis señaló que el editor ofrecía una mala experiencia. La [investigación UX/UI del editor](ux-screening-editor-research.md) recoge la inspección, fuentes, decisiones aplicadas y evidencia de navegador. **Primera mejora aprobada por Luis e integrada en `feature/entrega-2-LL`; validación con recruiters pendiente.** No cambia el alcance funcional de T-03 ni el contrato P-01 a P-08.
 
 Próximo paso: observar con recruiters la navegación Puesto/Preguntas/Revisión y la edición de una pregunta activa. Comparar tareas de creación/guardado/publicación en escritorio y móvil con la versión previa; registrar dudas, errores, vueltas atrás y tiempo. Evaluar si hacen falta deshacer, reordenar/duplicar preguntas, vista previa del candidato cuando exista T-06 y mejoras del banco personal/compartido. Conservar ownership, CAS, validación del servidor y publicación inmutable.
+
+## UX-02 — Formulario del postulante
+
+Luis aprobó la primera mejora del editor y pidió aplicar las mismas técnicas de UX/UI al recorrido del postulante (T-06). Esta es una condición de aceptación de ese ticket, no una afirmación de que el formulario ya exista. El diseño debe adaptar los patrones a quien responde: pasos cortos y progreso entendible, texto y opciones legibles, navegación atrás/adelante sin perder respuestas, controles compactos pero cómodos al tacto, etiquetas y foco visibles, ayudas que se abren con toque/teclado y explicaciones esenciales siempre presentes. Debe distinguir «sin responder» de «No puedo confirmarlo», mostrar estado de guardado confirmado por el servidor, conservar lo escrito ante fallo/conflicto, permitir revisión final y explicar que el envío cierra la edición. En móvil se comprobarán 375 px y teclado; en ningún paso se revelarán pesos, puntajes ni reglas excluyentes. Se verificará con cuentas e invitaciones ficticias antes de usar datos reales.
 
 ## Ideas posteriores propuestas por Luis (28/09/2026)
 

@@ -8,7 +8,7 @@ T-00 prepara la base del proyecto: React/Vite, NestJS/Express, MongoDB/Mongoose 
 
 T-01 agrega [modelos, índices y operaciones de persistencia](datos.md), datos ficticios y pruebas con MongoDB real. T-01 no añade login, editor, OTP, cálculo ni endpoints de producto.
 
-T-02 agrega [login/logout, sesiones persistentes y listado propio](acceso.md). La pantalla inicial ahora es el acceso del recruiter. T-03 agrega [editor, reglas, publicación, copia y banco inicial revisado](screenings.md); [UX-01](ux-screening-editor-research.md) mejora la creación en una rama posterior. El recorrido del candidato sigue pendiente.
+T-02 agrega [login/logout, sesiones persistentes y listado propio](acceso.md). La pantalla inicial ahora es el acceso del recruiter. T-03 agrega [editor, reglas, publicación, copia y banco inicial revisado](screenings.md); [UX-01](ux-screening-editor-research.md) mejora la creación y ya está en la rama de entrega 2. El recorrido del candidato sigue pendiente y debe cumplir [UX-02](backlog.md#ux-02--formulario-del-postulante).
 
 ## Requisitos
 

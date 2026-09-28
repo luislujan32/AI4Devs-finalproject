@@ -1,6 +1,6 @@
 # Investigación UX/UI — editor de Screeningroom
 
-**Fecha:** 28/09/2026. **Estado:** investigación aplicada en la rama `feature/screening-editor-ux-LL`; resta validarla con recruiters. Luis señaló que la creación de screenings ofrecía una mala experiencia. Este documento analiza el **editor del recruiter**, no el futuro cuestionario del candidato. Se inspeccionó el borrador ficticio de Tecnología en la demo local, su recorrido visual y su implementación previa. Las guías externas son evidencia de patrones y ejemplos, no una prueba de que alguna solución funcione para nuestros usuarios.
+**Fecha:** 28/09/2026. **Estado:** investigación aplicada e integrada en `feature/entrega-2-LL`; Luis aprobó la primera mejora y resta validarla con recruiters. Este documento analiza el **editor del recruiter**, no el futuro cuestionario del candidato, que seguirá [UX-02](backlog.md#ux-02--formulario-del-postulante). Se inspeccionó el borrador ficticio de Tecnología en la demo local, su recorrido visual y su implementación previa. Las guías externas son evidencia de patrones y ejemplos, no una prueba de que alguna solución funcione para nuestros usuarios.
 
 ## Diagnóstico del editor previo
 

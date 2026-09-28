@@ -13,7 +13,7 @@ Proyecto individual AI4Devs. Stack aprobado: React/Vite/TypeScript, NestJS/Expre
 - docs/datos.md: semántica de persistencia, fixtures y límites de T-01.
 - docs/acceso.md: sesiones, cuentas ficticias, rutas implementadas y límites de T-02.
 - docs/screenings.md: autoría, publicación, CAS y banco inicial revisado de T-03.
-- docs/ux-screening-editor-research.md: diagnóstico y propuesta de UX-01; investigación, no rediseño implementado.
+- docs/ux-screening-editor-research.md: diagnóstico, fuentes y primera mejora implementada del editor del recruiter.
 
 ## Repositorio y ramas
 
@@ -34,6 +34,8 @@ La instrucción del usuario para avanzar autoriza el trabajo acordado. Preservar
 Preservar P-01 a P-08. Scoring determinista; texto libre sin puntuación ni exclusión por IA; desconocidos no equivalen a cero. Configuración publicada inmutable. Resultado y revisión humana independientes. Envío único con concurrencia controlada.
 
 La IA solo propone preguntas, con revisión del recruiter. No enviar respuestas ni identidades de candidatos. Autorización por ownership; una sesión de candidato pertenece a una sola invitación. Datos ficticios en pruebas. No guardar secretos ni datos personales en código, logs, prompts o navegador.
+
+El formulario del candidato debe aplicar los criterios de UX ya adoptados para el recruiter: pasos comprensibles, navegación y progreso visibles, campos claros, ayuda esencial a la vista y ampliación accesible sin hover, acciones compactas con semántica correcta, foco/teclado/tacto y diseño móvil. Mostrar guardado solo tras confirmación del servidor, conservar edición visible ante errores o conflictos, permitir revisar antes de enviar y explicar con precisión el efecto irreversible del envío. No exponer puntajes, pesos ni excluyentes al candidato.
 
 ## Evidencia y continuidad
 
