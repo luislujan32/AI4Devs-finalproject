@@ -40,6 +40,12 @@
 
 T-07 implementa la API de respuestas y evaluación; T-06 consume ese contrato. La interfaz puede avanzar con datos simulados antes de integrar el backend. Las pruebas de cada regla se realizan con su ticket, no se acumulan todas en T-10.
 
+## UX-01 — Mejorar la creación de screenings
+
+Luis señaló que el editor actual ofrece una mala experiencia. La [investigación UX/UI del editor](ux-screening-editor-research.md) recoge una inspección de la demo, fuentes externas y una propuesta para probar. **Investigación completada; rediseño pendiente.** No cambia el alcance funcional de T-03 ni el contrato P-01 a P-08.
+
+Antes de implementar: contrastar con recruiters la navegación Puesto/Preguntas/Revisión y la edición de una pregunta activa. Priorizar evitar pérdidas al cambiar tipo o quitar preguntas, mantener guardado visible y vincular errores con campos. Comparar tareas de creación/guardado/publicación en escritorio y móvil con el editor actual; conservar ownership, CAS, validación del servidor y publicación inmutable.
+
 ## Ideas posteriores propuestas por Luis (28/09/2026)
 
 - Investigar cómo otras plataformas organizan y configuran sus bancos de preguntas antes de decidir cambios de producto. Esta investigación queda para una etapa posterior; no modifica el contrato P-06 ni el alcance de T-03.

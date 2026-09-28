@@ -13,6 +13,7 @@ Proyecto individual AI4Devs. Stack aprobado: React/Vite/TypeScript, NestJS/Expre
 - docs/datos.md: semántica de persistencia, fixtures y límites de T-01.
 - docs/acceso.md: sesiones, cuentas ficticias, rutas implementadas y límites de T-02.
 - docs/screenings.md: autoría, publicación, CAS y banco inicial revisado de T-03.
+- docs/ux-screening-editor-research.md: diagnóstico y propuesta de UX-01; investigación, no rediseño implementado.
 
 ## Repositorio y ramas
 
