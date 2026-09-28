@@ -221,3 +221,11 @@ Por cada fase se añadirán las herramientas y modelos identificables, hasta tre
 **Evidencia:** `npm run check`, 14 pruebas de screenings, 13 de acceso y 14 de persistencia pasaron. En navegador real y cuenta ficticia: crear puesto, añadir desde banco con cambios locales, crear pregunta manual y tercera respuesta, configurar puntajes/peso, guardar y recargar; error de publicación por umbral con foco en el campo, publicación y copia; conflicto entre dos pestañas 409 con edición local preservada y descarte explícito. A 375 px no hubo desbordamiento horizontal tras abrir la ayuda. No se hicieron pruebas observadas con recruiters, auditoría completa de accesibilidad ni E2E automatizado del producto. El flujo del candidato sigue pendiente.
 
 **Herramientas/modelo:** Codex desktop, OpenSpec 1.4.1, React/TypeScript/CSS, npm y navegador integrado. No se verificó un nombre exacto del modelo seleccionado ni se lo inventa.
+
+## Entrega 2 — Workflow 8: aprobar UX-01 y fijar UX-02
+
+**Decisión humana:** Luis aprobó la nueva interfaz de creación de screenings y pidió que el formulario del postulante aplique las mismas técnicas de UX/UI. Los ajustes finos de campos quedan para revisión posterior.
+
+**Trabajo con IA:** se integraron por avance directo T-01/T-02/T-03 y UX-01 en `feature/entrega-2-LL` del fork. Se añadió UX-02 como criterio explícito de aceptación de T-06: progreso y navegación claros, controles y ayudas accesibles, guardado confirmado, recuperación ante error, revisión final y móvil. No se afirma implementación del cuestionario ni validación con postulantes.
+
+**Elección del modelo:** Luis indicó que usa GPT-6 Sol Extra High. Se contrastó con la guía oficial de selección de OpenAI: es adecuado para análisis y verificación profundos de este desarrollo; tareas pequeñas pueden requerir menos esfuerzo. Esta orientación no implica que el modelo usado en workflows anteriores haya sido el mismo.
