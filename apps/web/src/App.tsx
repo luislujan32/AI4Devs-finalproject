@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState, type FormEvent } from 'react';
 
 import type { Session } from './api';
 import { Workspace } from './Workspace';
+import { CandidateAccess } from './CandidateAccess';
+const readInvitation = () => new URLSearchParams(window.location.hash.slice(1)).get('invite') || '';
 const sessionData = (value: unknown): value is Session => {
   if (!value || typeof value !== 'object' || !('user' in value) || !value.user || typeof value.user !== 'object') return false;
   return 'displayName' in value.user && typeof value.user.displayName === 'string'
@@ -9,6 +11,7 @@ const sessionData = (value: unknown): value is Session => {
 };
 
 export function App() {
+  const [invitation, setInvitation] = useState(readInvitation);
   const [session, setSession] = useState<Session | null>(null);
   const [initializing, setInitializing] = useState(true);
   const [csrf, setCsrf] = useState('');
@@ -21,7 +24,11 @@ export function App() {
   const [confirmLogout, setConfirmLogout] = useState(false);
   const expired = useCallback(() => { setSession(null); setCsrf(''); setEditingDirty(false); setConfirmLogout(false); setAttempt((n) => n + 1); setError('Tu sesión venció. Volvé a entrar.'); }, []);
 
+  useEffect(() => { const change = () => setInvitation(readInvitation()); window.addEventListener('hashchange', change);
+    return () => window.removeEventListener('hashchange', change); }, []);
+
   useEffect(() => {
+    if (invitation) return;
     const controller = new AbortController();
     let active = true;
     setInitializing(true);
@@ -42,7 +49,7 @@ export function App() {
       .catch(() => { if (active) setError('No pudimos conectar. Volvé a intentar.'); })
       .finally(() => { if (active) setInitializing(false); });
     return () => { active = false; controller.abort(); };
-  }, [attempt]);
+  }, [attempt, invitation]);
 
   async function login(event: FormEvent) {
     event.preventDefault(); setBusy(true); setError('');
@@ -73,6 +80,7 @@ export function App() {
     } catch { setError('No pudimos cerrar la sesión. Volvé a intentar.'); }
     finally { setBusy(false); }
   }
+  if (invitation) return <CandidateAccess key={invitation} publicId={invitation} />;
   return (
     <main className="shell">
       <header><a className="brand" href="/" aria-label="Screeningroom, inicio"><span className="brand-mark">S</span>screeningroom</a>

@@ -39,7 +39,7 @@ En persistencia, declarar qué es fuente de verdad, snapshot o derivado, quién 
 | T-00 | Instalación limpia; tipos/lint/build; HTTP y MongoDB reales; pantalla, caída y recuperación local | Verificado localmente. No es flujo de producto ni despliegue público |
 | T-01 | Casos de schema e índices en MongoDB aislado; restricciones de duplicados, ownership y CAS; fixtures repetibles | Implementado y verificado localmente; no es auth HTTP ni publicación completa |
 | T-02 | Trece pruebas HTTP/MongoDB de login, sesiones, ownership, CSRF y límites; navegador escritorio/móvil y teclado | Implementado y verificado localmente con cuentas ficticias; integración pendiente |
-| T-05 | OTP y sesión limitada a invitación; negativos entre candidatos | Pendiente |
+| T-05 | Cinco pruebas HTTP/MongoDB/Mailpit: propiedad, OTP, límites, concurrencia y revocación; navegador ficticio | Implementado en rama de tarea; móvil visual pendiente |
 | T-03 | Catorce pruebas HTTP/MongoDB de autoría/catálogo; navegador, recarga, conflicto, móvil y copia; carga repetida del banco aprobado | Implementado y verificado localmente; integración hacia entrega 2 pendiente |
 | T-07/T-08 | Cálculo P-01–P-08, concurrencia de envío/revisión y persistencia | Pendiente |
 | T-04 | Salida estructurada válida, ausencia de datos de candidatos, fallo recuperable y edición manual | Pendiente |

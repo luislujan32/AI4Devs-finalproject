@@ -16,6 +16,7 @@ const equal = (a: string, b: string) => {
   return left.length === right.length && timingSafeEqual(left, right);
 };
 export type AuthContext = { sessionId: string; csrfToken: string; expiresAt: Date; user: { id: string; email: string; displayName: string } };
+export type CandidateContext = { sessionId: string; csrfToken: string; expiresAt: Date; invitationId: string; publicId: string };
 
 @Injectable()
 export class AuthService implements OnModuleInit {
@@ -46,7 +47,7 @@ export class AuthService implements OnModuleInit {
     this.dummyHash = await hashPassword(nonce());
     await this.limits.createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 });
   }
-  private digest(value: string) { return createHmac('sha256', this.secret).update(value).digest('base64url'); }
+  digest(value: string) { return createHmac('sha256', this.secret).update(value).digest('base64url'); }
   private cookies(req: Request) { return parseCookie(req.headers.cookie ?? ''); }
   private setCookie(res: Response, name: string, value: string, maxAge: number) {
     res.append('Set-Cookie', stringifySetCookie({ name, value, path: '/', httpOnly: true, sameSite: 'lax', secure: this.secure, maxAge }));
@@ -61,7 +62,7 @@ export class AuthService implements OnModuleInit {
     this.setCookie(res, 'sr_csrf', `${token}.${issued}.${this.digest(`csrf:${token}:${issued}`)}`, WINDOW / 1000);
     return { csrfToken: token };
   }
-  private checkLoginCsrf(req: Request) {
+  checkLoginCsrf(req: Request) {
     this.checkOrigin(req);
     const [token, issued, tag] = (this.cookies(req).sr_csrf ?? '').split('.');
     const timestamp = Number(issued);
@@ -72,7 +73,7 @@ export class AuthService implements OnModuleInit {
       throw new ForbiddenException('Solicitud no autorizada.');
     }
   }
-  private async consumeLimit(kind: string, identity: string, maximum: number) {
+  async consumeLimit(kind: string, identity: string, maximum: number) {
     const window = Math.floor(Date.now() / WINDOW);
     const key = this.digest(`limit:${kind}:${identity}:${window}`);
     const filter = { _id: key };
@@ -120,12 +121,35 @@ export class AuthService implements OnModuleInit {
     return { sessionId, csrfToken: session.csrfToken, expiresAt: session.expiresAt,
       user: { id: user._id.toString(), email: user.email, displayName: user.displayName } };
   }
-  checkMutation(req: Request, context: AuthContext) {
+  async candidateContext(req: Request): Promise<CandidateContext> {
+    const raw = this.cookies(req).sr_session;
+    if (!raw || !/^[\w-]{43}$/.test(raw)) throw new UnauthorizedException('Sesión no disponible.');
+    const sessionId = this.digest(`session:${raw}`);
+    const session = await this.models.Session.findOne({ sessionId, principal: 'candidate', expiresAt: { $gt: new Date() } }).select('+csrfToken');
+    if (!session?.invitationId) throw new UnauthorizedException('Sesión no disponible.');
+    const invitation = await this.models.Invitation.findOne({ _id: session.invitationId,
+      expiresAt: { $gt: new Date() }, purgeAt: { $gt: new Date() } }).select('publicId');
+    if (!invitation) throw new UnauthorizedException('Sesión no disponible.');
+    return { sessionId, csrfToken: session.csrfToken, expiresAt: session.expiresAt,
+      invitationId: invitation._id.toString(), publicId: invitation.publicId };
+  }
+  async startCandidateSession(req: Request, res: Response, invitationId: string, invitationExpiresAt: Date) {
+    const raw = nonce(); const csrfToken = nonce();
+    const expiresAt = new Date(Math.min(Date.now() + 2 * 3600000, invitationExpiresAt.getTime()));
+    if (expiresAt.getTime() <= Date.now()) throw new UnauthorizedException('La invitación venció.');
+    await this.models.Session.create({ sessionId: this.digest(`session:${raw}`), principal: 'candidate', invitationId, csrfToken, expiresAt });
+    const previous = this.cookies(req).sr_session;
+    if (previous) await this.models.Session.deleteOne({ sessionId: this.digest(`session:${previous}`) });
+    this.setCookie(res, 'sr_session', raw, Math.max(1, Math.floor((expiresAt.getTime() - Date.now()) / 1000)));
+    this.setCookie(res, 'sr_csrf', '', 0);
+    return { csrfToken, expiresAt };
+  }
+  checkMutation(req: Request, context: { csrfToken: string }) {
     this.checkOrigin(req);
     const token = req.headers['x-csrf-token'];
     if (typeof token !== 'string' || !equal(token, context.csrfToken)) throw new ForbiddenException('Solicitud no autorizada.');
   }
-  async logout(req: Request, res: Response, context: AuthContext) {
+  async logout(req: Request, res: Response, context: { csrfToken: string; sessionId: string }) {
     this.checkMutation(req, context);
     await this.models.Session.deleteOne({ sessionId: context.sessionId });
     this.setCookie(res, 'sr_session', '', 0);

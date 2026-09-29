@@ -4,7 +4,7 @@ Desarrollo en el fork; **feature/entrega-2-LL** es la rama de integración previ
 
 **Entrega 2 en desarrollo · Luis Lujan (LL) · Actualización: 28 de septiembre de 2026.**
 
-La entrega 1 definió el MVP y su diseño. La rama `feature/entrega-2-LL` integra T-00 (frontend, API y MongoDB conectados), T-01 (persistencia), T-02 (acceso del recruiter con cuentas ficticias), T-03 (editor, banco inicial aprobado por Luis, publicación y copia) y la primera [mejora UX-01 del editor](docs/ux-screening-editor-research.md), aprobada por Luis. El flujo principal de candidatos todavía está pendiente; su formulario deberá seguir [UX-02](docs/backlog.md#ux-02--formulario-del-postulante). Las reglas de producto de este documento describen el comportamiento previsto. [Persistencia y sus límites](docs/datos.md) · [Acceso implementado y demo](docs/acceso.md) · [Editor, publicación y límites](docs/screenings.md).
+La entrega 1 definió el MVP y su diseño. La rama `feature/entrega-2-LL` integra T-00 (frontend, API y MongoDB conectados), T-01 (persistencia), T-02 (acceso del recruiter con cuentas ficticias), T-03 (editor, banco inicial aprobado por Luis, publicación y copia) y la primera [mejora UX-01 del editor](docs/ux-screening-editor-research.md), aprobada por Luis. La rama de tarea `feature/candidate-access-T05-LL` agrega [invitaciones y acceso del postulante](docs/candidatos-acceso.md) con correo ficticio; el cuestionario y la evaluación siguen pendientes y su formulario deberá seguir [UX-02](docs/backlog.md#ux-02--formulario-del-postulante). Las reglas de producto de este documento describen el comportamiento previsto. [Persistencia y sus límites](docs/datos.md) · [Acceso implementado y demo](docs/acceso.md) · [Editor, publicación y límites](docs/screenings.md).
 
 ## Índice
 
@@ -199,7 +199,7 @@ flowchart TD
 5. Publicar el servicio detrás de HTTPS, restringir el acceso de red a MongoDB y comprobar el inicio de sesión y la entrega de códigos.
 6. Ejecutar una prueba de humo con un screening ficticio completo. Ante un fallo de aplicación, recuperar la versión desplegada anterior; cualquier cambio posterior del modelo de datos requerirá su estrategia específica.
 
-Para desarrollo se prevén MongoDB y un buzón SMTP local como Mailpit. El correo de prueba no omite la validación del candidato: el código se obtiene del buzón de pruebas. La evaluación no depende del proveedor de IA y la creación manual sigue disponible si ese proveedor falla.
+Para desarrollo se usan MongoDB y Mailpit local; T-05 envía códigos a su API HTTP de pruebas. El correo de prueba no omite la validación del candidato: el código se obtiene del buzón de pruebas. La evaluación no depende del proveedor de IA y la creación manual sigue disponible si ese proveedor falla.
 
 Hosting, proveedor SMTP y modelo de IA se concretarán al implementar según acceso disponible. Esta decisión pendiente no cambia los componentes ni el flujo definido. El MVP usa un único proceso de aplicación; no requiere microservicios, colas ni Redis.
 
@@ -283,7 +283,7 @@ Se adjunta [OpenAPI](docs/openapi.yaml) con tres operaciones, conforme al máxim
 | `POST /api/candidate/attempt/submit` | Candidato autenticado | Envía las respuestas ya guardadas de su invitación; persiste una sola evaluación; devuelve confirmación |
 | `GET /api/invitations/{invitationId}/report` | Recruiter propietario | Devuelve resultado, desglose de evidencia y revisión humana vigente |
 
-Operaciones adicionales previstas: login/logout; crear/editar/listar/copiar screening; consultar banco; obtener sugerencias; crear/listar/eliminar invitación; solicitar/verificar código; leer/guardar respuestas; registrar revisión. Se detallarán antes de implementar cada ticket, sin añadirlas como endpoints representativos a la entrega.
+Operaciones adicionales: login/logout, crear/editar/listar/copiar screening, consultar banco, crear/listar invitación y solicitar/verificar código ya están detalladas en sus guías de implementación. Obtener sugerencias, eliminar invitación, leer/guardar respuestas y registrar revisión siguen previstos. OpenAPI conserva las tres operaciones representativas de la entrega.
 
 Errores comunes: `401` sesión ausente/expirada; `403` protección CSRF; `404` recurso inexistente o ajeno; `409` conflicto de estado/revisión; `410` invitación vencida; `422` datos inválidos; `429` límite de solicitudes. Las respuestas de error no incluyen datos de otras personas. Los endpoints del candidato nunca retornan scoring, opciones excluyentes ni informe interno.
 

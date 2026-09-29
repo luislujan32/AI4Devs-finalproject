@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { api, ApiError, type Session } from './api';
+import { Invitations } from './Invitations';
 
 type Option = { id: string; label: string; score?: number };
 type Question = { id: string; bankQuestionId?: string; criterion?: string; text?: string; type: 'boolean' | 'single_choice' | 'text';
@@ -398,6 +399,7 @@ export function Workspace({ session, onExpired, onDirtyChange }: { session: Sess
         </div>}
         {published && <div className="stage-footer"><button className="outline-button" disabled={busy} onClick={copy}>Crear copia como borrador</button></div>}
       </section>}
+      {published && <Invitations screeningId={screening.id} session={session} onExpired={onExpired} />}
     </> : route ? <><h1 id="workspace-title">No pudimos abrir el screening</h1><button className="outline-button" onClick={() => go()}>Volver a mis screenings</button></> : <>
       <p className="eyebrow">Tu espacio de trabajo</p><h1 id="workspace-title">Tus screenings</h1><p className="description">Hola, {session.user.displayName}. Prepará las preguntas y criterios para cada puesto.</p>
       <button disabled={busy} onClick={create}>Crear screening</button>

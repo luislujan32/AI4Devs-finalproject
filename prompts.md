@@ -229,3 +229,15 @@ Por cada fase se añadirán las herramientas y modelos identificables, hasta tre
 **Trabajo con IA:** se integraron por avance directo T-01/T-02/T-03 y UX-01 en `feature/entrega-2-LL` del fork. Se añadió UX-02 como criterio explícito de aceptación de T-06: progreso y navegación claros, controles y ayudas accesibles, guardado confirmado, recuperación ante error, revisión final y móvil. No se afirma implementación del cuestionario ni validación con postulantes.
 
 **Elección del modelo:** Luis indicó que usa GPT-6 Sol Extra High. Se contrastó con la guía oficial de selección de OpenAI: es adecuado para análisis y verificación profundos de este desarrollo; tareas pequeñas pueden requerir menos esfuerzo. Esta orientación no implica que el modelo usado en workflows anteriores haya sido el mismo.
+
+## Entrega 2 — Workflow 9: invitaciones y acceso candidato T-05
+
+**Entrada humana:** Luis aprobó avanzar con el postulante y pidió aplicar el estilo UX/UI renovado a su formulario. Indicó usar cuentas ficticias ahora y reales solo en pruebas posteriores. Las publicaciones se limitan a su fork.
+
+**Trabajo con IA:** cambio OpenSpec `candidate-invitations` con propuesta, diseño, escenarios y tareas. La implementación suma invitaciones solo de screenings publicados propios, correo `example.test`, enlace individual, código aleatorio de seis dígitos y un uso, controles de reenvío/fallos/IP, sesión candidata ligada a una invitación, separación de recruiter y candidato, interfaz de invitaciones y acceso con etiquetas/errores/foco. No se simuló el cuestionario como si ya estuviera operativo: T-07/T-06 siguen para respuestas, evaluación y formulario.
+
+**Ajuste técnico durante la prueba:** el puerto SMTP local aceptaba conexión pero no respondía al saludo en el entorno de prueba. Se cambió el adaptador ficticio a la API HTTP local de Mailpit, restringida a loopback y correos `example.test`; se actualizó diseño y documentación. No se habilitó envío externo ni se agregó una dependencia nueva.
+
+**Evidencia:** pruebas HTTP/MongoDB/Mailpit aisladas de ownership, duplicado, CSRF, código correcto/incorrecto/usado, cinco fallos, reenvío y límite horario, concurrencia y revocación por retención. En navegador se creó invitación ficticia desde publicado, se abrió enlace, se leyó código de Mailpit y se confirmó acceso/sesión. Se comprobó una recarga con sesión vigente. El control de viewport integrado no aplicó 375 px; la revisión visual móvil se deja para T-06. No se afirma envío a correo real, identidad civil, CI remoto ni E2E principal.
+
+**Herramientas y límites:** Codex desktop, OpenSpec, Node/TypeScript, MongoDB/Mailpit locales, navegador integrado y Git. Los códigos de prueba solo circularon dentro del equipo y no se imprimieron en documentación. Sin subagentes. Se sigue la decisión humana de usar únicamente el fork para commits/PRs de desarrollo.
