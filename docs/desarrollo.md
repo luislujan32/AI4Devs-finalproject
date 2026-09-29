@@ -112,8 +112,8 @@ Check y 41 pruebas (14 screenings/catálogo, 13 acceso, 14 persistencia), más s
 
 ## Evidencia local de T-05
 
-`npm run test:candidate` usa una BD de prueba aleatoria y Mailpit local; cubre cinco escenarios de invitación, código y sesión. La rama añade el test al pipeline, cuya ejecución remota queda por verificar. La prueba visual en navegador recorrió invitación, código y acceso ficticios; [alcance y límites](candidatos-acceso.md).
+`npm run test:candidate` usa una BD de prueba aleatoria y Mailpit local; cubre cinco escenarios de invitación, código y sesión. El test pasó en el [CI de la rama candidata](https://github.com/luislujan32/AI4Devs-finalproject/actions/runs/36584509325). La prueba visual en navegador recorrió invitación, código y acceso ficticios; [alcance y límites](candidatos-acceso.md).
 
 ## Evidencia local de T-07/T-06
 
-`npm run test:attempt` cubre cálculo puro y HTTP/MongoDB/Mailpit de lectura, guardado, reanudación, CAS, validación, envío concurrente e idempotencia. En navegador ficticio se respondió, navegó entre preguntas, guardó, recargó, revisó y envió; el recibo persistió otra recarga. [Detalle y límites](candidatos-formulario.md). Se añadió al pipeline local; la ejecución remota queda pendiente.
+`npm run test:attempt` cubre cálculo puro y HTTP/MongoDB/Mailpit de lectura, guardado, reanudación, CAS, validación, envío concurrente e idempotencia. En navegador ficticio se respondió, navegó entre preguntas, guardó, recargó, revisó y envió; el recibo persistió otra recarga. [Detalle y límites](candidatos-formulario.md). El [CI de la rama candidata](https://github.com/luislujan32/AI4Devs-finalproject/actions/runs/36584509325) terminó correctamente.

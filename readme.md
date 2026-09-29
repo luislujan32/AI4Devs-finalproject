@@ -170,7 +170,7 @@ PostgreSQL también sería válido. Se elige MongoDB porque la configuración y 
 | `docs/wireframes.svg` | Incluido | Bocetos de interfaz |
 | `apps/web` | Implementado en ramas de entrega 2 | Acceso del recruiter, editor, invitaciones y formulario del postulante; informe del recruiter pendiente |
 | `apps/api` | Implementado en ramas de entrega 2 | NestJS/Express, MongoDB, autenticación, screenings, invitaciones, respuestas y evaluación; revisión humana pendiente |
-| `.github/workflows` | Configurado en ramas de entrega 2 | Tipos, lint, build, OpenSpec, pruebas de persistencia, acceso y flujo del candidato; ejecución remota de esta rama pendiente |
+| `.github/workflows` | [CI de la rama candidata completado](https://github.com/luislujan32/AI4Devs-finalproject/actions/runs/36584509325) | Tipos, lint, build, OpenSpec, pruebas de persistencia, acceso y flujo del candidato |
 
 El monorepo contiene frontend y backend como npm workspaces. Cada regla se mantiene en su documento de referencia. [Comandos y workflow OpenSpec](docs/desarrollo.md).
 
