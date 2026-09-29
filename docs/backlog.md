@@ -31,7 +31,7 @@
 | T-02 | Login/logout y ownership del recruiter | T-01 |
 | T-03 | Editor, reglas, copia, banco y publicación | T-02 |
 | T-04 | Sugerencias IA con revisión y recuperación ante error | T-03 |
-| T-05 | Invitaciones, SMTP, OTP y sesión de candidato | T-02, T-03 |
+| T-05 | Invitaciones, código en Mailpit local y sesión de candidato | T-02, T-03 |
 | T-06 | Cuestionario, guardado y reanudación | T-03, T-05, T-07 para integración |
 | T-07 | API de respuestas, evaluación y envío final | T-01, T-03, T-05 |
 | T-08 | Informe y revisión humana | T-07 |

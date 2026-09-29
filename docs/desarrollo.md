@@ -8,7 +8,7 @@ T-00 prepara la base del proyecto: React/Vite, NestJS/Express, MongoDB/Mongoose 
 
 T-01 agrega [modelos, índices y operaciones de persistencia](datos.md), datos ficticios y pruebas con MongoDB real. T-01 no añade login, editor, OTP, cálculo ni endpoints de producto.
 
-T-02 agrega [login/logout, sesiones persistentes y listado propio](acceso.md). La pantalla inicial ahora es el acceso del recruiter. T-03 agrega [editor, reglas, publicación, copia y banco inicial revisado](screenings.md); [UX-01](ux-screening-editor-research.md) mejora la creación y ya está en la rama de entrega 2. El recorrido del candidato sigue pendiente y debe cumplir [UX-02](backlog.md#ux-02--formulario-del-postulante).
+T-02 agrega [login/logout, sesiones persistentes y listado propio](acceso.md). La pantalla inicial ahora es el acceso del recruiter. T-03 agrega [editor, reglas, publicación, copia y banco inicial revisado](screenings.md); [UX-01](ux-screening-editor-research.md) mejora la creación y ya está en la rama de entrega 2. T-05 añade [invitaciones y acceso del postulante](candidatos-acceso.md). El cuestionario sigue pendiente y debe cumplir [UX-02](backlog.md#ux-02--formulario-del-postulante).
 
 ## Requisitos
 
@@ -33,7 +33,7 @@ Si .env ya existe, conservarlo y comparar con .env.example en lugar de reemplaza
 
 Abrir http://127.0.0.1:5173. Vite envía las peticiones /api al backend, conservando el mismo origen para el navegador. El frontend permite entrar con una cuenta ficticia y consultar sus screenings; comunica errores y permite reintentar.
 
-Mailpit está en http://127.0.0.1:8026. Su servicio SMTP está preparado en 127.0.0.1:1026; el envío de códigos se implementará en T-05.
+Mailpit está en http://127.0.0.1:8026. T-05 usa su API HTTP local para capturar códigos ficticios; el puerto SMTP 1026 queda disponible para otras pruebas. [Recorrido y límites](candidatos-acceso.md).
 
 La base de datos se conserva en un volumen de Compose. `npm run infra:down` detiene los servicios sin borrar ese volumen. El entorno local está ligado a localhost y no es una configuración de producción.
 
@@ -78,6 +78,8 @@ T-00 está cerrado en openspec/changes/archive/2026-09-27-bootstrap-workspace; s
 
 T-01 está cerrado en openspec/changes/archive/2026-09-27-persist-domain-model, con sus diez tareas completas y evidencia local. Su contrato está sincronizado en openspec/specs/domain-persistence/spec.md. T-02 está cerrado en openspec/changes/archive/2026-09-27-recruiter-access; sincroniza recruiter-auth y recruiter-workspace. T-03 se cerró en OpenSpec como screening-editor y sincroniza screening-authoring y question-catalog. Las ideas posteriores de banco quedan en [backlog](backlog.md#ideas-posteriores-propuestas-por-luis-28092026).
 
+T-05 se especifica en `openspec/changes/candidate-invitations` y documenta [invitaciones/acceso](candidatos-acceso.md). Usa Mailpit local; no se deben usar cuentas de candidatos reales.
+
 ## Ramas de trabajo
 
 El remoto origin debe ser el fork luislujan32/AI4Devs-finalproject. Trabajar sobre feature/entrega-2-LL o una rama de tarea creada desde ella. Antes de publicar comprobar remoto, rama y cambios; antes de un PR confirmar que la base es feature/entrega-2-LL en el fork.
@@ -107,3 +109,7 @@ Tipos, lint, build, OpenSpec, trece pruebas HTTP/MongoDB de acceso, catorce de p
 ## Evidencia local de T-03
 
 Check y 41 pruebas (14 screenings/catálogo, 13 acceso, 14 persistencia), más smoke, pasaron. Navegador verificó creación/guardado/recarga/publicación/copia, rechazo de configuración incompleta, conflicto entre pestañas y recuperación, móvil/teclado. Tras la aprobación de Luis, se cargaron quince entradas del banco en la demo dos veces sin duplicados; el navegador mostró las tres áreas y cinco entradas al filtrar Tecnología. No se afirma CI remoto. Detalles en screenings.md.
+
+## Evidencia local de T-05
+
+`npm run test:candidate` usa una BD de prueba aleatoria y Mailpit local; cubre cinco escenarios de invitación, código y sesión. La rama añade el test al pipeline, cuya ejecución remota queda por verificar. La prueba visual en navegador recorrió invitación, código y acceso ficticios; [alcance y límites](candidatos-acceso.md).

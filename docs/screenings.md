@@ -2,7 +2,7 @@
 
 [README](../readme.md) · [Contrato P-01 a P-08](producto.md) · [Acceso y demo](acceso.md).
 
-Crear/abrir, guardar un borrador, configurar preguntas manuales, publicar y copiar un publicado están implementados y verificados localmente. El banco se consulta desde MongoDB y permite copia aislada. Luis aprobó las [quince preguntas iniciales](banco-revision.md) el 28/09/2026; se cargaron en la demo local. No hay todavía invitaciones, cuestionario de candidato, evaluación de respuestas ni informes.
+Crear/abrir, guardar un borrador, configurar preguntas manuales, publicar y copiar un publicado están implementados y verificados localmente. El banco se consulta desde MongoDB y permite copia aislada. Luis aprobó las [quince preguntas iniciales](banco-revision.md) el 28/09/2026; se cargaron en la demo local. [T-05](candidatos-acceso.md) agrega invitaciones desde el publicado; todavía no hay cuestionario, evaluación de respuestas ni informes.
 
 ## Recorrido
 

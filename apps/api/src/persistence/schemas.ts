@@ -76,7 +76,7 @@ const ReviewSchema = new Schema({
 const AuthSchema = new Schema({
   challengeId: String, codeHmac: { type: String, select: false }, expiresAt: Date,
   failedAttempts: { ...integer(0), default: 0 }, windowStartedAt: Date,
-  requestsInWindow: { ...integer(0), default: 0 },
+  requestsInWindow: { ...integer(0), default: 0 }, lastRequestedAt: Date,
 }, embedded);
 
 export const UserSchema = new Schema({

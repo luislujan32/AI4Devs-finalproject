@@ -1,0 +1,116 @@
+import { ConflictException, HttpException, Injectable, NotFoundException, ServiceUnavailableException, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
+import { InjectConnection } from '@nestjs/mongoose';
+import { randomBytes, randomInt } from 'node:crypto';
+import type { Request, Response } from 'express';
+import { isObjectIdOrHexString, type Connection } from 'mongoose';
+import { AuthService } from '../auth/auth.service.js';
+import { domainModels } from '../persistence/models.js';
+import { PersistenceRepository } from '../persistence/persistence.repository.js';
+import { sendLocalCode } from './local-mail.js';
+
+const DAY = 86400000;
+const HOUR = 3600000;
+const publicIdPattern = /^[\w-]{43}$/;
+function record(value: unknown, keys: string[]): Record<string, unknown> {
+  if (!value || typeof value !== 'object' || Array.isArray(value) || Object.keys(value).some((key) => !keys.includes(key))) {
+    throw new UnprocessableEntityException('Datos inválidos.');
+  }
+  return value as Record<string, unknown>;
+}
+
+@Injectable()
+export class CandidateService {
+  private readonly models;
+  constructor(@InjectConnection() connection: Connection, private readonly auth: AuthService, private readonly repository: PersistenceRepository) {
+    this.models = domainModels(connection);
+  }
+  private invitationView(row: { _id: { toString(): string }; publicId: string; candidateEmail: string; candidateName?: string | null;
+    status: string; expiresAt: Date; createdAt?: Date }) {
+    return { id: row._id.toString(), publicId: row.publicId, candidateEmail: row.candidateEmail,
+      candidateName: row.candidateName ?? null, status: row.status, expiresAt: row.expiresAt, createdAt: row.createdAt };
+  }
+  async list(ownerId: string, screeningId: string) {
+    if (!isObjectIdOrHexString(screeningId) || !await this.models.Screening.exists({ _id: screeningId, ownerId })) throw new NotFoundException('Screening no encontrado.');
+    const rows = await this.models.Invitation.find({ screeningId, ownerId }).sort({ createdAt: -1 }).limit(100).lean();
+    return { invitations: rows.map((row) => this.invitationView(row)) };
+  }
+  async create(ownerId: string, screeningId: string, input: unknown) {
+    if (!isObjectIdOrHexString(screeningId)) throw new NotFoundException('Screening no encontrado.');
+    const body = record(input, ['candidateEmail', 'candidateName']);
+    const candidateEmail = typeof body.candidateEmail === 'string' ? body.candidateEmail.trim().toLowerCase() : '';
+    if (candidateEmail.length > 254 || !/^[^\s@]+@(?:[^\s@.]+\.)*example\.test$/.test(candidateEmail)) {
+      throw new UnprocessableEntityException('Usá un correo ficticio terminado en example.test.');
+    }
+    const candidateName = body.candidateName === undefined ? undefined : typeof body.candidateName === 'string' ? body.candidateName.trim() : null;
+    if (candidateName === null || (candidateName && candidateName.length > 120)) throw new UnprocessableEntityException('Nombre inválido.');
+    const now = Date.now();
+    try {
+      const row = await this.repository.createInvitation(ownerId, screeningId, {
+        candidateEmail, ...(candidateName ? { candidateName } : {}), expiresAt: new Date(now + 7 * DAY), purgeAt: new Date(now + 90 * DAY),
+      });
+      if (!row) throw new NotFoundException('Screening publicado no encontrado.');
+      return this.invitationView(row);
+    } catch (error) {
+      if (error && typeof error === 'object' && 'code' in error && error.code === 11000) throw new ConflictException('Ya existe una invitación para ese correo.');
+      throw error;
+    }
+  }
+  private active(publicId: unknown) {
+    if (typeof publicId !== 'string' || !publicIdPattern.test(publicId)) throw new NotFoundException('Invitación no disponible.');
+    return this.models.Invitation.findOne({ publicId, expiresAt: { $gt: new Date() }, purgeAt: { $gt: new Date() } });
+  }
+  async requestCode(req: Request, input: unknown) {
+    this.auth.checkLoginCsrf(req);
+    const body = record(input, ['publicId']);
+    await this.auth.consumeLimit('candidate-code-ip', req.socket.remoteAddress ?? 'unknown', 20);
+    const row = await this.active(body.publicId);
+    if (!row) throw new NotFoundException('Invitación vencida o no disponible.');
+    const now = new Date(); const hourAgo = new Date(now.getTime() - HOUR);
+    const code = String(randomInt(0, 1000000)).padStart(6, '0');
+    const challengeId = randomBytes(16).toString('base64url');
+    const codeHmac = this.auth.digest(`candidate-code:${row._id}:${challengeId}:${code}`);
+    const common = { _id: row._id, expiresAt: { $gt: now }, purgeAt: { $gt: now },
+      $or: [{ 'auth.lastRequestedAt': { $exists: false } }, { 'auth.lastRequestedAt': { $lte: new Date(now.getTime() - 60000) } }] };
+    const challenge = { 'auth.challengeId': challengeId, 'auth.codeHmac': codeHmac,
+      'auth.expiresAt': new Date(now.getTime() + 600000), 'auth.failedAttempts': 0, 'auth.lastRequestedAt': now };
+    let updated = await this.models.Invitation.findOneAndUpdate({ ...common,
+      $and: [{ 'auth.windowStartedAt': { $gt: hourAgo } }, { 'auth.requestsInWindow': { $lt: 5 } }] },
+      { $set: challenge, $inc: { 'auth.requestsInWindow': 1 } }, { returnDocument: 'after' });
+    if (!updated) updated = await this.models.Invitation.findOneAndUpdate({ ...common,
+      $and: [{ $or: [{ 'auth.windowStartedAt': { $exists: false } }, { 'auth.windowStartedAt': { $lte: hourAgo } }] }] },
+      { $set: { ...challenge, 'auth.windowStartedAt': now, 'auth.requestsInWindow': 1 } }, { returnDocument: 'after' });
+    if (!updated) throw new HttpException('Esperá antes de pedir otro código.', 429);
+    try { await sendLocalCode(updated.candidateEmail, code); }
+    catch { throw new ServiceUnavailableException('No pudimos entregar el código. Intentá nuevamente en un minuto.'); }
+    return { status: 'sent', retryAfterSeconds: 60 };
+  }
+  async verify(req: Request, res: Response, input: unknown) {
+    this.auth.checkLoginCsrf(req);
+    const body = record(input, ['publicId', 'code']);
+    if (typeof body.publicId !== 'string' || !publicIdPattern.test(body.publicId)
+      || typeof body.code !== 'string' || !/^\d{6}$/.test(body.code)) throw new UnprocessableEntityException('Código inválido.');
+    await this.auth.consumeLimit('candidate-verify-ip', req.socket.remoteAddress ?? 'unknown', 100);
+    const row = await this.active(body.publicId);
+    if (!row?.auth?.challengeId || !row.auth.expiresAt || row.auth.expiresAt <= new Date() || row.auth.failedAttempts >= 5) {
+      throw new UnauthorizedException('El código venció o es incorrecto. Solicitá uno nuevo.');
+    }
+    const codeHmac = this.auth.digest(`candidate-code:${row._id}:${row.auth.challengeId}:${body.code}`);
+    const now = new Date();
+    const common = { _id: row._id, 'auth.challengeId': row.auth.challengeId,
+      'auth.expiresAt': { $gt: now }, 'auth.failedAttempts': { $lt: 5 }, expiresAt: { $gt: now }, purgeAt: { $gt: now } };
+    const consumed = await this.models.Invitation.findOneAndUpdate({ ...common, 'auth.codeHmac': codeHmac },
+      { $unset: { 'auth.challengeId': 1, 'auth.codeHmac': 1, 'auth.expiresAt': 1 }, $set: { status: row.status === 'submitted' ? 'submitted' : 'in_progress' } },
+      { returnDocument: 'after' });
+    if (!consumed) {
+      await this.models.Invitation.updateOne(common, { $inc: { 'auth.failedAttempts': 1 } });
+      throw new UnauthorizedException('El código venció o es incorrecto. Solicitá uno nuevo.');
+    }
+    const session = await this.auth.startCandidateSession(req, res, row._id.toString(), row.expiresAt);
+    return { status: 'authenticated', publicId: row.publicId, ...session };
+  }
+  async summary(invitationId: string) {
+    const row = await this.models.Invitation.findById(invitationId).select('status candidateName expiresAt');
+    if (!row) throw new UnauthorizedException('Sesión no disponible.');
+    return { status: row.status, candidateName: row.candidateName ?? null, expiresAt: row.expiresAt };
+  }
+}
