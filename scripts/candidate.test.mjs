@@ -55,6 +55,12 @@ async function invite(email, account = accounts[0], id = published._id.toString(
 }
 
 before(async () => {
+  let mailboxReady = false;
+  for (let n = 0; n < 30; n++) {
+    try { if ((await fetch(`${mailpit}/api/v1/messages?limit=1`)).ok) { mailboxReady = true; break; } } catch { /* bounded startup */ }
+    await delay(100);
+  }
+  assert.ok(mailboxReady, 'Mailpit local debe estar disponible.');
   const parsed = new URL(process.env.MONGODB_URI ?? 'mongodb://127.0.0.1:27018/screeningroom');
   parsed.pathname = `/${dbName}`;
   connection = await mongoose.createConnection(parsed.toString(), { serverSelectionTimeoutMS: 3000 }).asPromise();

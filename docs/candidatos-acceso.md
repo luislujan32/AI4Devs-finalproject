@@ -2,7 +2,7 @@
 
 [README](../readme.md) · [Reglas de producto](producto.md) · [UX-02](backlog.md#ux-02--formulario-del-postulante).
 
-T-05 permite crear invitaciones individuales para un screening publicado propio y verificar el correo ficticio del postulante. El acceso ya funciona con MongoDB y Mailpit locales. **El cuestionario, guardado de respuestas, revisión y envío aún no están implementados**; corresponden a T-07/T-06. La pantalla autenticada indica ese siguiente paso sin mostrar preguntas antes de verificar.
+T-05 permite crear invitaciones individuales para un screening publicado propio y verificar el correo ficticio del postulante. El acceso ya funciona con MongoDB y Mailpit locales. La rama dependiente `feature/candidate-attempt-T07-LL` añade [cuestionario, guardado, revisión y envío](candidatos-formulario.md); un enlace por sí solo nunca muestra preguntas.
 
 ## Recorrido local
 
@@ -34,4 +34,4 @@ La invitación dura siete días y se conserva como máximo 90 días desde la cre
 
 `npm run test:candidate` pasó con API HTTP, MongoDB aislado y Mailpit real: propiedad/borrador/duplicado, correo ficticio, CSRF, código recibido y de un uso, cinco fallos, reenvío y límite horario, verificaciones concurrentes, separación de principales, revocación por retención, logout. El test elimina solo su base aleatoria y deja los mensajes de prueba en Mailpit local. `npm run check` y regresiones se ejecutan antes de integrar. El navegador integrado mostró creación de invitación, enlace, solicitud, lectura del buzón, verificación y sesión tras recarga. El control de viewport del navegador integrado no aplicó el ancho móvil solicitado; la comprobación visual a 375 px sigue pendiente.
 
-Esta evidencia no cubre aún el cuestionario, evaluación, informe, E2E académico ni entrega de correo real.
+La evidencia de este ticket no cubría el cuestionario ni la evaluación; su implementación posterior está en [T-07/T-06](candidatos-formulario.md). Tampoco acredita E2E académico ni entrega de correo real.

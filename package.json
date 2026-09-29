@@ -30,7 +30,8 @@
     "spec:validate": "openspec validate --all --strict --no-interactive",
     "catalog": "npm run build -w @screeningroom/api && node --env-file-if-exists=.env scripts/catalog.mjs",
     "test:screenings": "node --env-file-if-exists=.env --test scripts/screenings.test.mjs",
-    "test:candidate": "node --env-file-if-exists=.env --test scripts/candidate.test.mjs"
+    "test:candidate": "node --env-file-if-exists=.env --test scripts/candidate.test.mjs",
+    "test:attempt": "node --env-file-if-exists=.env --test scripts/attempt.test.mjs"
   },
   "devDependencies": {
     "@fission-ai/openspec": "1.4.1",

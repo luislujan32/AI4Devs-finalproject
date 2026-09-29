@@ -14,6 +14,8 @@ Proyecto individual AI4Devs. Stack aprobado: React/Vite/TypeScript, NestJS/Expre
 - docs/acceso.md: sesiones, cuentas ficticias, rutas implementadas y límites de T-02.
 - docs/screenings.md: autoría, publicación, CAS y banco inicial revisado de T-03.
 - docs/ux-screening-editor-research.md: diagnóstico, fuentes y primera mejora implementada del editor del recruiter.
+- docs/candidatos-acceso.md: invitaciones, correo local, sesión y límites de T-05.
+- docs/candidatos-formulario.md: respuestas, evaluación, envío y UX del postulante de T-07/T-06.
 
 ## Repositorio y ramas
 
@@ -41,6 +43,6 @@ El formulario del candidato debe aplicar los criterios de UX ya adoptados para e
 
 Ejecutar comprobaciones aplicables; documentar sus resultados y límites reales. No presentar un scaffold como flujo principal completo ni intención como implementación. Actualizar README/prompts.md cuando cambie el estado o el workflow.
 
-Comandos de trabajo: npm run check, npm run test:persistence, npm run test:auth, npm run test:screenings, npm run smoke, npm run spec:validate. La comprobación de infraestructura o persistencia no sustituye el E2E del producto.
+Comandos de trabajo: npm run check, npm run test:persistence, npm run test:auth, npm run test:screenings, npm run test:candidate, npm run test:attempt, npm run smoke, npm run spec:validate. La comprobación de infraestructura o persistencia no sustituye el E2E del producto.
 
 Los checkpoints aportados se reconciliaron como conocimiento de referencia en docs/harness.md. No trasladar contratos empresariales al proyecto académico ni convertir recomendaciones pedagógicas en nuevos requisitos. La autorización actual del usuario para avanzar prevalece sobre gates históricos de otros proyectos.

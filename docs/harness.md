@@ -41,9 +41,10 @@ En persistencia, declarar qué es fuente de verdad, snapshot o derivado, quién 
 | T-02 | Trece pruebas HTTP/MongoDB de login, sesiones, ownership, CSRF y límites; navegador escritorio/móvil y teclado | Implementado y verificado localmente con cuentas ficticias; integración pendiente |
 | T-05 | Cinco pruebas HTTP/MongoDB/Mailpit: propiedad, OTP, límites, concurrencia y revocación; navegador ficticio | Implementado en rama de tarea; móvil visual pendiente |
 | T-03 | Catorce pruebas HTTP/MongoDB de autoría/catálogo; navegador, recarga, conflicto, móvil y copia; carga repetida del banco aprobado | Implementado y verificado localmente; integración hacia entrega 2 pendiente |
-| T-07/T-08 | Cálculo P-01–P-08, concurrencia de envío/revisión y persistencia | Pendiente |
+| T-07 | Cálculo P-01–P-08, guardado y concurrencia de envío en pruebas puras/HTTP/MongoDB | Implementado en rama dependiente; integración pendiente |
+| T-08 | Lectura de informe y revisión humana | Pendiente |
 | T-04 | Salida estructurada válida, ausencia de datos de candidatos, fallo recuperable y edición manual | Pendiente |
-| T-06 | Responder, guardar, salir y reanudar; validación requerida, errores y envío en navegador | Pendiente |
+| T-06 | Responder, guardar, reanudar, revisar y enviar en navegador ficticio | Implementado en rama dependiente; prueba visual móvil pendiente |
 | T-09/T-10 | Accesos, expiración/borrado, E2E principal, despliegue e instrucciones reproducibles | Pendiente |
 
 ## Ramas y cierre
