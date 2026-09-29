@@ -8,7 +8,7 @@ T-00 prepara la base del proyecto: React/Vite, NestJS/Express, MongoDB/Mongoose 
 
 T-01 agrega [modelos, índices y operaciones de persistencia](datos.md), datos ficticios y pruebas con MongoDB real. T-01 no añade login, editor, OTP, cálculo ni endpoints de producto.
 
-T-02 agrega [login/logout, sesiones persistentes y listado propio](acceso.md). La pantalla inicial ahora es el acceso del recruiter. T-03 agrega [editor, reglas, publicación, copia y banco inicial revisado](screenings.md); [UX-01](ux-screening-editor-research.md) mejora la creación y ya está en la rama de entrega 2. T-05 añade [invitaciones y acceso del postulante](candidatos-acceso.md). El cuestionario sigue pendiente y debe cumplir [UX-02](backlog.md#ux-02--formulario-del-postulante).
+T-02 agrega [login/logout, sesiones persistentes y listado propio](acceso.md). La pantalla inicial ahora es el acceso del recruiter. T-03 agrega [editor, reglas, publicación, copia y banco inicial revisado](screenings.md); [UX-01](ux-screening-editor-research.md) mejora la creación y ya está en la rama de entrega 2. T-05 añade [invitaciones y acceso del postulante](candidatos-acceso.md). La rama dependiente de T-07/T-06 añade [cuestionario, guardado, evaluación y envío](candidatos-formulario.md) con UX-02; aún requiere integración en entrega 2.
 
 ## Requisitos
 
@@ -113,3 +113,7 @@ Check y 41 pruebas (14 screenings/catálogo, 13 acceso, 14 persistencia), más s
 ## Evidencia local de T-05
 
 `npm run test:candidate` usa una BD de prueba aleatoria y Mailpit local; cubre cinco escenarios de invitación, código y sesión. La rama añade el test al pipeline, cuya ejecución remota queda por verificar. La prueba visual en navegador recorrió invitación, código y acceso ficticios; [alcance y límites](candidatos-acceso.md).
+
+## Evidencia local de T-07/T-06
+
+`npm run test:attempt` cubre cálculo puro y HTTP/MongoDB/Mailpit de lectura, guardado, reanudación, CAS, validación, envío concurrente e idempotencia. En navegador ficticio se respondió, navegó entre preguntas, guardó, recargó, revisó y envió; el recibo persistió otra recarga. [Detalle y límites](candidatos-formulario.md). Se añadió al pipeline local; la ejecución remota queda pendiente.

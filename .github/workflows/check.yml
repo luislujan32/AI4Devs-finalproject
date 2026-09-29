@@ -39,4 +39,5 @@ jobs:
       - run: npm run test:auth
       - run: npm run test:screenings
       - run: npm run test:candidate
+      - run: npm run test:attempt
       - run: npm run smoke

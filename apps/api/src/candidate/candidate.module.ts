@@ -4,7 +4,9 @@ import { PersistenceModule } from '../persistence/persistence.module.js';
 import { CandidateController, InvitationController } from './candidate.controller.js';
 import { CandidateGuard } from './candidate.guard.js';
 import { CandidateService } from './candidate.service.js';
+import { AttemptController } from './attempt.controller.js';
+import { AttemptService } from './attempt.service.js';
 
-@Module({ imports: [AuthModule, PersistenceModule], providers: [CandidateService, CandidateGuard],
-  controllers: [CandidateController, InvitationController] })
+@Module({ imports: [AuthModule, PersistenceModule], providers: [CandidateService, CandidateGuard, AttemptService],
+  controllers: [CandidateController, InvitationController, AttemptController] })
 export class CandidateModule {}

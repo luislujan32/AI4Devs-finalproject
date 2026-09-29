@@ -1,7 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
+import { CandidateQuestionnaire, type CandidateSession } from './CandidateQuestionnaire';
 
-type CandidateSession = { csrfToken: string; expiresAt: string; publicId: string;
-  invitation: { status: string; candidateName: string | null; expiresAt: string } };
 function message(status: number, fallback: string) {
   if (status === 404) return 'La invitación venció o no está disponible. Contactá a quien te la compartió.';
   if (status === 429) return 'Esperá antes de solicitar otro código.';
@@ -74,27 +73,22 @@ export function CandidateAccess({ publicId }: { publicId: string }) {
       setSession(null); setSent(false); setCode('');
       const next = await fetch('/api/auth/csrf', { cache: 'no-store' });
       if (next.ok) setCsrf((await next.json() as { csrfToken: string }).csrfToken);
-    } catch { setError('No pudimos cerrar el acceso. Volvé a intentar.'); }
+    } catch { throw new Error('No pudimos cerrar el acceso. Volvé a intentar.'); }
     finally { setBusy(false); }
   }
+  if (session) return <CandidateQuestionnaire session={session} onLogout={logout} />;
   return <main className="shell candidate-shell"><header><a className="brand" href="/" aria-label="Screeningroom, inicio"><span className="brand-mark">S</span>screeningroom</a>
     <span className="badge">Postulante</span></header>
     <div className="candidate-layout"><div className="candidate-intro"><p className="eyebrow">Tu postulación</p><h1>Tu experiencia,<br />en tus palabras.</h1>
       <p className="description">Este espacio te acompaña paso a paso. Verificá tu correo para abrir tu invitación y continuar cuando lo necesites.</p>
       <div className="candidate-trust"><span>1. Verificá tu correo</span><span>2. Respondé con calma</span><span>3. Revisá antes de enviar</span></div></div>
       <section className="candidate-card" aria-labelledby="candidate-title">
-        {loading ? <p role="status">Comprobando invitación…</p> : session ? <>
-          <p className="eyebrow">Acceso confirmado</p><h2 id="candidate-title">{session.invitation.candidateName ? `Hola, ${session.invitation.candidateName}` : 'Ya podés continuar'}</h2>
-          <p>Tu correo fue verificado. Esta invitación está {session.invitation.status === 'submitted' ? 'enviada' : 'lista para continuar'}.</p>
-          <p className="field-hint">Tu acceso vence el {new Date(session.expiresAt).toLocaleString('es-AR', { dateStyle: 'medium', timeStyle: 'short' })}.</p>
-          <div className="candidate-next"><strong>Próximo paso</strong><p>Estamos preparando el cuestionario para que puedas guardar tus respuestas y revisarlas antes de enviar.</p></div>
-          <button className="text-action" disabled={busy} onClick={() => void logout()}>Cerrar acceso</button>
-        </> : <>
+        {loading ? <p role="status">Comprobando invitación…</p> : <>
           <p className="eyebrow">Acceso seguro</p><h2 id="candidate-title">{sent ? 'Ingresá el código' : 'Verificá tu correo'}</h2>
           <p>{sent ? 'Te enviamos un código de seis dígitos al correo registrado para esta invitación.' : 'Te enviaremos un código al correo que registró quien te invitó.'}</p>
           {!sent ? <button disabled={busy || !csrf} onClick={() => void send()}>{busy ? 'Enviando…' : 'Enviar código de acceso'}</button> : <>
             <form className="candidate-code-form" onSubmit={(event) => void verify(event)}><label htmlFor="candidate-code">Código de seis dígitos</label>
-              <input id="candidate-code" autoComplete="one-time-code" inputMode="numeric" pattern="[0-9]{6}" maxLength={6} required
+              <input id="candidate-code" autoFocus autoComplete="one-time-code" inputMode="numeric" pattern="[0-9]{6}" maxLength={6} required
                 value={code} onChange={(event) => setCode(event.target.value.replace(/\D/g, '').slice(0, 6))} placeholder="000000" />
               <p className="field-hint">Vence en diez minutos. Encontralo en Mailpit durante esta prueba.</p>
               <button type="submit" disabled={busy || code.length !== 6}>{busy ? 'Verificando…' : 'Continuar'}</button></form>

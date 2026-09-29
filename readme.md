@@ -2,9 +2,9 @@
 
 Desarrollo en el fork; **feature/entrega-2-LL** es la rama de integración prevista. [Guía local](docs/desarrollo.md) · [Aplicación de los aprendizajes del máster](docs/harness.md). La entrega 1 conserva su documentación en feature/entrega-1-LL.
 
-**Entrega 2 en desarrollo · Luis Lujan (LL) · Actualización: 28 de septiembre de 2026.**
+**Entrega 2 en desarrollo · Luis Lujan (LL) · Actualización: 29 de septiembre de 2026.**
 
-La entrega 1 definió el MVP y su diseño. La rama `feature/entrega-2-LL` integra T-00 (frontend, API y MongoDB conectados), T-01 (persistencia), T-02 (acceso del recruiter con cuentas ficticias), T-03 (editor, banco inicial aprobado por Luis, publicación y copia) y la primera [mejora UX-01 del editor](docs/ux-screening-editor-research.md), aprobada por Luis. La rama de tarea `feature/candidate-access-T05-LL` agrega [invitaciones y acceso del postulante](docs/candidatos-acceso.md) con correo ficticio; el cuestionario y la evaluación siguen pendientes y su formulario deberá seguir [UX-02](docs/backlog.md#ux-02--formulario-del-postulante). Las reglas de producto de este documento describen el comportamiento previsto. [Persistencia y sus límites](docs/datos.md) · [Acceso implementado y demo](docs/acceso.md) · [Editor, publicación y límites](docs/screenings.md).
+La entrega 1 definió el MVP y su diseño. La rama `feature/entrega-2-LL` integra T-00 (frontend, API y MongoDB conectados), T-01 (persistencia), T-02 (acceso del recruiter con cuentas ficticias), T-03 (editor, banco inicial aprobado por Luis, publicación y copia) y la primera [mejora UX-01 del editor](docs/ux-screening-editor-research.md), aprobada por Luis. La rama `feature/candidate-access-T05-LL` agrega [invitaciones y acceso del postulante](docs/candidatos-acceso.md). Su rama dependiente `feature/candidate-attempt-T07-LL` implementa [respuestas, evaluación, formulario UX-02 y envío](docs/candidatos-formulario.md). El flujo principal web/API/BD se probó localmente con cuentas ficticias; todavía falta integrar estas ramas en entrega 2, T-08 (informe/revisión del recruiter), despliegue y evidencia final. [Persistencia y sus límites](docs/datos.md) · [Acceso recruiter y demo](docs/acceso.md) · [Editor y banco](docs/screenings.md).
 
 ## Índice
 
@@ -168,9 +168,9 @@ PostgreSQL también sería válido. Se elige MongoDB porque la configuración y 
 | `docs/backlog.md` | Incluido | Historias adicionales, tickets y dependencias |
 | `docs/openapi.yaml` | Incluido | Tres operaciones representativas |
 | `docs/wireframes.svg` | Incluido | Bocetos de interfaz |
-| `apps/web` | Base T-00 incorporada durante entrega 2 | React y comprobación de conexión; flujo de producto pendiente |
-| `apps/api` | T-00 y cambio T-01 | NestJS/Express, readiness, cinco modelos, índices y operaciones de persistencia; endpoints de producto pendientes |
-| `.github/workflows` | Pipeline configurado durante T-00/T-01 | Tipos, lint, build, OpenSpec y pruebas de infraestructura/persistencia con MongoDB |
+| `apps/web` | Implementado en ramas de entrega 2 | Acceso del recruiter, editor, invitaciones y formulario del postulante; informe del recruiter pendiente |
+| `apps/api` | Implementado en ramas de entrega 2 | NestJS/Express, MongoDB, autenticación, screenings, invitaciones, respuestas y evaluación; revisión humana pendiente |
+| `.github/workflows` | Configurado en ramas de entrega 2 | Tipos, lint, build, OpenSpec, pruebas de persistencia, acceso y flujo del candidato; ejecución remota de esta rama pendiente |
 
 El monorepo contiene frontend y backend como npm workspaces. Cada regla se mantiene en su documento de referencia. [Comandos y workflow OpenSpec](docs/desarrollo.md).
 
