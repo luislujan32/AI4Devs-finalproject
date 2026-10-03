@@ -236,6 +236,7 @@ test('copia de publicado remapea ids/referencias y no copia invitaciones', async
   await models.Invitation.create({ ownerId: accounts[0].user.id, screeningId: draft.id, candidateEmail: 'candidate@example.test', publicId: randomUUID(), expiresAt: new Date('2099-01-01'), purgeAt: new Date('2099-02-01') });
   const copied = await result(await request(`/screenings/${draft.id}/copy`, accounts[0], 'POST', {}), 201);
   assert.notEqual(copied.id, source.id); assert.equal(copied.status, 'draft'); assert.equal(copied.revision, 0); assert.equal('publishedAt' in copied, false);
+  assert.equal(copied.basedOnScreeningId, source.id);
   assert.equal(await models.Invitation.countDocuments({ screeningId: copied.id }), 0);
   for (let n = 0; n < copied.questions.length; n++) { assert.notEqual(copied.questions[n].id, source.questions[n].id); assert.equal(copied.questions[n].text, source.questions[n].text); }
   assert.ok(copied.questions[0].options.every((o) => !source.questions[0].options.some((prior) => prior.id === o.id)));
@@ -275,12 +276,29 @@ test('copia de banco no aprueba reglas y conserva texto/opciones/orientación in
   assert.equal((await request(`/screenings/${draft.id}/questions/from-bank`, accounts[0], 'POST', { expectedRevision: 1, bankQuestionId: new mongoose.Types.ObjectId().toString() })).status, 409);
 });
 
+test('no duplica preguntas del banco y rechaza umbrales inalcanzables', async () => {
+  const entry = (await result(await request('/question-bank'), 200)).questions.find((question) => question.active !== false);
+  const draft = await create();
+  const first = await result(await request(`/screenings/${draft.id}/questions/from-bank`, accounts[0], 'POST',
+    { expectedRevision: 0, bankQuestionId: entry.id }), 200);
+  assert.equal((await request(`/screenings/${draft.id}/questions/from-bank`, accounts[0], 'POST',
+    { expectedRevision: first.revision, bankQuestionId: entry.id })).status, 409);
+  const impossible = valid(); impossible.threshold = 90;
+  impossible.questions[0].options[0].score = 80;
+  const limited = await create(impossible);
+  const denied = await publish(limited.id);
+  assert.equal(denied.status, 422);
+  assert.match(JSON.stringify(await denied.json()), /máximo posible/);
+});
+
 test('copias simultáneas del banco y límite veinte preguntas no pierden cambios', async () => {
   const entries = (await result(await request('/question-bank'), 200)).questions;
   const draft = await create({ questions: Array.from({ length: 19 }, (_, n) => ({ id: `q${n}`, type: 'text', required: false, scored: false, options: [] })) });
   const responses = await Promise.all(entries.slice(0, 2).map((entry) => request(`/screenings/${draft.id}/questions/from-bank`, accounts[0], 'POST', { expectedRevision: 0, bankQuestionId: entry.id })));
   assert.deepEqual(responses.map((r) => r.status).sort(), [200, 409]);
   const stored = await result(await request(`/screenings/${draft.id}`), 200); assert.equal(stored.questions.length, 20); assert.equal(stored.revision, 1);
-  assert.equal((await request(`/screenings/${draft.id}/questions/from-bank`, accounts[0], 'POST', { expectedRevision: 1, bankQuestionId: entries[0].id })).status, 422);
+  const unused = entries.find((entry) => !stored.questions.some((question) => question.bankQuestionId === entry.id));
+  assert.ok(unused);
+  assert.equal((await request(`/screenings/${draft.id}/questions/from-bank`, accounts[0], 'POST', { expectedRevision: 1, bankQuestionId: unused.id })).status, 422);
   assert.equal((await models.Screening.findById(draft.id)).questions.length, 20);
 });

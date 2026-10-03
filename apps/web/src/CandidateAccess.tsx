@@ -9,6 +9,7 @@ function message(status: number, fallback: string) {
   return fallback;
 }
 export function CandidateAccess({ publicId }: { publicId: string }) {
+  const [emailToken] = useState(() => new URLSearchParams(window.location.hash.slice(1)).get('access') || '');
   const [session, setSession] = useState<CandidateSession | null>(null);
   const [csrf, setCsrf] = useState('');
   const [loading, setLoading] = useState(true);
@@ -24,6 +25,7 @@ export function CandidateAccess({ publicId }: { publicId: string }) {
   }, [retryAt]);
   useEffect(() => {
     let active = true; const controller = new AbortController();
+    if (emailToken) window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}#invite=${publicId}`);
     async function boot() {
       try {
         const response = await fetch('/api/candidate/session', { cache: 'no-store', signal: controller.signal });
@@ -36,11 +38,22 @@ export function CandidateAccess({ publicId }: { publicId: string }) {
         const data = await csrfResponse.json() as { csrfToken?: string };
         if (!data.csrfToken) throw new Error();
         if (active) setCsrf(data.csrfToken);
+        if (emailToken) {
+          const opened = await fetch('/api/candidate/access/email-link', { method: 'POST', cache: 'no-store', signal: controller.signal,
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': data.csrfToken },
+            body: JSON.stringify({ publicId, token: emailToken }) });
+          if (opened.ok) {
+            const next = await fetch('/api/candidate/session', { cache: 'no-store', signal: controller.signal });
+            if (!next.ok) throw new Error();
+            if (active) setSession(await next.json() as CandidateSession);
+          } else if (active) setError('Este enlace de acceso ya se usó o venció. Podés pedir un código al correo de la invitación.');
+        }
       } catch { if (active) setError('No pudimos conectar. Recargá la página.'); }
       finally { if (active) setLoading(false); }
     }
-    void boot(); return () => { active = false; controller.abort(); };
-  }, [publicId]);
+    const timer = window.setTimeout(() => void boot(), 0);
+    return () => { active = false; window.clearTimeout(timer); controller.abort(); };
+  }, [publicId, emailToken]);
   async function send() {
     setBusy(true); setError('');
     try {
@@ -80,7 +93,7 @@ export function CandidateAccess({ publicId }: { publicId: string }) {
   return <main className="shell candidate-shell"><header><a className="brand" href="/" aria-label="Screeningroom, inicio"><span className="brand-mark">S</span>screeningroom</a>
     <span className="badge">Postulante</span></header>
     <div className="candidate-layout"><div className="candidate-intro"><p className="eyebrow">Tu postulación</p><h1>Tu experiencia,<br />en tus palabras.</h1>
-      <p className="description">Este espacio te acompaña paso a paso. Verificá tu correo para abrir tu invitación y continuar cuando lo necesites.</p>
+      <p className="description">Este espacio te acompaña paso a paso. Abrí tu invitación y continuá cuando lo necesites.</p>
       <div className="candidate-trust"><span>1. Verificá tu correo</span><span>2. Respondé con calma</span><span>3. Revisá antes de enviar</span></div></div>
       <section className="candidate-card" aria-labelledby="candidate-title">
         {loading ? <p role="status">Comprobando invitación…</p> : <>

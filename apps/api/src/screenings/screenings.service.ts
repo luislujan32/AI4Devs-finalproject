@@ -95,7 +95,8 @@ export class ScreeningsService {
       return { ...q.toObject(), id: randomUUID(), options: q.options.map((o) => ({ ...o.toObject(), id: ids.get(o.id)! })),
         ...(q.exclusion ? { exclusion: { acceptedOptionIds: q.exclusion.acceptedOptionIds?.map((id) => ids.get(id)!) ?? [] } } : {}) };
     });
-    return this.view(await this.models.Screening.create({ ownerId, title: source.title ? `${source.title.slice(0, 112)} (copia)` : 'Copia',
+    return this.view(await this.models.Screening.create({ ownerId, basedOnScreeningId: source._id,
+      title: source.title ? `${source.title.slice(0, 104)} — nueva versión` : 'Nueva versión',
       area: source.area, description: source.description, threshold: source.threshold, questions, status: 'draft', revision: 0 }));
   }
   async bank(area?: unknown) {
@@ -111,6 +112,9 @@ export class ScreeningsService {
     if (typeof input.bankQuestionId !== 'string' || !isObjectIdOrHexString(input.bankQuestionId)) throw new NotFoundException('Pregunta del banco no disponible.');
     const entry = await this.models.BankQuestion.findOne({ _id: input.bankQuestionId, active: true });
     if (!entry) throw new NotFoundException('Pregunta del banco no disponible.');
+    if (row.questions.some((question) => question.bankQuestionId?.toString() === entry._id.toString())) {
+      throw new ConflictException('Esta pregunta ya está incluida en el screening.');
+    }
     const questions = row.questions.map((q) => { const value = q.toObject(); return { ...value, ...(q.bankQuestionId ? { bankQuestionId: q.bankQuestionId.toString() } : {}) } as DraftQuestion; });
     questions.push({ id: randomUUID(), bankQuestionId: entry._id.toString(), criterion: entry.criterion, text: entry.text,
       type: entry.type as DraftQuestion['type'], required: false, scored: false,

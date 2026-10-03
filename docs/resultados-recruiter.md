@@ -2,9 +2,11 @@
 
 [README](../README.md) · [Reglas P-01 a P-08](producto.md) · [Backlog](backlog.md).
 
-La rama `feature/recruiter-results-T08-LL` agrega el último tramo del flujo local de entrega 2. En **Postulantes**, una fila con respuestas enviadas ofrece **Ver respuestas** en lugar de copiar el enlace. El panel presenta el resultado calculado, puntaje o cálculo pendiente, umbral, evidencia por criterio y requisitos excluyentes. La decisión humana se guarda en una sección separada; no recalcula el informe ni comunica una decisión al candidato. Los estados Por responder, En curso y Respuestas recibidas tienen estilos más visibles.
+En **Postulantes**, una fila con respuestas enviadas ofrece **Ver informe** en lugar de copiar el enlace. El informe reemplaza la lista mientras se consulta y ofrece una sola acción para volver. La vista presenta el resultado calculado, puntaje o cálculo pendiente, umbral, evidencia por criterio y requisitos excluyentes. La decisión humana se guarda en una sección separada; no recalcula el informe ni comunica una decisión al candidato. Los estados Por responder, En curso y Respuestas recibidas tienen estilos más visibles.
 
-El recruiter puede cerrar un SC publicado tras confirmar el efecto. El cierre registra `closedAt` y revisión nueva, congela su configuración e impide nuevas invitaciones. Las invitaciones ya enviadas pueden completarse hasta el vencimiento individual de siete días. El SC cerrado conserva acceso de solo lectura a configuración, postulantes, informes y revisiones, y admite crear una copia como borrador. El enlace de un envío completado deja de mostrarse como acción de copia. Cerrar no elimina datos ni revoca enlaces anteriores.
+El recruiter puede cerrar un SC publicado tras confirmar el efecto. El cierre registra `closedAt` y revisión nueva, congela su configuración e impide nuevas invitaciones. Las invitaciones ya enviadas pueden completarse hasta el vencimiento individual de siete días. El SC cerrado conserva acceso de solo lectura a configuración, postulantes, informes y revisiones, y admite crear una nueva versión como borrador vinculado al original. El enlace de un envío completado deja de mostrarse como acción de copia. Cerrar no elimina datos ni revoca enlaces anteriores.
+
+La revisión visual del 03/10 con cuenta ficticia aislada confirmó apertura del informe, resultado y respuesta visibles, una sola acción de regreso, cierre exitoso y resultados conservados. El error `Cannot GET/POST` observado por Luis provenía de una API local anterior todavía en ejecución; la demo del puerto 3001 se reinició con las rutas de esta versión. El control de viewport del navegador integrado no cambió el ancho efectivo a 375 px en esta revisión.
 
 | Ruta | Resultado |
 | --- | --- |

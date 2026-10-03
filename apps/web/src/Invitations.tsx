@@ -43,9 +43,12 @@ export function Invitations({ screeningId, closed, session, onExpired }: { scree
     try { await navigator.clipboard.writeText(link(item.publicId)); setCopied(item.publicId); setManualLink(''); }
     catch { setCopied(''); setManualLink(item.publicId); }
   }
+  const selected = items.find((item) => item.id === reportId);
+  if (selected) return <RecruiterReport invitationId={selected.id} candidate={selected.candidateName || selected.candidateEmail}
+    session={session} onExpired={onExpired} onClose={() => setReportId('')} />;
   return <section className="stage-panel invitation-panel" aria-labelledby="invitation-title">
     <div className="stage-heading"><div><p className="eyebrow">{closed ? 'Screening cerrado' : 'Después de publicar'}</p><h2 id="invitation-title">Postulantes</h2></div>
-      <p>{closed ? 'No se pueden enviar nuevas invitaciones. Las personas ya invitadas pueden responder hasta el vencimiento de su enlace y sus resultados siguen disponibles.' : 'Invitá a cada persona por correo. El mensaje incluye su enlace; al abrirlo recibirá un código de acceso.'}</p></div>
+      <p>{closed ? 'No se pueden enviar nuevas invitaciones. Las personas ya invitadas pueden responder hasta el vencimiento de su enlace y sus resultados siguen disponibles.' : 'Invitá a cada persona por correo. El enlace del mensaje abre su invitación; los enlaces compartidos requieren verificar el correo.'}</p></div>
     <div className="invitation-actions">{!closed && <button type="button" onClick={() => { setFormOpen((open) => !open); setError(''); }}
       aria-expanded={formOpen} aria-controls="invitation-form">{formOpen ? 'Cancelar invitación' : 'Invitar postulante'}</button>
       }
@@ -67,15 +70,13 @@ export function Invitations({ screeningId, closed, session, onExpired }: { scree
       <div className="invitation-heading"><div><strong>{item.candidateName || item.candidateEmail}</strong>
         {item.candidateName && <span>{item.candidateEmail}</span>}</div><span className={`badge status-${item.status}`}>{statusText[item.status]}</span></div>
       <div className="invitation-meta"><span>{item.status === 'submitted' ? 'Respuestas enviadas' : `Enlace disponible hasta el ${new Date(item.expiresAt).toLocaleString('es-AR', { dateStyle: 'medium', timeStyle: 'short' })}`}</span>
-        {item.status === 'submitted' ? <button className="outline-button" type="button" aria-expanded={reportId === item.id}
-          onClick={() => setReportId((id) => id === item.id ? '' : item.id)}>{reportId === item.id ? 'Ocultar respuestas' : 'Ver respuestas'}</button>
+        {item.status === 'submitted' ? <button className="outline-button" type="button"
+          onClick={() => setReportId(item.id)}>Ver informe</button>
           : new Date(item.expiresAt) > new Date() && <button className="icon-action" type="button" aria-label={`Copiar enlace de ${item.candidateName || item.candidateEmail}`}
           title="Copiar enlace" onClick={() => void copy(item)}><svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg></button>}</div>
       {copied === item.publicId && <p className="copy-confirmation" role="status">Enlace copiado</p>}
       {manualLink === item.publicId && <div className="field manual-link"><label htmlFor={`link-${item.id}`}>Seleccioná y copiá el enlace</label>
         <input id={`link-${item.id}`} readOnly value={link(item.publicId)} onFocus={(event) => event.target.select()} /></div>}
-      {reportId === item.id && <RecruiterReport invitationId={item.id} candidate={item.candidateName || item.candidateEmail}
-        session={session} onExpired={onExpired} onClose={() => setReportId('')} />}
     </li>)}</ul> : <p className="invitation-empty">Todavía no invitaste a nadie. Enviá la primera invitación para compartir el screening.</p>}
   </section>;
 }

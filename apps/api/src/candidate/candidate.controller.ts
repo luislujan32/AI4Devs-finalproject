@@ -21,6 +21,8 @@ export class CandidateController {
   requestCode(@Req() req: Request, @Body() body: unknown) { return this.candidates.requestCode(req, body); }
   @Post('access/verify') @HttpCode(200)
   verify(@Req() req: Request, @Res({ passthrough: true }) res: Response, @Body() body: unknown) { return this.candidates.verify(req, res, body); }
+  @Post('access/email-link') @HttpCode(200) @Header('Cache-Control', 'no-store')
+  emailLink(@Req() req: Request, @Res({ passthrough: true }) res: Response, @Body() body: unknown) { return this.candidates.emailLink(req, res, body); }
   @Get('session') @UseGuards(CandidateGuard) @Header('Cache-Control', 'no-store')
   async session(@Req() req: CandidateRequest) {
     return { csrfToken: req.candidate.csrfToken, expiresAt: req.candidate.expiresAt,

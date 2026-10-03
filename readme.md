@@ -76,7 +76,7 @@ Las reglas de evaluación, publicación, banco y revisión humana se especifican
 2. Crea el screening, elige área y agrega preguntas propias, del banco o sugeridas por IA. Confirma puntuación, pesos, excluyentes, obligatoriedad y umbral.
 3. Publica una configuración válida. El cuestionario publicado queda inmutable; puede cerrarlo para detener nuevas invitaciones o copiarlo a un borrador nuevo.
 4. Registra el correo del candidato y obtiene un enlace individual para compartir. El nombre es opcional. Una invitación contiene un único intento; no hay importación masiva ni reintentos de evaluación en el MVP.
-5. Al abrir el enlace, el candidato solicita un código enviado al correo registrado. El enlace por sí solo no permite leer el cuestionario ni respuestas. El código comprueba acceso al buzón, no identidad civil ni titularidad exclusiva.
+5. Al abrir el enlace del correo por primera vez, el candidato accede mediante un token de un uso. El enlace que copia el recruiter requiere un código enviado al correo registrado. El identificador público por sí solo no permite leer el cuestionario ni respuestas. El código comprueba acceso al buzón, no identidad civil ni titularidad exclusiva.
 6. El candidato lee el aviso de uso de datos, responde y guarda su avance. Puede salir y retomar mediante un nuevo acceso autorizado.
 7. Revisa las respuestas y realiza el envío final. Una respuesta desfavorable nunca interrumpe el recorrido. Tras el envío no puede modificar respuestas; ve confirmación, no el informe interno.
 8. El sistema conserva el envío y genera el informe. El recruiter lo revisa y registra continuar, no continuar o solicitar aclaración. Esta última opción registra una intención; no abre otro intento ni envía mensajes automáticamente.
@@ -199,7 +199,7 @@ flowchart TD
 5. Publicar el servicio detrás de HTTPS, restringir el acceso de red a MongoDB y comprobar el inicio de sesión y la entrega de códigos.
 6. Ejecutar una prueba de humo con un screening ficticio completo. Ante un fallo de aplicación, recuperar la versión desplegada anterior; cualquier cambio posterior del modelo de datos requerirá su estrategia específica.
 
-Para desarrollo se usan MongoDB y Mailpit local; T-05 envía la invitación inicial y, después de abrir el enlace, los códigos a su API HTTP de pruebas. El correo de prueba no omite la validación del candidato: el código se obtiene del buzón de pruebas. La evaluación no depende del proveedor de IA y la creación manual sigue disponible si ese proveedor falla.
+Para desarrollo se usan MongoDB y Mailpit local; T-05 envía la invitación inicial y, después de abrir el enlace, los códigos a su API HTTP de pruebas. El correo de prueba incluye un enlace de acceso de un uso; el enlace compartible sigue requiriendo el código del buzón de pruebas. La evaluación no depende del proveedor de IA y la creación manual sigue disponible si ese proveedor falla.
 
 Hosting, proveedor SMTP y modelo de IA se concretarán al implementar según acceso disponible. Esta decisión pendiente no cambia los componentes ni el flujo definido. El MVP usa un único proceso de aplicación; no requiere microservicios, colas ni Redis.
 

@@ -47,8 +47,10 @@ export class CandidateService {
     if (candidateName === null || (candidateName && candidateName.length > 120)) throw new UnprocessableEntityException('Nombre inválido.');
     const now = Date.now();
     try {
+      const emailToken = randomBytes(32).toString('base64url');
       const row = await this.repository.createInvitation(ownerId, screeningId, {
         candidateEmail, ...(candidateName ? { candidateName } : {}), expiresAt: new Date(now + 7 * DAY), purgeAt: new Date(now + 90 * DAY),
+        emailTokenHash: this.auth.digest(`candidate-email-link:${emailToken}`),
       });
       if (!row) throw new NotFoundException('Screening publicado no encontrado.');
       const screening = await this.models.Screening.findOne({ _id: screeningId, ownerId, status: 'published' }).select('title');
@@ -56,7 +58,7 @@ export class CandidateService {
         await this.models.Invitation.deleteOne({ _id: row._id, status: 'invited', answerRevision: 0 });
         throw new ConflictException('El screening se cerró mientras se preparaba la invitación.');
       }
-      try { await sendLocalInvitation(candidateEmail, candidateName, screening.title ?? 'Screening', `${origin}/#invite=${row.publicId}`); }
+      try { await sendLocalInvitation(candidateEmail, candidateName, screening.title ?? 'Screening', `${origin}/#invite=${row.publicId}&access=${emailToken}`); }
       catch {
         await this.models.Invitation.deleteOne({ _id: row._id, status: 'invited', answerRevision: 0 });
         throw new ServiceUnavailableException('No pudimos enviar la invitación. Intentá nuevamente.');
@@ -70,6 +72,22 @@ export class CandidateService {
   private active(publicId: unknown) {
     if (typeof publicId !== 'string' || !publicIdPattern.test(publicId)) throw new NotFoundException('Invitación no disponible.');
     return this.models.Invitation.findOne({ publicId, expiresAt: { $gt: new Date() }, purgeAt: { $gt: new Date() } });
+  }
+  async emailLink(req: Request, res: Response, input: unknown) {
+    this.auth.checkLoginCsrf(req);
+    const body = record(input, ['publicId', 'token']);
+    if (typeof body.publicId !== 'string' || !publicIdPattern.test(body.publicId)
+      || typeof body.token !== 'string' || !publicIdPattern.test(body.token)) throw new UnprocessableEntityException('Enlace inválido.');
+    await this.auth.consumeLimit('candidate-email-link-ip', req.socket.remoteAddress ?? 'unknown', 50);
+    const now = new Date();
+    const row = await this.models.Invitation.findOneAndUpdate({ publicId: body.publicId,
+      'emailAccess.tokenHash': this.auth.digest(`candidate-email-link:${body.token}`),
+      'emailAccess.expiresAt': { $gt: now }, 'emailAccess.usedAt': { $exists: false },
+      expiresAt: { $gt: now }, purgeAt: { $gt: now } },
+    { $set: { 'emailAccess.usedAt': now }, $unset: { 'emailAccess.tokenHash': 1 } }, { returnDocument: 'after' });
+    if (!row) throw new UnauthorizedException('El enlace de acceso ya se usó o venció. Verificá tu correo con un código.');
+    const session = await this.auth.startCandidateSession(req, res, row._id.toString(), row.expiresAt);
+    return { status: 'authenticated', publicId: row.publicId, ...session };
   }
   async requestCode(req: Request, input: unknown) {
     this.auth.checkLoginCsrf(req);
