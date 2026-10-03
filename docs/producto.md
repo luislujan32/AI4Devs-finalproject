@@ -32,6 +32,7 @@ Una pregunta excluyente no puntuable desconocida puede dejar el resultado pendie
 ### P-04 — Publicación
 
 La publicación congela preguntas, opciones, pesos, umbral y excluyentes. No se edita el publicado. Una copia crea otro borrador con nuevos identificadores y sin invitaciones. Un candidato iniciado o enviado siempre conserva la configuración que recibió.
+El recruiter puede cerrar un publicado para impedir nuevas invitaciones sin borrar respuestas ni informes. Las invitaciones previas pueden terminarse hasta su vencimiento; el cerrado conserva configuración de solo lectura y resultados dentro de la retención. También puede copiarse como borrador nuevo.
 
 ### P-05 — Revisión
 

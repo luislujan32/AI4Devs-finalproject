@@ -2,8 +2,8 @@ openapi: 3.0.3
 info:
   title: Screeningroom — API representativa
   version: 0.1.0
-  description: 'Diseño de entrega 1: tres operaciones representativas. No es la API
-    completa ni una implementación. Se utilizan sesiones de servidor; los permisos
+  description: 'Tres operaciones representativas del producto implementado; no es la API
+    completa. Se utilizan sesiones de servidor; los permisos
     dependen del principal y del ownership, no solo de poseer una cookie.'
 servers:
 - url: /
@@ -63,6 +63,8 @@ paths:
           $ref: '#/components/responses/RateLimited'
   /api/candidate/attempt/submit:
     post:
+      security:
+      - candidateSessionCookie: []
       operationId: submitCandidateAttempt
       tags:
       - Candidate
@@ -149,9 +151,13 @@ components:
     sessionCookie:
       type: apiKey
       in: cookie
-      name: sr_session
-      description: Cookie HttpOnly de sesión de servidor. Secure en HTTPS y SameSite=Lax.
-        El rol y alcance se comprueban en el servidor.
+      name: sr_recruiter_session
+      description: Cookie HttpOnly de recruiter. El ownership se comprueba en el servidor.
+    candidateSessionCookie:
+      type: apiKey
+      in: cookie
+      name: sr_candidate_session
+      description: Cookie HttpOnly limitada a una invitación.
   schemas:
     ExpectedRevision:
       type: object
@@ -309,6 +315,21 @@ components:
       required:
       - invitationId
       - screeningId
+      - report
+      - review
+      properties:
+        invitationId:
+          type: string
+        screeningId:
+          type: string
+        report:
+          $ref: '#/components/schemas/CalculatedReport'
+        review:
+          $ref: '#/components/schemas/Review'
+    CalculatedReport:
+      type: object
+      additionalProperties: false
+      required:
       - algorithmVersion
       - outcome
       - reason
@@ -317,12 +338,7 @@ components:
       - incomplete
       - criteria
       - generatedAt
-      - review
       properties:
-        invitationId:
-          type: string
-        screeningId:
-          type: string
         algorithmVersion:
           type: string
           enum:
@@ -362,8 +378,6 @@ components:
         generatedAt:
           type: string
           format: date-time
-        review:
-          $ref: '#/components/schemas/Review'
     Error:
       type: object
       additionalProperties: false

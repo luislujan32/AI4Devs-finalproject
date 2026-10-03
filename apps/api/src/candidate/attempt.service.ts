@@ -39,7 +39,8 @@ export class AttemptService {
     const invitation = await this.models.Invitation.findOne({ _id: context.invitationId,
       expiresAt: { $gt: now }, purgeAt: { $gt: now } });
     if (!invitation) throw new NotFoundException('Invitación no disponible.');
-    const screening = await this.models.Screening.findOne({ _id: invitation.screeningId, ownerId: invitation.ownerId, status: 'published' });
+    const screening = await this.models.Screening.findOne({ _id: invitation.screeningId, ownerId: invitation.ownerId,
+      status: { $in: ['published', 'closed'] } });
     if (!screening) throw new NotFoundException('Screening no disponible.');
     const questions: EvaluationQuestion[] = screening.questions.map((question) => ({
       id: question.id, criterion: question.criterion ?? '', text: question.text ?? '', type: question.type as EvaluationQuestion['type'],

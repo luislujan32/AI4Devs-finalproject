@@ -6,7 +6,9 @@ import { CandidateGuard } from './candidate.guard.js';
 import { CandidateService } from './candidate.service.js';
 import { AttemptController } from './attempt.controller.js';
 import { AttemptService } from './attempt.service.js';
+import { ResultsController } from './results.controller.js';
+import { ResultsService } from './results.service.js';
 
-@Module({ imports: [AuthModule, PersistenceModule], providers: [CandidateService, CandidateGuard, AttemptService],
-  controllers: [CandidateController, InvitationController, AttemptController] })
+@Module({ imports: [AuthModule, PersistenceModule], providers: [CandidateService, CandidateGuard, AttemptService, ResultsService],
+  controllers: [CandidateController, InvitationController, AttemptController, ResultsController] })
 export class CandidateModule {}

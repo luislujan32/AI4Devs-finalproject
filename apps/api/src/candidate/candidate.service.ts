@@ -31,7 +31,8 @@ export class CandidateService {
   }
   async list(ownerId: string, screeningId: string) {
     if (!isObjectIdOrHexString(screeningId) || !await this.models.Screening.exists({ _id: screeningId, ownerId })) throw new NotFoundException('Screening no encontrado.');
-    const rows = await this.models.Invitation.find({ screeningId, ownerId }).sort({ createdAt: -1 }).limit(100).lean();
+    const rows = await this.models.Invitation.find({ screeningId, ownerId, purgeAt: { $gt: new Date() } })
+      .sort({ createdAt: -1 }).limit(100).lean();
     return { invitations: rows.map((row) => this.invitationView(row)) };
   }
   async create(ownerId: string, screeningId: string, input: unknown, origin: string) {
@@ -51,7 +52,11 @@ export class CandidateService {
       });
       if (!row) throw new NotFoundException('Screening publicado no encontrado.');
       const screening = await this.models.Screening.findOne({ _id: screeningId, ownerId, status: 'published' }).select('title');
-      try { await sendLocalInvitation(candidateEmail, candidateName, screening?.title ?? 'Screening', `${origin}/#invite=${row.publicId}`); }
+      if (!screening) {
+        await this.models.Invitation.deleteOne({ _id: row._id, status: 'invited', answerRevision: 0 });
+        throw new ConflictException('El screening se cerró mientras se preparaba la invitación.');
+      }
+      try { await sendLocalInvitation(candidateEmail, candidateName, screening.title ?? 'Screening', `${origin}/#invite=${row.publicId}`); }
       catch {
         await this.models.Invitation.deleteOne({ _id: row._id, status: 'invited', answerRevision: 0 });
         throw new ServiceUnavailableException('No pudimos enviar la invitación. Intentá nuevamente.');

@@ -2,7 +2,7 @@
 
 [README](../readme.md) · [Contrato P-01 a P-08](producto.md) · [Acceso y demo](acceso.md).
 
-Crear/abrir, guardar o eliminar un borrador, configurar preguntas manuales, publicar y copiar un publicado están implementados y verificados localmente. El banco se consulta desde MongoDB y permite copia aislada. Luis aprobó las [quince preguntas iniciales](banco-revision.md) el 28/09/2026; se cargaron en la demo local. [T-05](candidatos-acceso.md) agrega invitaciones y [T-07/T-06](candidatos-formulario.md) el cuestionario y evaluación; la consulta de informes por el recruiter sigue pendiente en T-08.
+Crear/abrir, guardar o eliminar un borrador, configurar preguntas manuales, publicar y copiar un publicado están implementados y verificados localmente. El banco se consulta desde MongoDB y permite copia aislada. Luis aprobó las [quince preguntas iniciales](banco-revision.md) el 28/09/2026; se cargaron en la demo local. [T-05](candidatos-acceso.md) agrega invitaciones, [T-07/T-06](candidatos-formulario.md) el cuestionario y evaluación, y [T-08](resultados-recruiter.md) los informes, la revisión y el cierre de SC.
 
 ## Recorrido
 
@@ -14,7 +14,7 @@ Guardar permite un borrador incompleto, con validación de tipos/límites/identi
 
 En Revisión se leen preguntas, opciones, valores y reglas junto al umbral. Guardar antes de publicar. Marcar la confirmación de preguntas, evaluación y umbral; el servidor valida las reglas independientemente del checkbox/UI. Una configuración inválida permanece en borrador; su resumen de problemas enlaza y enfoca los campos reconocibles. Publicación congela metadata y configuración, registra fecha y aumenta revisión en una sola escritura condicionada. La pantalla publicada es de lectura; «Crear copia como borrador» conserva contenido/reglas, crea ids nuevos, remapea opciones aceptadas y no copia invitaciones ni fecha publicada. El recruiter vuelve a revisar la copia antes de publicar.
 
-La navegación usa un fragmento #screening=id, para recuperar desde API el screening al recargar. En un publicado, Configuración y Postulantes son áreas separadas; los tres pasos de autoría permanecen dentro de Configuración. Los borradores muestran «Eliminar borrador» con confirmación; un publicado no se borra por esta ruta. No guarda configuración, contraseña o token en almacenamiento persistente del navegador. Listado: hasta cien entradas propias; paginación pendiente.
+La navegación usa un fragmento #screening=id, para recuperar desde API el screening al recargar. En un publicado o cerrado, Configuración y Postulantes son áreas separadas; los tres pasos de autoría permanecen dentro de Configuración. Los borradores muestran «Eliminar borrador» con confirmación; un publicado se puede cerrar sin borrar invitaciones/resultados. No guarda configuración, contraseña o token en almacenamiento persistente del navegador. Listado: hasta cien entradas propias; paginación pendiente.
 
 ## Rutas y frontera de escritura
 
@@ -27,7 +27,8 @@ Todas llevan /api y guard de recruiter T-02. Mutaciones requieren Origin permiti
 | PUT /screenings/:id | Reemplazo completo de metadata/configuración, con expectedRevision; campos omitidos se limpian; devuelve documento actualizado |
 | DELETE /screenings/:id | `{expectedRevision}`; elimina solo borrador propio con revisión vigente; 204 sin cuerpo |
 | POST /screenings/:id/publish | expectedRevision y confirmConfiguration=true; devuelve solo id/status/revision/publishedAt, conforme al recibo OpenAPI |
-| POST /screenings/:id/copy | Body vacío; publicado propio → 201 con nuevo borrador |
+| POST /screenings/:id/close | expectedRevision y confirmClosure=true; publicado propio → cerrado con closedAt, sin nuevas invitaciones |
+| POST /screenings/:id/copy | Body vacío; publicado o cerrado propio → 201 con nuevo borrador |
 | GET /question-bank?area=... | Catálogo activo, filtro exacto por área opcional, hasta cien entradas |
 | POST /screenings/:id/questions/from-bank | expectedRevision y bankQuestionId; copia a borrador propio con ids nuevos y sin reglas preaprobadas |
 

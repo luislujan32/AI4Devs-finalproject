@@ -4,6 +4,8 @@
 
 T-05 permite crear invitaciones individuales para un screening publicado propio y verificar el correo ficticio del postulante. El acceso ya funciona con MongoDB y Mailpit locales. La rama dependiente `feature/candidate-attempt-T07-LL` añade [cuestionario, guardado, revisión y envío](candidatos-formulario.md); un enlace por sí solo nunca muestra preguntas.
 
+El [cierre posterior de un SC](resultados-recruiter.md) impide nuevas invitaciones, pero las ya enviadas conservan su plazo original de siete días y pueden terminarse.
+
 ## Recorrido local
 
 1. Iniciar MongoDB y Mailpit con `npm run infra:up`, configurar `.env` y ejecutar la app según [desarrollo](desarrollo.md). Mailpit se abre en `http://127.0.0.1:8026`.

@@ -76,9 +76,20 @@ export class ScreeningsService {
     if (!updated) throw new ConflictException('El screening cambió. Recargá antes de continuar.');
     return { id: updated._id.toString(), status: updated.status, revision: updated.revision, publishedAt: updated.publishedAt };
   }
+  async close(ownerId: string, id: string, body: unknown) {
+    await this.owned(ownerId, id);
+    const input = object(body, ['expectedRevision', 'confirmClosure']);
+    const revision = expectedRevision(input.expectedRevision);
+    if (input.confirmClosure !== true) invalid('Confirmá el cierre del screening.');
+    const closedAt = new Date();
+    const updated = await this.models.Screening.findOneAndUpdate({ _id: id, ownerId, status: 'published', revision },
+      { $set: { status: 'closed', closedAt }, $inc: { revision: 1 } }, { returnDocument: 'after', runValidators: true });
+    if (!updated) throw new ConflictException('El screening cambió o ya está cerrado. Recargá antes de continuar.');
+    return { id: updated._id.toString(), status: updated.status, revision: updated.revision, closedAt: updated.closedAt };
+  }
   async copy(ownerId: string, id: string, body: unknown) {
     const source = await this.owned(ownerId, id); object(body ?? {}, []);
-    if (source.status !== 'published') throw new ConflictException('Solo se copian screenings publicados.');
+    if (!['published', 'closed'].includes(source.status)) throw new ConflictException('Solo se copian screenings publicados o cerrados.');
     const questions = source.questions.map((q) => {
       const ids = new Map(q.options.map((o) => [o.id, randomUUID()]));
       return { ...q.toObject(), id: randomUUID(), options: q.options.map((o) => ({ ...o.toObject(), id: ids.get(o.id)! })),
