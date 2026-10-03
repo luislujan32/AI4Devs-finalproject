@@ -263,3 +263,11 @@ Por cada fase se añadirán las herramientas y modelos identificables, hasta tre
 **Correcciones y límites:** se identificó que ambos principales usaban una cookie `sr_session`: verificar a un candidato en el mismo navegador podía desplazar al recruiter y aparentar un vencimiento prematuro. El informe ya se guarda en MongoDB pero su vista y revisión humana siguen en T-08. Mailpit entrega solo dentro de la demo con `example.test`; no se afirma correo real. La duración futura de la sesión y archivado de publicados requieren decisión humana. No se usaron subagentes ni datos reales.
 
 **Evidencia local:** `npm run check` y pruebas de screenings, auth, candidate y attempt pasaron con MongoDB/Mailpit locales. Se comprobó por navegador el acceso público del candidato a un ancho efectivo de 375 px sin desbordamiento horizontal; la revisión del editor autenticado a ese ancho y el recorrido completo posterior a estos cambios siguen pendientes. No se atribuye un modelo exacto al trabajo sin evidencia verificable.
+
+## Entrega 2 — Workflow 12: segunda revisión y prioridades
+
+**Entrada humana:** Luis validó la mejora general mediante seis capturas y propuso estados más visibles, revisar el texto del correo, evitar código al abrir desde el email, mejorar el recibo y reconsiderar la copia del enlace tras recibir respuestas. Solicitó conocer el estado real del proyecto y los próximos pasos.
+
+**Análisis con IA:** contrastar cada observación con la rama implementada y el backlog; investigar documentación primaria sobre etiquetas de estado, confirmaciones y tokens de enlace. Se documentó la diferencia entre el enlace actual (idéntico en email y botón copiar) y la propuesta de dos credenciales con acceso diferente. Se priorizó T-08 porque el informe ya se persiste pero aún no es visible para el recruiter. No se equiparó un correo más un código al mismo buzón con dos factores independientes.
+
+**Resultado y límite:** se actualizaron [la revisión UX](docs/ux-feedback-2026-10-03.md) y [el backlog](docs/backlog.md) como propuestas, sin cambiar el acceso ni presentar funcionalidades futuras como terminadas. Se mantienen datos ficticios; no se usaron subagentes ni datos reales. El modelo exacto del turno no se verificó en la interfaz.

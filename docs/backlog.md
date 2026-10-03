@@ -59,3 +59,12 @@ Luis aprobó la primera mejora del editor y pidió aplicar las mismas técnicas 
 **Criterio de terminado por ticket:** criterios observables satisfechos; control de acceso aplicable; pruebas de riesgos del cambio; tipos/lint sin errores; documentación y registro de IA actualizados cuando cambie el contrato; sin secretos ni datos reales en fixtures.
 
 **Hitos académicos:** entrega 1, 24/09, documentación; entrega 2, 22/10, flujo principal operativo con web/API/BD; final, 12/11, funcionalidades, tests, evidencia y registro de IA.
+
+## Próximo tramo priorizado — revisión del 03/10/2026
+
+1. **T-08, cerrar el recorrido del recruiter:** mostrar respuestas e informe de cada invitación enviada, con estados claros y una revisión humana separada del cálculo. En la fila con respuestas recibidas, reemplazar «Copiar enlace» por la acción de consulta. Es la principal brecha funcional del flujo completo.
+2. **Integrar y probar entrega 2:** incorporar de forma ordenada las ramas dependientes T-05, T-06/T-07 y UX posterior en `feature/entrega-2-LL` del fork; ejecutar el recorrido recruiter → correo → candidato → informe con datos ficticios, más móvil de 375 px y fallos recuperables. Verificar CI sobre la rama integrada antes del formulario académico.
+3. **T-04 y T-09:** completar sugerencias de preguntas con revisión humana; después cerrar avisos, retención y borrado operativo antes de usar datos reales. La decisión sobre archivar screenings publicados con invitaciones sigue abierta.
+4. **T-10 para entrega final:** pruebas E2E, despliegue, correo real solo cuando estén definidos proveedor/seguridad/privacidad, `prompts.md` y evidencia de funcionamiento.
+
+La [segunda revisión UX](ux-feedback-2026-10-03.md#segunda-prueba-de-luis-propuestas-posteriores-aún-no-implementadas) conserva propuestas de badges, correo, enlace de un uso y confirmación. No se mezclan con funcionalidades ya implementadas. La duración de sesión más larga requiere una decisión tras probar de nuevo la corrección de cookies independientes.
