@@ -37,6 +37,7 @@ El recruiter puede cerrar un publicado para impedir nuevas invitaciones sin borr
 ### P-05 — Revisión
 
 Resultado calculado y decisión humana son campos distintos. Se permite continuar pese a un resultado negativo o pendiente, con justificación obligatoria. La revisión vigente conserva autor, fecha y motivo; al editarla se reemplaza esa revisión, no el informe. El historial de revisiones queda fuera del MVP.
+En esta versión solo se puede registrar **continuar** o **no continuar**. Es una decisión interna: no cambia una etapa externa ni envía mensajes al postulante. La opción anterior «Solicitar aclaración» solo guardaba una etiqueta, por lo que se retiró de nuevas revisiones; sus registros históricos siguen legibles y se pueden reemplazar. Una solicitud real requerirá un flujo de comunicación y respuesta separado.
 
 ### P-06 — Banco inicial
 

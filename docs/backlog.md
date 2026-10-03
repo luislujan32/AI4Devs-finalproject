@@ -16,11 +16,13 @@
 
 **Como** recruiter, **quiero** registrar mi decisión después de leer el informe, **para** conservar el criterio aplicado al candidato.
 
-- **Dado** un informe, **cuando** registro una revisión, **entonces** elijo continuar, no continuar o solicitar aclaración y se guardan autor y fecha.
+- **Dado** un informe, **cuando** registro una revisión, **entonces** elijo continuar o no continuar y se guardan autor y fecha; el sistema no afirma que contactó al postulante ni que lo movió de etapa.
 - **Dado** un resultado distinto de «Supera los criterios», **cuando** decido continuar, **entonces** debo indicar el motivo.
 - **Dada** una revisión, **cuando** se guarda o modifica, **entonces** el informe calculado permanece intacto; se conserva la revisión vigente.
 - **Dada** una revisión modificada desde otra pestaña, **cuando** guardo una versión anterior, **entonces** recibo conflicto y debo recargar.
 - **Dada** una decisión guardada, **cuando** se consulta, **entonces** no se interpreta como una acción ya ejecutada en otro sistema.
+- **Dada** una decisión guardada, **cuando** vuelvo al informe o a Postulantes, **entonces** veo la decisión vigente sin reabrir el formulario; puedo elegir «Cambiar decisión».
+- **Dado** un antiguo registro «Solicitar aclaración», **cuando** lo consulto, **entonces** se explica que fue un pendiente interno sin mensaje enviado y puedo reemplazarlo por una decisión vigente.
 
 ## Tickets y dependencias
 
@@ -64,7 +66,10 @@ Luis aprobó la primera mejora del editor y pidió aplicar las mismas técnicas 
 
 1. **T-08 implementado en `feature/recruiter-results-T08-LL`:** el recruiter consulta respuestas/informe, registra revisión humana y puede cerrar un SC publicado sin perder resultados. El cierre impide nuevas invitaciones; las existentes conservan su plazo. [Contrato y evidencia local](resultados-recruiter.md).
 2. **Integrar y probar entrega 2:** incorporar de forma ordenada las ramas dependientes T-05, T-06/T-07, UX posterior y T-08 en `feature/entrega-2-LL` del fork; ejecutar el recorrido recruiter → correo → candidato → informe → revisión → cierre con datos ficticios, más móvil de 375 px y fallos recuperables. Verificar CI sobre la rama integrada antes del formulario académico.
+
+La nueva [definición de producto y UX para resultados y revisión](ux-resultados-revision.md) cierra la brecha de interacción que dejó P-05: estados independientes, explicación del cálculo y lectura/edición de la decisión. Antes de ampliar el MVP a muchos postulantes se necesita paginar el listado; un flujo real de aclaración, historial completo y movimientos de etapa requieren tickets propios.
+El [criterio transversal de experiencia](experiencia-producto.md) queda como pauta para las próximas capacidades, para que el diseño de estados, confirmaciones, retorno y errores no dependa de una revisión minuciosa de Luis después de cada cambio.
 3. **T-04 y T-09:** completar sugerencias de preguntas con revisión humana; después cerrar avisos, retención y borrado operativo antes de usar datos reales. El cierre de SC ya está implementado; el borrado anticipado de invitaciones y datos sigue pendiente.
 4. **T-10 para entrega final:** pruebas E2E, despliegue, correo real solo cuando estén definidos proveedor/seguridad/privacidad, `prompts.md` y evidencia de funcionamiento.
 
-La [segunda revisión UX](ux-feedback-2026-10-03.md#segunda-prueba-de-luis-mejoras-aplicadas-y-propuestas-pendientes) originó el acceso directo de un uso desde el correo, el informe como vista propia, el guardado automático y reglas más claras de publicación en `feature/review-feedback-LL`. Siguen pendientes los ajustes finos del texto del correo y del recibo, y la verificación móvil a 375 px. La duración de sesión más larga requiere una decisión tras probar de nuevo la corrección de cookies independientes.
+La [segunda revisión UX](ux-feedback-2026-10-03.md#segunda-prueba-de-luis-mejoras-aplicadas-y-propuestas-pendientes) originó el acceso directo de un uso desde el correo, el informe como vista propia, el guardado automático y reglas más claras de publicación en `feature/review-feedback-LL`. Siguen pendientes los ajustes finos del texto del correo y del recibo, y la verificación móvil a 375 px del editor autenticado y del recorrido completo integrado. La lista y el informe del recruiter sí se comprobaron a ese ancho en la [revisión posterior](ux-resultados-revision.md). La duración de sesión más larga requiere una decisión tras probar de nuevo la corrección de cookies independientes.

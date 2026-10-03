@@ -205,8 +205,14 @@ test('la revisión humana exige motivo para continuar contra el resultado y prot
   const first = await result(await request(`/invitations/${invitation.id}/report`), 200);
   assert.equal(first.review.decision, 'continue'); assert.equal(first.review.revision, 1);
   assert.equal(first.report.outcome, 'not_meets');
-  const second = await result(await request(path, accounts[0], 'PUT', { expectedRevision: 1, decision: 'clarify', reason: '' }), 200);
-  assert.equal(second.review.revision, 2); assert.equal(second.review.decision, 'clarify');
+  const withDecision = await result(await request(`/screenings/${draft.id}/invitations`), 200);
+  const listedReview = withDecision.invitations.find((item) => item.id === invitation.id);
+  assert.deepEqual(listedReview.result, { outcome: 'not_meets', score: 0, threshold: 70 });
+  assert.ok(Date.parse(listedReview.submittedAt));
+  assert.equal(listedReview.review.decision, 'continue'); assert.ok(Date.parse(listedReview.review.reviewedAt));
+  assert.equal((await request(path, accounts[0], 'PUT', { expectedRevision: 1, decision: 'clarify', reason: '' })).status, 422);
+  const second = await result(await request(path, accounts[0], 'PUT', { expectedRevision: 1, decision: 'do_not_continue', reason: '' }), 200);
+  assert.equal(second.review.revision, 2); assert.equal(second.review.decision, 'do_not_continue');
   const afterReview = await result(await request(`/invitations/${invitation.id}/report`), 200);
   assert.equal(afterReview.report.outcome, 'not_meets'); assert.equal(afterReview.review.revision, 2);
   const pending = await models.Invitation.create({ ownerId: accounts[0].user.id, screeningId: draft.id,

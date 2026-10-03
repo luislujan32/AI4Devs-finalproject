@@ -31,6 +31,8 @@ Distinguir contrato aprobado, comportamiento existente verificado, propuesta y p
 
 La instrucción del usuario para avanzar autoriza el trabajo acordado. Preservar cambios ajenos y evitar mutaciones destructivas. No agregar requisitos académicos, herramientas o abstracciones que no aporten al cambio. Buscar equivalentes antes de crear helpers; en este proyecto nuevo no exigir precedentes inexistentes.
 
+Para cambios de flujo, aplicar [el criterio de experiencia del producto](docs/experiencia-producto.md): definir efecto real y estados visibles antes del código, recorrer acción → confirmación → lista → reapertura → edición/cancelación con datos ficticios, y comprobar móvil/accesibilidad. Resolver autónomamente decisiones pequeñas de UX/UI; consultar a Luis solo elecciones estratégicas de alcance o comunicación externa.
+
 ## Reglas del producto
 
 Preservar P-01 a P-08. Scoring determinista; texto libre sin puntuación ni exclusión por IA; desconocidos no equivalen a cero. Configuración publicada inmutable. Resultado y revisión humana independientes. Envío único con concurrencia controlada.

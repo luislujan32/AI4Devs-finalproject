@@ -2,7 +2,9 @@
 
 [README](../README.md) · [Reglas P-01 a P-08](producto.md) · [Backlog](backlog.md).
 
-En **Postulantes**, una fila con respuestas enviadas ofrece **Ver informe** en lugar de copiar el enlace. El informe reemplaza la lista mientras se consulta y ofrece una sola acción para volver. La vista presenta el resultado calculado, puntaje o cálculo pendiente, umbral, evidencia por criterio y requisitos excluyentes. La decisión humana se guarda en una sección separada; no recalcula el informe ni comunica una decisión al candidato. Los estados Por responder, En curso y Respuestas recibidas tienen estilos más visibles.
+En **Postulantes**, una fila con respuestas enviadas ofrece **Ver informe** en lugar de copiar el enlace. El informe reemplaza la lista mientras se consulta y ofrece una sola acción para volver. Cada fila separa tres datos: recepción de respuestas, resultado de criterios y decisión humana. La vista presenta el resultado calculado, puntaje o cálculo pendiente, umbral, evidencia por criterio y requisitos excluyentes. Destaca los excluyentes incumplidos y los datos insuficientes; cuando el total queda bajo el umbral, muestra los valores puntuados más bajos sin llamarlos «preguntas fallidas», porque el umbral solo se aplica al promedio global. La decisión humana se guarda y se muestra en una sección separada; no recalcula el informe ni comunica una decisión al candidato. Los estados conservan texto además de acentos semánticos sobrios.
+
+Después de registrar o cambiar la decisión, el formulario se cierra y aparece un resumen con decisión, motivo y fecha. Al reabrir el informe se presenta ese resumen; «Cambiar decisión» abre el formulario prellenado. «Solicitar aclaración» se retiró de nuevas revisiones porque únicamente guardaba una etiqueta. Los registros anteriores se muestran como pendientes internos y aclaran que no se envió ninguna solicitud.
 
 El recruiter puede cerrar un SC publicado tras confirmar el efecto. El cierre registra `closedAt` y revisión nueva, congela su configuración e impide nuevas invitaciones. Las invitaciones ya enviadas pueden completarse hasta el vencimiento individual de siete días. El SC cerrado conserva acceso de solo lectura a configuración, postulantes, informes y revisiones, y admite crear una nueva versión como borrador vinculado al original. El enlace de un envío completado deja de mostrarse como acción de copia. Cerrar no elimina datos ni revoca enlaces anteriores.
 
@@ -12,7 +14,7 @@ La revisión visual del 03/10 con cuenta ficticia aislada confirmó apertura del
 | --- | --- |
 | `POST /api/screenings/:id/close` | `{expectedRevision, confirmClosure:true}`; cierre atómico de un publicado propio, 409 ante revisión obsoleta o estado incorrecto |
 | `GET /api/invitations/:id/report` | Informe y revisión vigente de una invitación enviada propia; 409 antes del envío y 404 si es ajena o salió de retención |
-| `PUT /api/invitations/:id/review` | `{expectedRevision, decision, reason}`; decisiones `continue`, `do_not_continue`, `clarify`; motivo obligatorio al continuar con informe negativo o pendiente |
+| `PUT /api/invitations/:id/review` | `{expectedRevision, decision, reason}`; nuevas decisiones `continue` o `do_not_continue`; motivo obligatorio al continuar con informe negativo o pendiente. `clarify` histórico sigue legible, pero no se acepta en nuevas escrituras |
 
 `expiresAt` limita el enlace y la sesión del candidato; no corta la consulta del informe por el recruiter. `purgeAt` limita resultados y revisiones y la eliminación TTL está configurada a 90 días desde la invitación. La revisión guarda autor, fecha y versión. Solo se conserva la última, conforme al alcance MVP. Las escrituras aplican sesión recruiter, propiedad, origen, CSRF y comparación de revisión; una edición simultánea devuelve 409.
 
