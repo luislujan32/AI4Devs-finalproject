@@ -37,6 +37,14 @@ export class ScreeningsService {
     for (const q of input.questions) if (q.bankQuestionId && !row.questions.some((prior) => prior.id === q.id && prior.bankQuestionId?.toString() === q.bankQuestionId)) invalid('La referencia al banco no corresponde a una copia existente.');
     return this.replace(ownerId, id, input.expectedRevision!, input);
   }
+  async remove(ownerId: string, id: string, body: unknown) {
+    const row = await this.owned(ownerId, id);
+    const input = object(body, ['expectedRevision']);
+    const revision = expectedRevision(input.expectedRevision);
+    if (row.status !== 'draft') throw new ConflictException('Solo se pueden eliminar borradores.');
+    const deleted = await this.models.Screening.findOneAndDelete({ _id: id, ownerId, status: 'draft', revision });
+    if (!deleted) throw new ConflictException('El borrador cambió. Recargá antes de eliminarlo.');
+  }
   private async replace(ownerId: string, id: string, revision: number, input: DraftInput) {
     const filter = { _id: id, ownerId, status: 'draft' as const, revision };
     const row = await this.models.Screening.findOne(filter);

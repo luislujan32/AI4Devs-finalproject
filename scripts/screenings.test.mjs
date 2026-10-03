@@ -50,7 +50,7 @@ before(async () => {
     const response = await fetch(`${origin}/api/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json', Origin: origin,
       Cookie: csrf.headers.getSetCookie()[0].split(';')[0], 'X-CSRF-Token': token }, body: JSON.stringify({ email: demoEmails[n], password: passwords[n] }) });
     const data = await result(response, 200);
-    accounts.push({ ...data, cookie: response.headers.getSetCookie().find((value) => value.startsWith('sr_session=')).split(';')[0] });
+    accounts.push({ ...data, cookie: response.headers.getSetCookie().find((value) => value.startsWith('sr_recruiter_session=')).split(';')[0] });
   }
   temporary = await mkdtemp(join(tmpdir(), 'screeningroom-catalog-test-'));
 });
@@ -66,6 +66,19 @@ test('crear y guardar borrador incompleto conserva identidad/metadata al releer'
   assert.equal(updated.revision, 1); assert.equal(updated.questions[0].scored, false); assert.equal('threshold' in updated, false);
   const reloaded = await result(await request(`/screenings/${draft.id}`), 200); assert.deepEqual(reloaded, updated);
   assert.equal((await publish(draft.id, 1)).status, 422); assert.equal((await models.Screening.findById(draft.id)).status, 'draft');
+});
+test('eliminar borrador requiere propiedad y revisión actual; un publicado se conserva', async () => {
+  const draft = await create();
+  const path = `/screenings/${draft.id}`;
+  assert.equal((await request(path, accounts[1], 'DELETE', { expectedRevision: 0 })).status, 404);
+  assert.equal((await request(path, accounts[0], 'DELETE', { expectedRevision: 1 })).status, 409);
+  assert.equal((await request(path, accounts[0], 'DELETE', { expectedRevision: 0 }, { 'X-CSRF-Token': '' })).status, 403);
+  assert.equal((await request(path, accounts[0], 'DELETE', { expectedRevision: 0 })).status, 204);
+  assert.equal((await request(path)).status, 404);
+  const published = await create(valid());
+  await result(await publish(published.id), 200);
+  assert.equal((await request(`/screenings/${published.id}`, accounts[0], 'DELETE', { expectedRevision: 1 })).status, 409);
+  assert.ok(await models.Screening.findById(published.id));
 });
 test('input no se coacciona y campos de propietario/estado/revisión no se pueden falsificar', async () => {
   const draft = await create();

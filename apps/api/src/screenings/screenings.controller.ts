@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Header, HttpCode, Param, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Header, HttpCode, Param, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
 import { RecruiterGuard, type RecruiterRequest } from '../auth/recruiter.guard.js';
 import { ScreeningsService } from './screenings.service.js';
 
@@ -11,6 +11,8 @@ export class ScreeningsController {
   detail(@Req() req: RecruiterRequest, @Param('id') id: string) { return this.screenings.detail(req.auth.user.id, id); }
   @Post() create(@Req() req: RecruiterRequest, @Body() body: unknown) { return this.screenings.create(req.auth.user.id, body); }
   @Put(':id') save(@Req() req: RecruiterRequest, @Param('id') id: string, @Body() body: unknown) { return this.screenings.save(req.auth.user.id, id, body); }
+  @Delete(':id') @HttpCode(204)
+  remove(@Req() req: RecruiterRequest, @Param('id') id: string, @Body() body: unknown) { return this.screenings.remove(req.auth.user.id, id, body); }
   @Post(':id/publish') @HttpCode(200)
   publish(@Req() req: RecruiterRequest, @Param('id') id: string, @Body() body: unknown) { return this.screenings.publish(req.auth.user.id, id, body); }
   @Post(':id/copy') copy(@Req() req: RecruiterRequest, @Param('id') id: string, @Body() body: unknown) { return this.screenings.copy(req.auth.user.id, id, body); }

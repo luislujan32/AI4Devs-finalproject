@@ -6,7 +6,7 @@ import { isObjectIdOrHexString, type Connection } from 'mongoose';
 import { AuthService } from '../auth/auth.service.js';
 import { domainModels } from '../persistence/models.js';
 import { PersistenceRepository } from '../persistence/persistence.repository.js';
-import { sendLocalCode } from './local-mail.js';
+import { sendLocalCode, sendLocalInvitation } from './local-mail.js';
 
 const DAY = 86400000;
 const HOUR = 3600000;
@@ -34,8 +34,9 @@ export class CandidateService {
     const rows = await this.models.Invitation.find({ screeningId, ownerId }).sort({ createdAt: -1 }).limit(100).lean();
     return { invitations: rows.map((row) => this.invitationView(row)) };
   }
-  async create(ownerId: string, screeningId: string, input: unknown) {
+  async create(ownerId: string, screeningId: string, input: unknown, origin: string) {
     if (!isObjectIdOrHexString(screeningId)) throw new NotFoundException('Screening no encontrado.');
+    if (!origin || new URL(origin).origin !== origin) throw new UnprocessableEntityException('Origen inválido.');
     const body = record(input, ['candidateEmail', 'candidateName']);
     const candidateEmail = typeof body.candidateEmail === 'string' ? body.candidateEmail.trim().toLowerCase() : '';
     if (candidateEmail.length > 254 || !/^[^\s@]+@(?:[^\s@.]+\.)*example\.test$/.test(candidateEmail)) {
@@ -49,7 +50,13 @@ export class CandidateService {
         candidateEmail, ...(candidateName ? { candidateName } : {}), expiresAt: new Date(now + 7 * DAY), purgeAt: new Date(now + 90 * DAY),
       });
       if (!row) throw new NotFoundException('Screening publicado no encontrado.');
-      return this.invitationView(row);
+      const screening = await this.models.Screening.findOne({ _id: screeningId, ownerId, status: 'published' }).select('title');
+      try { await sendLocalInvitation(candidateEmail, candidateName, screening?.title ?? 'Screening', `${origin}/#invite=${row.publicId}`); }
+      catch {
+        await this.models.Invitation.deleteOne({ _id: row._id, status: 'invited', answerRevision: 0 });
+        throw new ServiceUnavailableException('No pudimos enviar la invitación. Intentá nuevamente.');
+      }
+      return { ...this.invitationView(row), emailSent: true };
     } catch (error) {
       if (error && typeof error === 'object' && 'code' in error && error.code === 11000) throw new ConflictException('Ya existe una invitación para ese correo.');
       throw error;

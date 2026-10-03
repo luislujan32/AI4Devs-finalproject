@@ -62,31 +62,36 @@ export function CandidateQuestionnaire({ session, onLogout }: { session: Candida
     });
     setNotice(''); setConfirmed(false);
   }
+  async function persistDraft(current: Attempt, currentAnswers: Answer[]) {
+      const response = await fetch('/api/candidate/attempt/answers', { method: 'PUT', cache: 'no-store',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': session.csrfToken },
+        body: JSON.stringify({ expectedRevision: current.answerRevision, answers: currentAnswers }) });
+      if (!response.ok) throw new Error(errorMessage(response.status, 'No pudimos guardar. Tus cambios siguen visibles.'));
+      const data = await response.json() as { status: Attempt['status']; answerRevision: number; answers: Answer[] };
+      setAttempt((prior) => prior ? { ...prior, status: data.status, answerRevision: data.answerRevision, answers: data.answers } : prior);
+      setAnswers(data.answers); setNotice('Respuestas guardadas.');
+      return data.answerRevision;
+  }
   async function save() {
     if (!attempt || !dirty) return;
     setBusy(true); setError(''); setNotice('');
     try {
-      const response = await fetch('/api/candidate/attempt/answers', { method: 'PUT', cache: 'no-store',
-        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': session.csrfToken },
-        body: JSON.stringify({ expectedRevision: attempt.answerRevision, answers }) });
-      if (!response.ok) throw new Error(errorMessage(response.status, 'No pudimos guardar. Tus cambios siguen visibles.'));
-      const data = await response.json() as { status: Attempt['status']; answerRevision: number; answers: Answer[] };
-      setAttempt({ ...attempt, status: data.status, answerRevision: data.answerRevision, answers: data.answers });
-      setAnswers(data.answers); setNotice('Respuestas guardadas.');
+      await persistDraft(attempt, answers);
     } catch (reason) { setError(reason instanceof Error ? reason.message : 'No pudimos conectar.'); }
     finally { setBusy(false); }
   }
   async function submit() {
-    if (!attempt || dirty || requiredMissing.length || !confirmed) return;
+    if (!attempt || requiredMissing.length || !confirmed) return;
     setBusy(true); setError(''); setNotice('');
     try {
+      const revision = dirty ? await persistDraft(attempt, answers) : attempt.answerRevision;
       const response = await fetch('/api/candidate/attempt/submit', { method: 'POST', cache: 'no-store',
         headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': session.csrfToken },
-        body: JSON.stringify({ expectedRevision: attempt.answerRevision }) });
+        body: JSON.stringify({ expectedRevision: revision }) });
       if (!response.ok) throw new Error(errorMessage(response.status, 'No pudimos enviar. Tus respuestas siguen guardadas.'));
       const receipt = await response.json() as { status: 'submitted'; submittedAt: string };
-      setAttempt({ ...attempt, status: receipt.status, submittedAt: receipt.submittedAt });
-      setNotice('Envío confirmado.');
+      setAttempt((prior) => prior ? { ...prior, status: receipt.status, submittedAt: receipt.submittedAt } : prior);
+      setNotice('');
     } catch (reason) { setError(reason instanceof Error ? reason.message : 'No pudimos conectar.'); }
     finally { setBusy(false); }
   }
@@ -146,10 +151,10 @@ export function CandidateQuestionnaire({ session, onLogout }: { session: Candida
                 <button className="text-action" disabled={busy} onClick={() => { setIndex(n); setReview(false); }}>Editar</button></li>; })}</ol>
             <label className="check"><input type="checkbox" disabled={busy} checked={confirmed} onChange={(event) => setConfirmed(event.target.checked)} />Revisé mis respuestas y entiendo que el envío cierra la edición.</label>
             <div className="candidate-step-actions"><button className="outline-button" disabled={busy} onClick={() => { setReview(false); setIndex(attempt.questions.length - 1); }}>Volver</button>
-              <button disabled={busy || dirty || requiredMissing.length > 0 || !confirmed} onClick={() => void submit()}>Enviar respuestas</button></div>
+              <button disabled={busy || requiredMissing.length > 0 || !confirmed} onClick={() => void submit()}>{dirty ? 'Guardar y enviar respuestas' : 'Enviar respuestas'}</button></div>
           </section>}
-          <div className="candidate-persist"><button className="outline-button" disabled={busy || !dirty} onClick={() => void save()}>{busy ? 'Guardando…' : 'Guardar respuestas'}</button>
-            <p className="field-hint">Podés avanzar entre preguntas sin guardar; usá este botón antes de salir o enviar.</p></div>
+          <div className="candidate-persist"><button className="outline-button" disabled={busy || !dirty} onClick={() => void save()}>{busy ? 'Guardando…' : 'Guardar avance'}</button>
+            <p className="field-hint">Guardá tu avance si querés continuar más tarde. Al enviar, guardaremos automáticamente cualquier cambio pendiente.</p></div>
           {reloadRequested && <div className="notice" role="alertdialog" aria-label="Descartar cambios locales">
             <p>Al recargar perderás los cambios que todavía no guardaste. ¿Querés continuar?</p><div className="actions">
               <button onClick={() => { setReloadRequested(false); setRefresh((value) => value + 1); }}>Descartar y recargar</button>
@@ -159,6 +164,8 @@ export function CandidateQuestionnaire({ session, onLogout }: { session: Candida
       {confirmLogout && <div className="notice" role="alertdialog" aria-label="Salir con respuestas sin guardar"><p>Tenés respuestas sin guardar. ¿Querés salir y descartarlas?</p>
         <div className="actions"><button onClick={() => void exit()}>Descartar y salir</button><button className="outline-button" onClick={() => setConfirmLogout(false)}>Seguir respondiendo</button></div></div>}
       {error && <div className="notice" role="alert"><p>{error}</p>{attempt && !loading && <button className="text-action" onClick={() => dirty ? setReloadRequested(true) : setRefresh((value) => value + 1)}>Recargar versión guardada</button>}</div>}
-      <div className="candidate-data-notice"><strong>Sobre tus respuestas</strong><p>Se comparten con el recruiter de este screening y se conservan hasta 90 días desde la invitación. Son declaraciones tuyas; el sistema no verifica tu identidad ni decide automáticamente por el recruiter.</p></div>
+      <div className="candidate-data-notice"><strong>Uso de tus respuestas</strong>
+        <p>El recruiter de este screening podrá revisarlas. Se conservan hasta 90 días desde la invitación.</p>
+        <p>El sistema no verifica tu identidad ni decide por el recruiter.</p></div>
     </section><footer>Screeningroom · Proyecto final AI4Devs · Luis Lujan</footer></main>;
 }

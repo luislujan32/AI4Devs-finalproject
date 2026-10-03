@@ -15,8 +15,8 @@ La interfaz SHALL mostrar «guardado» solo tras confirmación del servidor; SHA
 - **THEN** la edición permanece en pantalla y recargar la versión guardada exige una decisión explícita
 
 ### Requirement: Review and final submission
-La interfaz SHALL mostrar un resumen editable de todas las respuestas y omisiones antes de enviar; SHALL impedir envío de obligatorias omitidas o cambios sin guardar y explicar que el envío cierra edición. SHALL presentar recibo sin evaluación interna solo tras confirmación del servidor.
+La interfaz SHALL mostrar un resumen editable de todas las respuestas y omisiones antes de enviar; SHALL impedir envío de obligatorias omitidas, guardar primero cualquier cambio pendiente y explicar que el envío cierra edición. SHALL presentar recibo sin evaluación interna solo tras confirmación del servidor.
 
 #### Scenario: Submit completed attempt
-- **WHEN** el postulante revisa, confirma y envía la revisión guardada
+- **WHEN** el postulante revisa, confirma y envía sus respuestas, aunque haya cambios locales pendientes
 - **THEN** ve confirmación y ya no puede editar las respuestas

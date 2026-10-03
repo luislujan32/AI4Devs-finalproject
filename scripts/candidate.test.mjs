@@ -29,7 +29,7 @@ async function recruiterLogin(index) {
     Origin: origin, Cookie: csrf.cookie, 'X-CSRF-Token': csrf.csrfToken },
   body: JSON.stringify({ email: demoEmails[index], password: passwords[index] }) });
   assert.equal(response.status, 200);
-  return { ...await response.json(), cookie: cookie(response, 'sr_session') };
+  return { ...await response.json(), cookie: cookie(response, 'sr_recruiter_session') };
 }
 async function candidatePost(path, body, csrf, sessionCookie = '') {
   return fetch(`${origin}/api/candidate${path}`, { method: 'POST', headers: { 'Content-Type': 'application/json',
@@ -40,7 +40,8 @@ async function mailCode(recipient) {
     const response = await fetch(`${mailpit}/api/v1/messages?limit=100`);
     assert.equal(response.status, 200);
     const list = await response.json();
-    const item = list.messages.find((message) => JSON.stringify(message.To).includes(recipient));
+    const item = list.messages.find((message) => JSON.stringify(message.To).includes(recipient)
+      && message.Subject === 'Tu código de acceso a Screeningroom');
     if (item) {
       const detail = await (await fetch(`${mailpit}/api/v1/message/${item.ID}`)).json();
       const code = detail.Text?.match(/\b\d{6}\b/)?.[0];
@@ -98,7 +99,17 @@ test('solo el propietario invita en publicado; duplicado y datos reales se recha
   assert.equal((await invite(email, accounts[0], draft._id.toString())).status, 404);
   assert.equal((await invite(email, accounts[1])).status, 404);
   assert.equal((await invite('real@gmail.com')).status, 422);
-  assert.equal((await invite(email)).status, 201);
+  const created = await invite(email);
+  assert.equal(created.status, 201);
+  const invitation = await created.json();
+  assert.equal(invitation.emailSent, true);
+  const mailbox = await (await fetch(`${mailpit}/api/v1/messages?limit=100`)).json();
+  const message = mailbox.messages.find((item) => JSON.stringify(item.To).includes(email)
+    && item.Subject.startsWith('Te invitaron a responder'));
+  assert.ok(message, 'Mailpit recibió la invitación inicial');
+  const emailContent = await (await fetch(`${mailpit}/api/v1/message/${message.ID}`)).json();
+  assert.match(emailContent.Text, new RegExp(`#invite=${invitation.publicId}`));
+  assert.match(emailContent.HTML, /Abrir mi invitación/);
   assert.equal((await invite(email.toUpperCase())).status, 409);
   const own = await call(`/screenings/${published._id}/invitations`, 'GET', undefined, accounts[0]);
   assert.equal(own.status, 200);
@@ -123,11 +134,13 @@ test('código Mailpit de un uso, CSRF, principal separado y recarga', async () =
   assert.equal((await candidatePost('/access/verify', { publicId: invitation.publicId, code: code === '000000' ? '000001' : '000000' }, csrf)).status, 401);
   const verified = await candidatePost('/access/verify', { publicId: invitation.publicId, code }, csrf, accounts[0].cookie);
   assert.equal(verified.status, 200);
-  const candidateCookie = cookie(verified, 'sr_session');
+  const candidateCookie = cookie(verified, 'sr_candidate_session');
   assert.ok(candidateCookie && candidateCookie !== accounts[0].cookie);
   assert.equal((await candidatePost('/access/verify', { publicId: invitation.publicId, code }, csrf)).status, 401);
   assert.equal((await call('/screenings', 'GET', undefined, { cookie: candidateCookie })).status, 401);
   assert.equal((await call('/candidate/session', 'GET', undefined, { cookie: accounts[1].cookie })).status, 401);
+  assert.equal((await call('/auth/session', 'GET', undefined, { cookie: `${accounts[0].cookie}; ${candidateCookie}` })).status, 200);
+  assert.equal((await call('/candidate/session', 'GET', undefined, { cookie: `${accounts[0].cookie}; ${candidateCookie}` })).status, 200);
   const resumed = await call('/candidate/session', 'GET', undefined, { cookie: candidateCookie });
   assert.equal(resumed.status, 200);
   const session = await resumed.json();
@@ -137,6 +150,7 @@ test('código Mailpit de un uso, CSRF, principal separado y recarga', async () =
   assert.equal((await call('/candidate/logout', 'POST', undefined, { cookie: candidateCookie, csrfToken: 'bad' })).status, 403);
   assert.equal((await call('/candidate/logout', 'POST', undefined, { cookie: candidateCookie, csrfToken: session.csrfToken })).status, 200);
   assert.equal((await call('/candidate/session', 'GET', undefined, { cookie: candidateCookie })).status, 401);
+  assert.equal((await call('/auth/session', 'GET', undefined, { cookie: accounts[0].cookie })).status, 200);
 });
 
 test('cinco fallos agotan desafío; vencimiento y retención revocan incluso sin TTL', async () => {
@@ -183,7 +197,7 @@ test('verificaciones concurrentes consumen una sola vez y vigencia revoca la ses
   const attempts = await Promise.all([candidatePost('/access/verify', { publicId: invitation.publicId, code }, csrf),
     candidatePost('/access/verify', { publicId: invitation.publicId, code }, csrf)]);
   assert.deepEqual(attempts.map((response) => response.status).sort(), [200, 401]);
-  const candidateCookie = cookie(attempts.find((response) => response.status === 200), 'sr_session');
+  const candidateCookie = cookie(attempts.find((response) => response.status === 200), 'sr_candidate_session');
   assert.equal((await call('/candidate/session', 'GET', undefined, { cookie: candidateCookie })).status, 200);
   const session = await models.Session.findOne({ invitationId: invitation.id });
   await models.Session.updateOne({ _id: session._id }, { $set: { expiresAt: new Date(Date.now() - 1000) } });
@@ -194,7 +208,7 @@ test('verificaciones concurrentes consumen una sola vez y vigencia revoca la ses
   const newCode = await mailCode(email);
   const newVerification = await candidatePost('/access/verify', { publicId: invitation.publicId, code: newCode }, csrfNew);
   assert.equal(newVerification.status, 200);
-  const renewedCookie = cookie(newVerification, 'sr_session');
+  const renewedCookie = cookie(newVerification, 'sr_candidate_session');
   assert.equal((await call('/candidate/session', 'GET', undefined, { cookie: renewedCookie })).status, 200);
   await models.Invitation.updateOne({ publicId: invitation.publicId }, { $set: { purgeAt: new Date(Date.now() - 1000) } });
   assert.equal((await call('/candidate/session', 'GET', undefined, { cookie: renewedCookie })).status, 401);
