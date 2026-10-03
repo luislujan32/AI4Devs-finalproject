@@ -293,6 +293,7 @@ components:
       properties:
         decision:
           type: string
+          description: "clarify solo puede aparecer al leer registros anteriores; las nuevas revisiones admiten continue y do_not_continue."
           enum:
           - continue
           - do_not_continue

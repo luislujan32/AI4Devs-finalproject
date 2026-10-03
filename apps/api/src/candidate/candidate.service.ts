@@ -25,13 +25,19 @@ export class CandidateService {
     this.models = domainModels(connection);
   }
   private invitationView(row: { _id: { toString(): string }; publicId: string; candidateEmail: string; candidateName?: string | null;
-    status: string; expiresAt: Date; createdAt?: Date }) {
+    status: string; expiresAt: Date; createdAt?: Date; submittedAt?: Date | null;
+    report?: { outcome: string; score?: number | null; threshold: number } | null;
+    review?: { decision: string; reviewedAt: Date } | null }) {
     return { id: row._id.toString(), publicId: row.publicId, candidateEmail: row.candidateEmail,
-      candidateName: row.candidateName ?? null, status: row.status, expiresAt: row.expiresAt, createdAt: row.createdAt };
+      candidateName: row.candidateName ?? null, status: row.status, expiresAt: row.expiresAt, createdAt: row.createdAt,
+      submittedAt: row.submittedAt ?? null,
+      result: row.report ? { outcome: row.report.outcome, score: row.report.score ?? null, threshold: row.report.threshold } : null,
+      review: row.review ? { decision: row.review.decision, reviewedAt: row.review.reviewedAt } : null };
   }
   async list(ownerId: string, screeningId: string) {
     if (!isObjectIdOrHexString(screeningId) || !await this.models.Screening.exists({ _id: screeningId, ownerId })) throw new NotFoundException('Screening no encontrado.');
     const rows = await this.models.Invitation.find({ screeningId, ownerId, purgeAt: { $gt: new Date() } })
+      .select('publicId candidateEmail candidateName status expiresAt createdAt submittedAt report.outcome report.score report.threshold review.decision review.reviewedAt')
       .sort({ createdAt: -1 }).limit(100).lean();
     return { invitations: rows.map((row) => this.invitationView(row)) };
   }

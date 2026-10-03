@@ -26,7 +26,7 @@ export class ResultsService {
   async review(ownerId: string, invitationId: string, input: unknown) {
     const body = object(input, ['expectedRevision', 'decision', 'reason']);
     const revision = expectedRevision(body.expectedRevision);
-    if (typeof body.decision !== 'string' || !['continue', 'do_not_continue', 'clarify'].includes(body.decision)) invalid('Elegí una decisión válida.');
+    if (typeof body.decision !== 'string' || !['continue', 'do_not_continue'].includes(body.decision)) invalid('Elegí una decisión válida.');
     if (body.reason !== undefined && (typeof body.reason !== 'string' || body.reason.length > 2000)) invalid('Motivo inválido.');
     const reason = typeof body.reason === 'string' ? body.reason.trim() : '';
     const row = await this.owned(ownerId, invitationId);
@@ -35,7 +35,7 @@ export class ResultsService {
       invalid('Explicá por qué continuás con una postulación que no cumple o requiere revisión.');
     }
     if ((row.review?.revision ?? 0) !== revision) throw new ConflictException('La revisión cambió. Recargá antes de guardar.');
-    const review = { decision: body.decision as 'continue' | 'do_not_continue' | 'clarify', reason,
+    const review = { decision: body.decision as 'continue' | 'do_not_continue', reason,
       reviewerId: ownerId, reviewedAt: new Date(), revision: revision + 1 };
     const updated = await this.models.Invitation.findOneAndUpdate({ _id: invitationId, ownerId, status: 'submitted',
       purgeAt: { $gt: new Date() }, ...(revision ? { 'review.revision': revision } : { 'review.revision': { $exists: false } }) },

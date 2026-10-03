@@ -3,8 +3,12 @@ import { api, ApiError, type Session } from './api';
 import { RecruiterReport } from './RecruiterReport';
 
 type Invitation = { id: string; publicId: string; candidateEmail: string; candidateName: string | null;
-  status: 'invited' | 'in_progress' | 'submitted'; expiresAt: string };
+  status: 'invited' | 'in_progress' | 'submitted'; expiresAt: string; submittedAt: string | null;
+  result: { outcome: 'meets' | 'not_meets' | 'needs_review'; score: number | null; threshold: number } | null;
+  review: { decision: 'continue' | 'do_not_continue' | 'clarify'; reviewedAt: string } | null };
 const statusText = { invited: 'Por responder', in_progress: 'En curso', submitted: 'Respuestas recibidas' };
+const resultText = { meets: 'Cumple criterios', not_meets: 'No cumple criterios', needs_review: 'Criterios pendientes' };
+const decisionText = { continue: 'Continuar', do_not_continue: 'No continuar', clarify: 'Aclaración pendiente (anterior)' };
 
 export function Invitations({ screeningId, closed, session, onExpired }: { screeningId: string; closed: boolean; session: Session; onExpired: () => void }) {
   const [items, setItems] = useState<Invitation[]>([]);
@@ -45,7 +49,9 @@ export function Invitations({ screeningId, closed, session, onExpired }: { scree
   }
   const selected = items.find((item) => item.id === reportId);
   if (selected) return <RecruiterReport invitationId={selected.id} candidate={selected.candidateName || selected.candidateEmail}
-    session={session} onExpired={onExpired} onClose={() => setReportId('')} />;
+    session={session} onExpired={onExpired} onClose={() => setReportId('')}
+    onReviewSaved={(review) => setItems((current) => current.map((item) => item.id === selected.id
+      ? { ...item, review: { decision: review.decision, reviewedAt: review.reviewedAt } } : item))} />;
   return <section className="stage-panel invitation-panel" aria-labelledby="invitation-title">
     <div className="stage-heading"><div><p className="eyebrow">{closed ? 'Screening cerrado' : 'Después de publicar'}</p><h2 id="invitation-title">Postulantes</h2></div>
       <p>{closed ? 'No se pueden enviar nuevas invitaciones. Las personas ya invitadas pueden responder hasta el vencimiento de su enlace y sus resultados siguen disponibles.' : 'Invitá a cada persona por correo. El enlace del mensaje abre su invitación; los enlaces compartidos requieren verificar el correo.'}</p></div>
@@ -69,9 +75,17 @@ export function Invitations({ screeningId, closed, session, onExpired }: { scree
     {items.length ? <ul className="invitation-list">{items.map((item) => <li key={item.id}>
       <div className="invitation-heading"><div><strong>{item.candidateName || item.candidateEmail}</strong>
         {item.candidateName && <span>{item.candidateEmail}</span>}</div><span className={`badge status-${item.status}`}>{statusText[item.status]}</span></div>
-      <div className="invitation-meta"><span>{item.status === 'submitted' ? 'Respuestas enviadas' : `Enlace disponible hasta el ${new Date(item.expiresAt).toLocaleString('es-AR', { dateStyle: 'medium', timeStyle: 'short' })}`}</span>
+      {item.status === 'submitted' && <div className="candidate-assessment" aria-label={`Evaluación de ${item.candidateName || item.candidateEmail}`}>
+        <div><span className="assessment-label">Criterios</span><span className={`assessment-value result-${item.result?.outcome ?? 'needs_review'}`}>
+          {item.result ? resultText[item.result.outcome] : 'Resultado pendiente'}</span></div>
+        <div><span className="assessment-label">Decisión humana</span><span className={`assessment-value review-${item.review?.decision ?? 'pending'}`}>
+          {item.review ? decisionText[item.review.decision] : 'Sin decisión'}</span></div>
+      </div>}
+      <div className="invitation-meta"><span>{item.status === 'submitted'
+        ? item.submittedAt ? `Respondió el ${new Date(item.submittedAt).toLocaleString('es-AR', { dateStyle: 'medium', timeStyle: 'short' })}` : 'Respuestas enviadas'
+        : `Enlace disponible hasta el ${new Date(item.expiresAt).toLocaleString('es-AR', { dateStyle: 'medium', timeStyle: 'short' })}`}</span>
         {item.status === 'submitted' ? <button className="outline-button" type="button"
-          onClick={() => setReportId(item.id)}>Ver informe</button>
+          onClick={() => setReportId(item.id)}>{item.review ? 'Ver informe y decisión' : 'Ver informe'}</button>
           : new Date(item.expiresAt) > new Date() && <button className="icon-action" type="button" aria-label={`Copiar enlace de ${item.candidateName || item.candidateEmail}`}
           title="Copiar enlace" onClick={() => void copy(item)}><svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg></button>}</div>
       {copied === item.publicId && <p className="copy-confirmation" role="status">Enlace copiado</p>}
