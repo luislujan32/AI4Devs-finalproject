@@ -3,18 +3,21 @@ import { api, ApiError, type Session } from './api';
 
 type Invitation = { id: string; publicId: string; candidateEmail: string; candidateName: string | null;
   status: 'invited' | 'in_progress' | 'submitted'; expiresAt: string };
-const statusText = { invited: 'Pendiente', in_progress: 'En curso', submitted: 'Enviado' };
+const statusText = { invited: 'Por responder', in_progress: 'En curso', submitted: 'Respuestas recibidas' };
+
 export function Invitations({ screeningId, session, onExpired }: { screeningId: string; session: Session; onExpired: () => void }) {
   const [items, setItems] = useState<Invitation[]>([]);
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
+  const [formOpen, setFormOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
   const [copied, setCopied] = useState('');
+  const [manualLink, setManualLink] = useState('');
   useEffect(() => {
     let active = true;
-    setItems([]); setError('');
+    setItems([]); setError(''); setNotice(''); setFormOpen(false);
     api<{ invitations: Invitation[] }>(`/screenings/${screeningId}/invitations`, session)
       .then((data) => { if (active) setItems(data.invitations); })
       .catch((reason: unknown) => { if (!active) return; if (reason instanceof ApiError && reason.status === 401) onExpired();
@@ -26,37 +29,46 @@ export function Invitations({ screeningId, session, onExpired }: { screeningId: 
     try {
       const created = await api<Invitation>(`/screenings/${screeningId}/invitations`, session, 'POST',
         { candidateEmail: email, ...(name.trim() ? { candidateName: name.trim() } : {}) });
-      setItems((current) => [created, ...current]); setEmail(''); setName('');
-      setNotice('Invitación creada. Compartí el enlace con el postulante ficticio.');
+      setItems((current) => [created, ...current]); setEmail(''); setName(''); setFormOpen(false);
+      setNotice(`Invitación enviada a ${created.candidateEmail}. El correo incluye el enlace para comenzar.`);
     } catch (reason) {
       if (reason instanceof ApiError && reason.status === 401) onExpired();
-      else setError(reason instanceof Error ? reason.message : 'No pudimos crear la invitación.');
+      else setError(reason instanceof Error ? reason.message : 'No pudimos enviar la invitación.');
     } finally { setBusy(false); }
   }
-  async function copy(publicId: string) {
-    const link = `${window.location.origin}${window.location.pathname}#invite=${publicId}`;
-    try { await navigator.clipboard.writeText(link); setCopied(publicId); }
-    catch { setCopied(''); setError('No pudimos copiar el enlace. Seleccionalo en el campo para copiarlo.'); }
+  function link(publicId: string) { return `${window.location.origin}${window.location.pathname}#invite=${publicId}`; }
+  async function copy(item: Invitation) {
+    try { await navigator.clipboard.writeText(link(item.publicId)); setCopied(item.publicId); setManualLink(''); }
+    catch { setCopied(''); setManualLink(item.publicId); }
   }
   return <section className="stage-panel invitation-panel" aria-labelledby="invitation-title">
-    <div className="stage-heading"><div><p className="eyebrow">Siguiente paso</p><h2 id="invitation-title">Invitaciones</h2></div>
-      <p>Un enlace por postulante. El acceso requiere un código enviado a su correo ficticio.</p></div>
-    <form className="invitation-form" onSubmit={create}>
-      <div className="field"><label htmlFor="candidate-email">Correo ficticio</label><input id="candidate-email" type="email" required
-        pattern=".+@(?:.+\.)?example\.test" placeholder="persona@example.test" autoComplete="off" maxLength={254} value={email}
-        onChange={(event) => setEmail(event.target.value)} /><p className="field-hint">Por ahora usamos direcciones example.test y Mailpit local.</p></div>
-      <div className="field"><label htmlFor="candidate-name">Nombre <span className="optional">(opcional)</span></label><input id="candidate-name"
-        maxLength={120} value={name} onChange={(event) => setName(event.target.value)} placeholder="Por ejemplo, Alex" /></div>
-      <button type="submit" disabled={busy}>{busy ? 'Creando…' : 'Crear invitación'}</button>
-    </form>
+    <div className="stage-heading"><div><p className="eyebrow">Después de publicar</p><h2 id="invitation-title">Postulantes</h2></div>
+      <p>Invitá a cada persona por correo. El mensaje incluye su enlace; al abrirlo recibirá un código de acceso.</p></div>
+    <div className="invitation-actions"><button type="button" onClick={() => { setFormOpen((open) => !open); setError(''); }}
+      aria-expanded={formOpen} aria-controls="invitation-form">{formOpen ? 'Cancelar invitación' : 'Invitar postulante'}</button>
+      <span className="field-hint">{items.length} {items.length === 1 ? 'postulante invitado' : 'postulantes invitados'}</span></div>
+    {formOpen && <form id="invitation-form" className="invitation-form" onSubmit={create}>
+      <div className="invitation-form-heading"><h3>Nueva invitación</h3><p>El enlace se envía por correo y también queda disponible para copiar.</p></div>
+      <div className="invitation-form-fields">
+        <div className="field"><label htmlFor="candidate-email">Correo electrónico</label><input id="candidate-email" type="email" required
+          pattern=".+@(?:.+\.)?example\.test" placeholder="persona@example.test" autoComplete="off" maxLength={254} value={email}
+          onChange={(event) => setEmail(event.target.value)} /></div>
+        <div className="field"><label htmlFor="candidate-name">Nombre <span className="optional">(opcional)</span></label><input id="candidate-name"
+          maxLength={120} value={name} onChange={(event) => setName(event.target.value)} placeholder="Por ejemplo, Alex" /></div>
+      </div>
+      <p className="field-hint">En esta versión de prueba se usan direcciones @example.test. Consultá el mensaje en Mailpit local.</p>
+      <button type="submit" disabled={busy}>{busy ? 'Enviando…' : 'Enviar invitación'}</button>
+    </form>}
     {error && <p className="inline-error" role="alert">{error}</p>}{notice && <p className="success" role="status">{notice}</p>}
     {items.length ? <ul className="invitation-list">{items.map((item) => <li key={item.id}>
       <div className="invitation-heading"><div><strong>{item.candidateName || item.candidateEmail}</strong>
         {item.candidateName && <span>{item.candidateEmail}</span>}</div><span className="badge">{statusText[item.status]}</span></div>
-      <p className="field-hint">Vence el {new Date(item.expiresAt).toLocaleString('es-AR', { dateStyle: 'medium', timeStyle: 'short' })}</p>
-      <div className="invitation-link"><input readOnly aria-label={`Enlace de ${item.candidateEmail}`}
-        value={`${window.location.origin}${window.location.pathname}#invite=${item.publicId}`} onFocus={(event) => event.target.select()} />
-        <button className="text-action" type="button" onClick={() => void copy(item.publicId)}>{copied === item.publicId ? 'Copiado' : 'Copiar enlace'}</button></div>
-    </li>)}</ul> : <p className="field-hint">Aún no hay invitaciones para este screening.</p>}
+      <div className="invitation-meta"><span>Enlace disponible hasta el {new Date(item.expiresAt).toLocaleString('es-AR', { dateStyle: 'medium', timeStyle: 'short' })}</span>
+        <button className="icon-action" type="button" aria-label={`Copiar enlace de ${item.candidateName || item.candidateEmail}`}
+          title="Copiar enlace" onClick={() => void copy(item)}><svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg></button></div>
+      {copied === item.publicId && <p className="copy-confirmation" role="status">Enlace copiado</p>}
+      {manualLink === item.publicId && <div className="field manual-link"><label htmlFor={`link-${item.id}`}>Seleccioná y copiá el enlace</label>
+        <input id={`link-${item.id}`} readOnly value={link(item.publicId)} onFocus={(event) => event.target.select()} /></div>}
+    </li>)}</ul> : <p className="invitation-empty">Todavía no invitaste a nadie. Enviá la primera invitación para compartir el screening.</p>}
   </section>;
 }

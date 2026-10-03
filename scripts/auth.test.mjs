@@ -46,7 +46,7 @@ async function login(index = 0, previous = '') {
     Origin: origin, 'X-CSRF-Token': csrf.token, Cookie: [csrf.cookie, previous].filter(Boolean).join('; ') },
     body: JSON.stringify({ email: demoEmails[index], password: passwords[index] }) });
   assert.equal(response.status, 200);
-  return { cookie: cookie(response, 'sr_session'), data: await response.json(), headers: response.headers };
+  return { cookie: cookie(response, 'sr_recruiter_session'), data: await response.json(), headers: response.headers };
 }
 
 before(async () => {
@@ -84,7 +84,7 @@ test('provisioning de demo repetible, hashes Argon2id y datos ajenos preservados
 });
 test('sesión ausente o cookie falsificada recibe 401', async () => {
   assert.equal((await request('/screenings')).status, 401);
-  assert.equal((await request('/auth/session', { headers: { Cookie: `sr_session=${randomBytes(32).toString('base64url')}` } })).status, 401);
+  assert.equal((await request('/auth/session', { headers: { Cookie: `sr_recruiter_session=${randomBytes(32).toString('base64url')}` } })).status, 401);
 });
 test('login rechaza origen/token ausentes, distintos y multibyte sin crear sesión', async () => {
   const csrf = await prelogin();
@@ -119,7 +119,7 @@ test('dos recruiters ven solo sus screenings y ajenos son 404', async () => {
   const missing = await request(`/screenings/${new mongoose.Types.ObjectId()}`, { headers: { Cookie: a.cookie } });
   assert.equal(foreign.status, 404); assert.deepEqual(await foreign.json(), await missing.json());
   assert.equal((await request('/screenings/not-an-id', { headers: { Cookie: a.cookie } })).status, 404);
-  assert.match(a.headers.getSetCookie().find((value) => value.startsWith('sr_session=')), /HttpOnly; SameSite=Lax/i);
+  assert.match(a.headers.getSetCookie().find((value) => value.startsWith('sr_recruiter_session=')), /HttpOnly; SameSite=Lax/i);
   assert.equal(a.headers.get('cache-control'), 'no-store');
   assert.equal('passwordHash' in a.data.user, false); assert.equal('sessionId' in a.data, false);
   const session = await models.Session.findOne({ userId: a.data.user.id }).select('+sessionId');

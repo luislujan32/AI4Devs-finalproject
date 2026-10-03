@@ -9,6 +9,8 @@ import { domainModels } from '../persistence/models.js';
 import { hashPassword, verifyPassword } from './passwords.js';
 
 const HOURS_8 = 8 * 60 * 60;
+const RECRUITER_COOKIE = 'sr_recruiter_session';
+const CANDIDATE_COOKIE = 'sr_candidate_session';
 const WINDOW = 15 * 60 * 1000;
 const nonce = () => randomBytes(32).toString('base64url');
 const equal = (a: string, b: string) => {
@@ -104,14 +106,15 @@ export class AuthService implements OnModuleInit {
     const expiresAt = new Date(Date.now() + HOURS_8 * 1000);
     const sessionId = this.digest(`session:${raw}`);
     await this.models.Session.create({ sessionId, principal: 'recruiter', userId: user._id, csrfToken, expiresAt });
-    const previous = this.cookies(req).sr_session;
+    const previous = this.cookies(req)[RECRUITER_COOKIE];
     if (previous) await this.models.Session.deleteOne({ sessionId: this.digest(`session:${previous}`) });
-    this.setCookie(res, 'sr_session', raw, HOURS_8);
+    this.setCookie(res, RECRUITER_COOKIE, raw, HOURS_8);
+    this.setCookie(res, 'sr_session', '', 0);
     this.setCookie(res, 'sr_csrf', '', 0);
     return { user: { id: user._id.toString(), email: user.email, displayName: user.displayName }, csrfToken, expiresAt };
   }
   async context(req: Request): Promise<AuthContext> {
-    const raw = this.cookies(req).sr_session;
+    const raw = this.cookies(req)[RECRUITER_COOKIE];
     if (!raw || !/^[\w-]{43}$/.test(raw)) throw new UnauthorizedException('Sesión no disponible.');
     const sessionId = this.digest(`session:${raw}`);
     const session = await this.models.Session.findOne({ sessionId, principal: 'recruiter', expiresAt: { $gt: new Date() } }).select('+csrfToken');
@@ -122,7 +125,7 @@ export class AuthService implements OnModuleInit {
       user: { id: user._id.toString(), email: user.email, displayName: user.displayName } };
   }
   async candidateContext(req: Request): Promise<CandidateContext> {
-    const raw = this.cookies(req).sr_session;
+    const raw = this.cookies(req)[CANDIDATE_COOKIE];
     if (!raw || !/^[\w-]{43}$/.test(raw)) throw new UnauthorizedException('Sesión no disponible.');
     const sessionId = this.digest(`session:${raw}`);
     const session = await this.models.Session.findOne({ sessionId, principal: 'candidate', expiresAt: { $gt: new Date() } }).select('+csrfToken');
@@ -138,9 +141,10 @@ export class AuthService implements OnModuleInit {
     const expiresAt = new Date(Math.min(Date.now() + 2 * 3600000, invitationExpiresAt.getTime()));
     if (expiresAt.getTime() <= Date.now()) throw new UnauthorizedException('La invitación venció.');
     await this.models.Session.create({ sessionId: this.digest(`session:${raw}`), principal: 'candidate', invitationId, csrfToken, expiresAt });
-    const previous = this.cookies(req).sr_session;
+    const previous = this.cookies(req)[CANDIDATE_COOKIE];
     if (previous) await this.models.Session.deleteOne({ sessionId: this.digest(`session:${previous}`) });
-    this.setCookie(res, 'sr_session', raw, Math.max(1, Math.floor((expiresAt.getTime() - Date.now()) / 1000)));
+    this.setCookie(res, CANDIDATE_COOKIE, raw, Math.max(1, Math.floor((expiresAt.getTime() - Date.now()) / 1000)));
+    this.setCookie(res, 'sr_session', '', 0);
     this.setCookie(res, 'sr_csrf', '', 0);
     return { csrfToken, expiresAt };
   }
@@ -149,10 +153,10 @@ export class AuthService implements OnModuleInit {
     const token = req.headers['x-csrf-token'];
     if (typeof token !== 'string' || !equal(token, context.csrfToken)) throw new ForbiddenException('Solicitud no autorizada.');
   }
-  async logout(req: Request, res: Response, context: { csrfToken: string; sessionId: string }) {
+  async logout(req: Request, res: Response, context: { csrfToken: string; sessionId: string }, principal: 'recruiter' | 'candidate') {
     this.checkMutation(req, context);
     await this.models.Session.deleteOne({ sessionId: context.sessionId });
-    this.setCookie(res, 'sr_session', '', 0);
+    this.setCookie(res, principal === 'recruiter' ? RECRUITER_COOKIE : CANDIDATE_COOKIE, '', 0);
     return { status: 'signed_out' };
   }
 }

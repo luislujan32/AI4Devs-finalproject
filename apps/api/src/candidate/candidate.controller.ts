@@ -11,7 +11,7 @@ export class InvitationController {
   @Get() @Header('Cache-Control', 'no-store')
   list(@Req() req: RecruiterRequest, @Param('id') id: string) { return this.candidates.list(req.auth.user.id, id); }
   @Post()
-  create(@Req() req: RecruiterRequest, @Param('id') id: string, @Body() body: unknown) { return this.candidates.create(req.auth.user.id, id, body); }
+  create(@Req() req: RecruiterRequest, @Param('id') id: string, @Body() body: unknown) { return this.candidates.create(req.auth.user.id, id, body, req.headers.origin ?? ''); }
 }
 
 @Controller('candidate')
@@ -27,5 +27,5 @@ export class CandidateController {
       publicId: req.candidate.publicId, invitation: await this.candidates.summary(req.candidate.invitationId) };
   }
   @Post('logout') @UseGuards(CandidateGuard) @HttpCode(200)
-  logout(@Req() req: CandidateRequest, @Res({ passthrough: true }) res: Response) { return this.auth.logout(req, res, req.candidate); }
+  logout(@Req() req: CandidateRequest, @Res({ passthrough: true }) res: Response) { return this.auth.logout(req, res, req.candidate, 'candidate'); }
 }

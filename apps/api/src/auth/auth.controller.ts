@@ -13,5 +13,5 @@ export class AuthController {
   @Get('session') @UseGuards(RecruiterGuard) @Header('Cache-Control', 'no-store')
   session(@Req() req: RecruiterRequest) { const { user, csrfToken, expiresAt } = req.auth; return { user, csrfToken, expiresAt }; }
   @Post('logout') @UseGuards(RecruiterGuard) @HttpCode(200)
-  logout(@Req() req: RecruiterRequest, @Res({ passthrough: true }) res: Response) { return this.auth.logout(req, res, req.auth); }
+  logout(@Req() req: RecruiterRequest, @Res({ passthrough: true }) res: Response) { return this.auth.logout(req, res, req.auth, 'recruiter'); }
 }

@@ -72,7 +72,7 @@ async function candidateLogin(invitation) {
   const code = await mailCode(invitation.candidateEmail);
   const verified = await call('/candidate/access/verify', csrf, 'POST', { publicId: invitation.publicId, code });
   assert.equal(verified.status, 200);
-  return { csrfToken: (await verified.json()).csrfToken, cookie: cookie(verified, 'sr_session') };
+  return { csrfToken: (await verified.json()).csrfToken, cookie: cookie(verified, 'sr_candidate_session') };
 }
 before(async () => {
   let mailboxReady = false;

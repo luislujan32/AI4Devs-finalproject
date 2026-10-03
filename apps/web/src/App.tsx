@@ -18,11 +18,12 @@ export function App() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [sessionExpired, setSessionExpired] = useState(false);
   const [busy, setBusy] = useState(false);
   const [attempt, setAttempt] = useState(0);
   const [editingDirty, setEditingDirty] = useState(false);
   const [confirmLogout, setConfirmLogout] = useState(false);
-  const expired = useCallback(() => { setSession(null); setCsrf(''); setEditingDirty(false); setConfirmLogout(false); setAttempt((n) => n + 1); setError('Tu sesión venció. Volvé a entrar.'); }, []);
+  const expired = useCallback(() => { setSession(null); setCsrf(''); setEditingDirty(false); setConfirmLogout(false); setSessionExpired(true); setAttempt((n) => n + 1); setError('Tu sesión terminó. Iniciá sesión de nuevo.'); }, []);
 
   useEffect(() => { const change = () => setInvitation(readInvitation()); window.addEventListener('hashchange', change);
     return () => window.removeEventListener('hashchange', change); }, []);
@@ -37,7 +38,7 @@ export function App() {
         if (response.ok) {
           const data: unknown = await response.json();
           if (!sessionData(data)) throw new Error();
-          if (active) { setSession(data); setError(''); }
+          if (active) { setSession(data); setError(''); setSessionExpired(false); }
         } else if (response.status === 401) {
           const bootstrap = await fetch('/api/auth/csrf', { signal: controller.signal, cache: 'no-store' });
           if (!bootstrap.ok) throw new Error();
@@ -46,7 +47,7 @@ export function App() {
           if (active) setCsrf(data.csrfToken);
         } else throw new Error();
       })
-      .catch(() => { if (active) setError('No pudimos conectar. Volvé a intentar.'); })
+      .catch(() => { if (active) { setSessionExpired(false); setError('No pudimos conectar. Volvé a intentar.'); } })
       .finally(() => { if (active) setInitializing(false); });
     return () => { active = false; controller.abort(); };
   }, [attempt, invitation]);
@@ -65,7 +66,7 @@ export function App() {
       }
       const data: unknown = await response.json().catch(() => { throw new Error('No pudimos confirmar la sesión.'); });
       if (!sessionData(data)) throw new Error('No pudimos confirmar la sesión.');
-      setCsrf(''); setSession(data);
+      setCsrf(''); setSession(data); setSessionExpired(false);
     } catch (reason) { setError(reason instanceof Error ? reason.message : 'No pudimos conectar.'); }
     finally { setBusy(false); }
   }
@@ -96,7 +97,7 @@ export function App() {
               <button type="submit" disabled={busy || !csrf}>{busy ? 'Entrando…' : 'Iniciar sesión'}</button></form></section></div>
       )}
       {confirmLogout && <div className="notice" role="alertdialog" aria-label="Salir con cambios sin guardar"><p>Tenés cambios sin guardar. ¿Querés cerrar sesión y descartarlos?</p><div className="actions"><button disabled={busy} onClick={() => void logout(true)}>Descartar cambios y cerrar sesión</button><button className="secondary" disabled={busy} onClick={() => setConfirmLogout(false)}>Seguir editando</button></div></div>}
-      {error && <div className="notice" role="alert"><p>{error}</p><button className="secondary" disabled={busy || initializing} onClick={() => { setError(''); setAttempt((n) => n + 1); }}>Reintentar</button></div>}
+      {error && <div className="notice" role="alert"><p>{error}</p>{!sessionExpired && <button className="secondary" disabled={busy || initializing} onClick={() => { setError(''); setAttempt((n) => n + 1); }}>Reintentar</button>}</div>}
       <footer>Screeningroom · Proyecto final AI4Devs · Luis Lujan</footer>
     </main>
   );

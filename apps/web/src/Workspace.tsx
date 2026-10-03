@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { api, ApiError, type Session } from './api';
 import { Invitations } from './Invitations';
 
@@ -23,8 +23,17 @@ function questionState(q: Question) {
   if (q.exclusion && (!q.exclusion.acceptedOptionIds.length || q.exclusion.acceptedOptionIds.length >= q.options.length)) return 'Revisar excluyente';
   return 'Para revisar';
 }
-function FieldHelp({ title, children }: { title: string; children: string }) {
-  return <details className="field-help"><summary><span aria-hidden="true">ⓘ</span> {title}</summary><p>{children}</p></details>;
+function FieldHelp({ label, children }: { label: string; children: string }) {
+  const id = useId();
+  const [open, setOpen] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
+  return <span className={`field-help ${open ? 'open' : ''} ${dismissed ? 'dismissed' : ''}`}
+    onMouseLeave={() => { setOpen(false); setDismissed(false); }}>
+    <button type="button" aria-label={label} aria-describedby={id} aria-expanded={open}
+      onClick={() => { setDismissed(false); setOpen((value) => !value); }}
+      onKeyDown={(event) => { if (event.key === 'Escape') { setOpen(false); setDismissed(true); } }}
+      onFocus={() => setDismissed(false)} onBlur={() => { setOpen(false); setDismissed(false); }}><span aria-hidden="true">ⓘ</span></button><span id={id} role="tooltip">{children}</span>
+  </span>;
 }
 function draftBody(screening: Screening) {
   return { title: screening.title, area: screening.area, description: screening.description, threshold: screening.threshold,
@@ -40,6 +49,7 @@ export function Workspace({ session, onExpired, onDirtyChange }: { session: Sess
   const [busy, setBusy] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const [error, setError] = useState<ApiError | null>(null);
   const [notice, setNotice] = useState('');
   const [pending, setPending] = useState<{ kind: 'navigate' | 'reload'; id?: string } | null>(null);
@@ -49,6 +59,7 @@ export function Workspace({ session, onExpired, onDirtyChange }: { session: Sess
   const [bankError, setBankError] = useState('');
   const [bankRefresh, setBankRefresh] = useState(0);
   const [step, setStep] = useState<EditorStep>('puesto');
+  const [area, setArea] = useState<'configuracion' | 'postulantes'>('configuracion');
   const [activeQuestionId, setActiveQuestionId] = useState<string>();
   const [bankOpen, setBankOpen] = useState(false);
   const [bankSearch, setBankSearch] = useState('');
@@ -89,7 +100,7 @@ export function Workspace({ session, onExpired, onDirtyChange }: { session: Sess
     const load = async () => {
       try {
         if (route) { const data = await api<Screening>(`/screenings/${route}`, session); if (active) { setScreening(data); setDirty(false); setConfirmed(false);
-          setStep(data.status === 'published' ? 'revision' : data.questions.length ? 'preguntas' : 'puesto'); setActiveQuestionId(data.questions[0]?.id); setBankOpen(false); setPendingEditAction(null); } }
+          setStep(data.status === 'published' ? 'revision' : data.questions.length ? 'preguntas' : 'puesto'); setArea(data.status === 'published' ? 'postulantes' : 'configuracion'); setActiveQuestionId(data.questions[0]?.id); setBankOpen(false); setPendingEditAction(null); setConfirmDelete(false); } }
         else { const data = await api<{ screenings: Row[] }>('/screenings', session); if (active) { setRows(data.screenings); setScreening(null); setDirty(false); } }
       } catch (reason) { if (active) fail(reason); }
       finally { if (active) setLoading(false); }
@@ -130,12 +141,20 @@ export function Workspace({ session, onExpired, onDirtyChange }: { session: Sess
   }
   async function publish() {
     if (!screening || dirty || !confirmed) return; setBusy(true); setError(null);
-    try { const data = await api<Pick<Screening, 'id' | 'status' | 'revision' | 'publishedAt'>>(`/screenings/${screening.id}/publish`, session, 'POST', { expectedRevision: screening.revision, confirmConfiguration: confirmed }); setScreening({ ...screening, ...data }); setConfirmed(false); setNotice('Screening publicado. Su configuración queda protegida de cambios.'); }
+    try { const data = await api<Pick<Screening, 'id' | 'status' | 'revision' | 'publishedAt'>>(`/screenings/${screening.id}/publish`, session, 'POST', { expectedRevision: screening.revision, confirmConfiguration: confirmed }); setScreening({ ...screening, ...data }); setArea('postulantes'); setConfirmed(false); setNotice('Screening publicado. Ya podés invitar postulantes.'); }
     catch (reason) { fail(reason); } finally { setBusy(false); }
   }
   async function copy() {
     if (!screening) return; setBusy(true); setError(null);
     try { const data = await api<Screening>(`/screenings/${screening.id}/copy`, session, 'POST', {}); go(data.id); }
+    catch (reason) { fail(reason); } finally { setBusy(false); }
+  }
+  async function remove() {
+    if (!screening || published) return;
+    setBusy(true); setError(null);
+    try { await api<void>(`/screenings/${screening.id}`, session, 'DELETE', { expectedRevision: screening.revision });
+      setConfirmDelete(false); setDirty(false); setScreening(null); setLoading(true);
+      window.history.pushState(null, '', window.location.pathname + window.location.search); setRoute(undefined); }
     catch (reason) { fail(reason); } finally { setBusy(false); }
   }
   async function addBank(id: string) {
@@ -228,15 +247,26 @@ export function Workspace({ session, onExpired, onDirtyChange }: { session: Sess
         <div className="toolbar-actions">
           <span className={`save-state ${dirty ? 'is-dirty' : ''}`} role="status">{published ? 'Publicado' : dirty ? 'Cambios sin guardar' : 'Borrador guardado'}</span>
           {!published && <><button className="save-action" disabled={busy || !dirty} onClick={save}>{busy ? 'Procesando…' : 'Guardar borrador'}</button>
-            <button className="outline-button" disabled={busy} onClick={() => setStep('revision')}>Revisar publicación</button></>}
+            <button className="outline-button" disabled={busy} onClick={() => setStep('revision')}>Revisar publicación</button>
+            <button className="text-action danger-action" disabled={busy} onClick={() => setConfirmDelete(true)}>Eliminar borrador</button></>}
           {published && <button className="save-action" disabled={busy} onClick={copy}>Crear copia</button>}
         </div>
       </div>
+      {confirmDelete && <div className="confirm-inline" role="alertdialog" aria-label="Eliminar borrador">
+        <p>¿Eliminar este borrador? Se perderán su configuración y los cambios sin guardar. Esta acción no se puede deshacer.</p>
+        <div className="actions"><button className="danger-button" disabled={busy} onClick={() => void remove()}>Eliminar borrador</button>
+          <button className="outline-button" disabled={busy} onClick={() => setConfirmDelete(false)}>Cancelar</button></div>
+      </div>}
       <div className="editor-intro">
         <p className="eyebrow">{published ? 'Screening publicado' : 'Editor de screening'}</p>
         <h1 id="workspace-title">{screening.title || 'Nuevo screening'}</h1>
         <p className="help">{published ? 'Esta configuración es de solo lectura. Creá una copia para modificarla.' : 'Prepará el puesto, sus preguntas y la evaluación. Podés guardar un borrador incompleto.'}</p>
       </div>
+      {published && <nav className="workspace-areas" aria-label="Áreas del screening">
+        <button className={area === 'configuracion' ? 'active' : ''} aria-current={area === 'configuracion' ? 'page' : undefined} onClick={() => setArea('configuracion')}>Configuración</button>
+        <button className={area === 'postulantes' ? 'active' : ''} aria-current={area === 'postulantes' ? 'page' : undefined} onClick={() => setArea('postulantes')}>Postulantes</button>
+      </nav>}
+      {area === 'configuracion' && <>
       <nav className="editor-steps" aria-label="Secciones del screening">
         {([{ id: 'puesto', label: '1. Puesto' }, { id: 'preguntas', label: `2. Preguntas (${screening.questions.length})` }, { id: 'revision', label: '3. Revisión' }] as const).map((item) =>
           <button key={item.id} className={`step-action ${step === item.id ? 'active' : ''}`} aria-current={step === item.id ? 'step' : undefined}
@@ -280,12 +310,16 @@ export function Workspace({ session, onExpired, onDirtyChange }: { session: Sess
         </div> : <div className="question-layout">
           <aside className="question-index" aria-labelledby="question-list-title">
             <div className="panel-heading"><h3 id="question-list-title" tabIndex={-1}>Tus preguntas</h3><span>{screening.questions.length}/20</span></div>
-            {screening.questions.length ? <ol>{screening.questions.map((q, index) => <li key={q.id}>
+            {screening.questions.length ? <><div className="field mobile-question-picker"><label htmlFor="question-picker">Ir a pregunta</label>
+              <select id="question-picker" value={activeQuestion?.id ?? screening.questions[0].id}
+                onChange={(event) => { setActiveQuestionId(event.target.value); setPendingEditAction(null); }}>
+                {screening.questions.map((q, index) => <option key={q.id} value={q.id}>{index + 1}. {q.criterion?.trim() || q.text?.trim() || 'Nueva pregunta'}</option>)}
+              </select></div><ol>{screening.questions.map((q, index) => <li key={q.id}>
               <button className={`question-item ${activeQuestion?.id === q.id ? 'selected' : ''}`} aria-current={activeQuestion?.id === q.id ? 'true' : undefined}
                 onClick={() => { setActiveQuestionId(q.id); setPendingEditAction(null); }}>
                 <span className="question-item-name">{index + 1}. {q.criterion?.trim() || q.text?.trim() || 'Nueva pregunta'}</span>
                 <span className="question-item-meta">{typeLabels[q.type]} · {questionState(q)}</span>
-              </button></li>)}</ol> : <p className="field-hint">Todavía no hay preguntas.</p>}
+              </button></li>)}</ol></> : <p className="field-hint">Todavía no hay preguntas.</p>}
             {!published && <div className="add-controls">
               <button className="text-action" disabled={busy || screening.questions.length >= 20} aria-expanded={addOpen} onClick={() => setAddOpen(!addOpen)}>＋ Agregar pregunta</button>
               {addOpen && <div className="add-choices" role="group" aria-label="Elegir tipo de pregunta">
@@ -305,10 +339,10 @@ export function Workspace({ session, onExpired, onDirtyChange }: { session: Sess
               </div>}
               <fieldset className="question-fields" disabled={published || busy}><legend className="sr-only">Editar pregunta {activeIndex + 1}</legend>
                 <div className="field"><div className="field-label"><label htmlFor={`criterion-${activeQuestion.id}`}>Criterio</label>
-                  <FieldHelp title="¿Qué es?">Es el aspecto del puesto que querés observar con esta pregunta, por ejemplo comunicación o control de registros.</FieldHelp></div>
+                  <FieldHelp label="Ayuda sobre el criterio">Es el aspecto del puesto que querés observar con esta pregunta, por ejemplo comunicación o control de registros.</FieldHelp></div>
                   <input id={`criterion-${activeQuestion.id}`} maxLength={120} value={activeQuestion.criterion ?? ''} placeholder="Por ejemplo, Comunicación con clientes"
                     onChange={(e) => question(activeIndex, { ...activeQuestion, criterion: e.target.value })} /></div>
-                <div className="field"><label htmlFor={`text-${activeQuestion.id}`}>Pregunta que verá la persona candidata</label>
+                <div className="field"><label htmlFor={`text-${activeQuestion.id}`}>Pregunta que verá el candidato</label>
                   <textarea id={`text-${activeQuestion.id}`} maxLength={500} rows={3} value={activeQuestion.text ?? ''} placeholder="Escribí una pregunta clara y concreta"
                     onChange={(e) => question(activeIndex, { ...activeQuestion, text: e.target.value })} /></div>
                 <div className="field"><label htmlFor={`type-${activeQuestion.id}`}>Tipo de respuesta</label>
@@ -350,7 +384,7 @@ export function Workspace({ session, onExpired, onDirtyChange }: { session: Sess
                       onChange={(e) => question(activeIndex, { ...activeQuestion, scored: e.target.checked, weight: undefined,
                         options: activeQuestion.options.map((o) => ({ ...o, score: undefined })) })} />Incluir en el puntaje</label>
                       {activeQuestion.scored && <div className="field compact-field"><div className="field-label"><label htmlFor={`weight-${activeQuestion.id}`}>Peso (1–5)</label>
-                        <FieldHelp title="¿Cómo funciona?">Un peso mayor hace que esta pregunta influya más en el puntaje total. Asigná también un valor a cada respuesta.</FieldHelp></div>
+                        <FieldHelp label="Ayuda sobre el peso">Un peso mayor hace que esta pregunta influya más en el puntaje total. Asigná también un valor a cada respuesta.</FieldHelp></div>
                         <input id={`weight-${activeQuestion.id}`} className="number-field" type="number" min={1} max={5} step={1}
                           value={activeQuestion.weight ?? ''} onChange={(e) => question(activeIndex, { ...activeQuestion, weight: number(e.target.value) })} /></div>}</div>
                     <div className="toggle-field"><label className="check"><input id={`exclusion-${activeQuestion.id}`} type="checkbox" checked={!!activeQuestion.exclusion}
@@ -372,7 +406,7 @@ export function Workspace({ session, onExpired, onDirtyChange }: { session: Sess
             <div><dt>Área</dt><dd>{screening.area || 'Pendiente'}</dd></div>
             <div><dt>Descripción</dt><dd>{screening.description || 'No indicada'}</dd></div></dl>
           <div className="field threshold-field"><div className="field-label"><label htmlFor="threshold">Umbral del puesto (0–100)</label>
-            <FieldHelp title="¿Qué significa?">Es el mínimo de puntaje para superar los criterios numéricos. No reemplaza la revisión humana ni anula requisitos excluyentes.</FieldHelp></div>
+            <FieldHelp label="Ayuda sobre el umbral">Es el mínimo de puntaje para superar los criterios numéricos. No reemplaza la revisión humana ni anula requisitos excluyentes.</FieldHelp></div>
             {published ? <p className="static-value">{screening.threshold ?? 'No definido'}</p> :
               <input id="threshold" className="number-field" type="number" min={0} max={100} step={1} value={screening.threshold ?? ''}
                 onChange={(e) => edit({ ...screening, threshold: number(e.target.value) })} />}
@@ -399,7 +433,8 @@ export function Workspace({ session, onExpired, onDirtyChange }: { session: Sess
         </div>}
         {published && <div className="stage-footer"><button className="outline-button" disabled={busy} onClick={copy}>Crear copia como borrador</button></div>}
       </section>}
-      {published && <Invitations screeningId={screening.id} session={session} onExpired={onExpired} />}
+      </>}
+      {published && area === 'postulantes' && <Invitations screeningId={screening.id} session={session} onExpired={onExpired} />}
     </> : route ? <><h1 id="workspace-title">No pudimos abrir el screening</h1><button className="outline-button" onClick={() => go()}>Volver a mis screenings</button></> : <>
       <p className="eyebrow">Tu espacio de trabajo</p><h1 id="workspace-title">Tus screenings</h1><p className="description">Hola, {session.user.displayName}. Prepará las preguntas y criterios para cada puesto.</p>
       <button disabled={busy} onClick={create}>Crear screening</button>
