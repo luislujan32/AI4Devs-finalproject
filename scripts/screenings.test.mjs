@@ -12,6 +12,7 @@ import mongoose from 'mongoose';
 import { domainModels } from '../apps/api/dist/persistence/models.js';
 import { provisionDemo, demoEmails } from '../apps/api/dist/auth/provision.js';
 import { loadCatalog, catalogAreas } from '../apps/api/dist/screenings/catalog.js';
+import { evaluate } from '../apps/api/dist/candidate/evaluation.js';
 
 const database = `screeningroom_demo_test_${randomUUID().replaceAll('-', '')}`;
 const passwords = [randomBytes(24).toString('base64url'), randomBytes(24).toString('base64url')];
@@ -159,6 +160,62 @@ test('publicar requiere confirmación y retorna exactamente el recibo OpenAPI', 
   assert.equal((await publish(draft.id, 1)).status, 409);
   assert.equal((await request(`/screenings/${draft.id}/questions/from-bank`, accounts[0], 'POST', { expectedRevision: 1, bankQuestionId: new mongoose.Types.ObjectId().toString() })).status, 409);
   assert.deepEqual(await result(await request(`/screenings/${draft.id}`), 200), before);
+});
+test('cerrar un publicado impide nuevas invitaciones y conserva configuración, invitaciones y resultados', async () => {
+  const draft = await create(valid());
+  assert.equal((await request(`/screenings/${draft.id}/close`, accounts[0], 'POST', { expectedRevision: 0, confirmClosure: true })).status, 409);
+  await result(await publish(draft.id), 200);
+  const invitation = await models.Invitation.create({ ownerId: accounts[0].user.id, screeningId: draft.id,
+    candidateEmail: `closed-${randomUUID()}@example.test`, publicId: randomUUID(), status: 'submitted',
+    expiresAt: new Date(Date.now() - 1000), purgeAt: new Date(Date.now() + 90 * 86400000),
+    submittedAt: new Date(), report: evaluate(valid().questions, [{ questionId: 'experience', kind: 'option', optionId: 'yes' }], 70) });
+  const path = `/screenings/${draft.id}/close`;
+  assert.equal((await request(path, accounts[1], 'POST', { expectedRevision: 1, confirmClosure: true })).status, 404);
+  assert.equal((await request(path, accounts[0], 'POST', { expectedRevision: 1 })).status, 422);
+  assert.equal((await request(path, accounts[0], 'POST', { expectedRevision: 1, confirmClosure: true }, { Origin: 'https://foreign.example' })).status, 403);
+  assert.equal((await request(path, accounts[0], 'POST', { expectedRevision: 0, confirmClosure: true })).status, 409);
+  const close = await result(await request(path, accounts[0], 'POST', { expectedRevision: 1, confirmClosure: true }), 200);
+  assert.equal(close.status, 'closed'); assert.equal(close.revision, 2); assert.ok(Date.parse(close.closedAt));
+  assert.equal((await request(path, accounts[0], 'POST', { expectedRevision: 2, confirmClosure: true })).status, 409);
+  assert.equal((await save(draft.id, valid(), 2)).status, 409);
+  assert.equal((await request(`/screenings/${draft.id}`, accounts[0], 'DELETE', { expectedRevision: 2 })).status, 409);
+  assert.equal((await request(`/screenings/${draft.id}/invitations`, accounts[0], 'POST', { candidateEmail: `new-${randomUUID()}@example.test` })).status, 404);
+  const listed = await result(await request(`/screenings/${draft.id}/invitations`), 200);
+  assert.ok(listed.invitations.some((item) => item.id === invitation.id));
+  const report = await result(await request(`/invitations/${invitation.id}/report`), 200);
+  assert.equal(report.report.outcome, 'meets'); assert.equal(report.review, null);
+  assert.equal((await request(`/invitations/${invitation.id}/report`, accounts[1])).status, 404);
+  const copy = await result(await request(`/screenings/${draft.id}/copy`, accounts[0], 'POST', {}), 201);
+  assert.equal(copy.status, 'draft'); assert.equal(await models.Invitation.countDocuments({ screeningId: copy.id }), 0);
+});
+test('la revisión humana exige motivo para continuar contra el resultado y protege la última revisión', async () => {
+  const draft = await create(valid()); await result(await publish(draft.id), 200);
+  const invitation = await models.Invitation.create({ ownerId: accounts[0].user.id, screeningId: draft.id,
+    candidateEmail: `review-${randomUUID()}@example.test`, publicId: randomUUID(), status: 'submitted',
+    expiresAt: new Date(Date.now() - 1000), purgeAt: new Date(Date.now() + 90 * 86400000),
+    submittedAt: new Date(), report: evaluate(valid().questions, [{ questionId: 'experience', kind: 'option', optionId: 'no' }], 70) });
+  const path = `/invitations/${invitation.id}/review`;
+  const input = { expectedRevision: 0, decision: 'continue', reason: 'Revisión manual del caso ficticio' };
+  assert.equal((await request(path, accounts[1], 'PUT', input)).status, 404);
+  assert.equal((await request(path, accounts[0], 'PUT', { ...input, reason: ' ' })).status, 422);
+  assert.equal((await request(path, accounts[0], 'PUT', { ...input, decision: 'invalid' })).status, 422);
+  assert.equal((await request(path, accounts[0], 'PUT', input, { 'X-CSRF-Token': '' })).status, 403);
+  const competing = await Promise.all([request(path, accounts[0], 'PUT', input), request(path, accounts[0], 'PUT', input)]);
+  assert.deepEqual(competing.map((response) => response.status).sort(), [200, 409]);
+  const first = await result(await request(`/invitations/${invitation.id}/report`), 200);
+  assert.equal(first.review.decision, 'continue'); assert.equal(first.review.revision, 1);
+  assert.equal(first.report.outcome, 'not_meets');
+  const second = await result(await request(path, accounts[0], 'PUT', { expectedRevision: 1, decision: 'clarify', reason: '' }), 200);
+  assert.equal(second.review.revision, 2); assert.equal(second.review.decision, 'clarify');
+  const afterReview = await result(await request(`/invitations/${invitation.id}/report`), 200);
+  assert.equal(afterReview.report.outcome, 'not_meets'); assert.equal(afterReview.review.revision, 2);
+  const pending = await models.Invitation.create({ ownerId: accounts[0].user.id, screeningId: draft.id,
+    candidateEmail: `pending-${randomUUID()}@example.test`, publicId: randomUUID(),
+    expiresAt: new Date(Date.now() + 86400000), purgeAt: new Date(Date.now() + 90 * 86400000) });
+  assert.equal((await request(`/invitations/${pending.id}/report`)).status, 409);
+  assert.equal((await request(`/invitations/${pending.id}/review`, accounts[0], 'PUT', input)).status, 409);
+  await models.Invitation.updateOne({ _id: invitation.id }, { $set: { purgeAt: new Date(Date.now() - 1000) } });
+  assert.equal((await request(`/invitations/${invitation.id}/report`)).status, 404);
 });
 test('dos guardados simultáneos: un ganador, 409 y contenido conservado', async () => {
   const draft = await create(); const responses = await Promise.all([save(draft.id, { ...valid(), title: 'Ganador A' }), save(draft.id, { ...valid(), title: 'Ganador B' })]);

@@ -2,7 +2,7 @@
 
 [README](../readme.md) · [Contrato P-01 a P-08](producto.md) · [Acceso T-05](candidatos-acceso.md) · [UX-02](backlog.md#ux-02--formulario-del-postulante).
 
-La rama `feature/candidate-attempt-T07-LL` conecta cuestionario, guardado y envío al intento autenticado. Usa solo invitaciones/correos ficticios. El candidato ve preguntas y sus respuestas, nunca puntajes, pesos, umbral, criterios de evaluación, exclusiones ni informe. El recruiter recibe el informe en MongoDB; la pantalla de consulta/revisión humana será T-08.
+La rama `feature/candidate-attempt-T07-LL` conecta cuestionario, guardado y envío al intento autenticado. Usa solo invitaciones/correos ficticios. El candidato ve preguntas y sus respuestas, nunca puntajes, pesos, umbral, criterios de evaluación, exclusiones ni informe. La rama posterior `feature/recruiter-results-T08-LL` permite [consultar el informe y registrar una revisión humana](resultados-recruiter.md).
 
 ## Recorrido del candidato
 
@@ -30,4 +30,4 @@ El informe se calcula sin IA. El denominador incluye los pesos de **todas** las 
 
 `npm run test:attempt` pasó con dos ejemplos puros P-01/P-03/P-08 y cuatro escenarios HTTP/MongoDB/Mailpit: proyección sin reglas, guardado/validación/reanudación, requerido/doble envío/recibo, guardados simultáneos y vencimiento. La BD de prueba se crea con nombre aleatorio y se elimina al terminar. El [CI de la rama](https://github.com/luislujan32/AI4Devs-finalproject/actions/runs/36584509325) también terminó correctamente. En navegador integrado, una invitación ficticia recorrió código, dos preguntas, navegación atrás/adelante con respuesta local, guardado, recarga, desconocido, revisión, confirmación, envío y recibo persistido. El control de viewport del navegador integrado no aplicó el ancho móvil; la inspección visual a 375 px sigue pendiente de permisos de control de pantalla del Mac. No se han hecho pruebas observadas con postulantes reales ni auditoría completa de accesibilidad.
 
-T-08 aún debe exponer informe y revisión al recruiter. La [revisión UX del 03/10](ux-feedback-2026-10-03.md) registra los cambios posteriores al flujo y su comprobación pendiente. El despliegue y el E2E académico se reservan para la entrega final; este recorrido local sí cubre la conexión frontend/API/BD del flujo principal de entrega 2.
+La [revisión UX del 03/10](ux-feedback-2026-10-03.md) registra los cambios posteriores al flujo. La consulta del recruiter y el cierre de SC se documentan en [T-08](resultados-recruiter.md). El despliegue y el E2E académico se reservan para la entrega final.

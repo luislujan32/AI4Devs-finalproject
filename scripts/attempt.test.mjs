@@ -163,6 +163,8 @@ test('obligatorias, informe interno y recibo idempotente ante doble envío', asy
 });
 
 test('dos guardados concurrentes admiten un ganador; invitación vencida corta lectura y escritura', async () => {
+  await models.Screening.updateOne({ _id: screening.id }, { $set: { status: 'closed', closedAt: new Date() } });
+  assert.equal((await call('/candidate/attempt', sessions[1])).status, 200, 'una invitación previa sigue activa tras el cierre');
   const bodies = [answer('english', 'high'), answer('license', 'yes')];
   const responses = await Promise.all([call('/candidate/attempt/answers', sessions[1], 'PUT', { expectedRevision: 0, answers: bodies }),
     call('/candidate/attempt/answers', sessions[1], 'PUT', { expectedRevision: 0, answers: [] })]);

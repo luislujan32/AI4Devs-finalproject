@@ -89,11 +89,11 @@ export const ScreeningSchema = new Schema({
   ownerId: { type: Schema.Types.ObjectId, required: true },
   title: { type: String, minlength: 1, maxlength: 120 }, area: String,
   description: { type: String, maxlength: 6000 },
-  status: { type: String, enum: ['draft', 'published'], default: 'draft' },
+  status: { type: String, enum: ['draft', 'published', 'closed'], default: 'draft' },
   revision: { ...integer(0), default: 0 }, threshold: integer(0, 100),
   questions: { type: [QuestionSchema], castNonArrays: false, default: [],
     validate: [(questions: { id: string }[]) => questions.length <= 20, uniqueIds].map((validator) => ({ validator, message: 'Preguntas inválidas.' })) },
-  publishedAt: Date,
+  publishedAt: Date, closedAt: Date,
 }, { ...stored, collection: 'screenings' });
 ScreeningSchema.index({ ownerId: 1, createdAt: -1 });
 

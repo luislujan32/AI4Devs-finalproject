@@ -15,6 +15,8 @@ export class ScreeningsController {
   remove(@Req() req: RecruiterRequest, @Param('id') id: string, @Body() body: unknown) { return this.screenings.remove(req.auth.user.id, id, body); }
   @Post(':id/publish') @HttpCode(200)
   publish(@Req() req: RecruiterRequest, @Param('id') id: string, @Body() body: unknown) { return this.screenings.publish(req.auth.user.id, id, body); }
+  @Post(':id/close') @HttpCode(200)
+  close(@Req() req: RecruiterRequest, @Param('id') id: string, @Body() body: unknown) { return this.screenings.close(req.auth.user.id, id, body); }
   @Post(':id/copy') copy(@Req() req: RecruiterRequest, @Param('id') id: string, @Body() body: unknown) { return this.screenings.copy(req.auth.user.id, id, body); }
   @Post(':id/questions/from-bank') @HttpCode(200)
   bankCopy(@Req() req: RecruiterRequest, @Param('id') id: string, @Body() body: unknown) { return this.screenings.fromBank(req.auth.user.id, id, body); }

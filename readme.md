@@ -2,9 +2,9 @@
 
 Desarrollo en el fork; **feature/entrega-2-LL** es la rama de integración prevista. [Guía local](docs/desarrollo.md) · [Aplicación de los aprendizajes del máster](docs/harness.md). La entrega 1 conserva su documentación en feature/entrega-1-LL.
 
-**Entrega 2 en desarrollo · Luis Lujan (LL) · Actualización: 29 de septiembre de 2026.**
+**Entrega 2 en desarrollo · Luis Lujan (LL) · Actualización: 3 de octubre de 2026.**
 
-La entrega 1 definió el MVP y su diseño. La rama `feature/entrega-2-LL` integra T-00 (frontend, API y MongoDB conectados), T-01 (persistencia), T-02 (acceso del recruiter con cuentas ficticias), T-03 (editor, banco inicial aprobado por Luis, publicación y copia) y la primera [mejora UX-01 del editor](docs/ux-screening-editor-research.md), aprobada por Luis. La rama `feature/candidate-access-T05-LL` agrega [invitaciones y acceso del postulante](docs/candidatos-acceso.md). Su rama dependiente `feature/candidate-attempt-T07-LL` implementa [respuestas, evaluación, formulario UX-02 y envío](docs/candidatos-formulario.md). La rama `feature/ux-feedback-LL` aplica la [revisión UX posterior](docs/ux-feedback-2026-10-03.md): separación Configuración/Postulantes, correo inicial local, borrado de borradores y mejoras móviles/del envío. El flujo principal web/API/BD se probó localmente con cuentas ficticias; todavía falta integrar estas ramas en entrega 2, T-08 (informe/revisión del recruiter), despliegue y evidencia final. [Persistencia y sus límites](docs/datos.md) · [Acceso recruiter y demo](docs/acceso.md) · [Editor y banco](docs/screenings.md).
+La entrega 1 definió el MVP y su diseño. La rama `feature/entrega-2-LL` integra T-00 a T-03 y la primera [mejora UX-01 del editor](docs/ux-screening-editor-research.md). Las ramas dependientes `feature/candidate-access-T05-LL`, `feature/candidate-attempt-T07-LL` y `feature/ux-feedback-LL` agregan invitaciones, formulario del postulante y las correcciones de [la revisión UX](docs/ux-feedback-2026-10-03.md). Esta rama, `feature/recruiter-results-T08-LL`, agrega [informes, revisión humana y cierre de SC](docs/resultados-recruiter.md). El flujo web/API/BD se probó localmente con cuentas ficticias; falta integrarlo en `feature/entrega-2-LL`, completar T-04/T-09 y preparar despliegue y evidencia final. [Persistencia y sus límites](docs/datos.md) · [Acceso recruiter y demo](docs/acceso.md) · [Editor y banco](docs/screenings.md).
 
 ## Índice
 
@@ -74,7 +74,7 @@ Las reglas de evaluación, publicación, banco y revisión humana se especifican
 
 1. El recruiter inicia sesión con correo y contraseña. En el MVP las cuentas se aprovisionan mediante un comando administrativo; no se desarrolla registro público, roles complejos ni recuperación de contraseña por interfaz.
 2. Crea el screening, elige área y agrega preguntas propias, del banco o sugeridas por IA. Confirma puntuación, pesos, excluyentes, obligatoriedad y umbral.
-3. Publica una configuración válida. El cuestionario publicado queda inmutable; puede copiarlo a un borrador nuevo.
+3. Publica una configuración válida. El cuestionario publicado queda inmutable; puede cerrarlo para detener nuevas invitaciones o copiarlo a un borrador nuevo.
 4. Registra el correo del candidato y obtiene un enlace individual para compartir. El nombre es opcional. Una invitación contiene un único intento; no hay importación masiva ni reintentos de evaluación en el MVP.
 5. Al abrir el enlace, el candidato solicita un código enviado al correo registrado. El enlace por sí solo no permite leer el cuestionario ni respuestas. El código comprueba acceso al buzón, no identidad civil ni titularidad exclusiva.
 6. El candidato lee el aviso de uso de datos, responde y guarda su avance. Puede salir y retomar mediante un nuevo acceso autorizado.
@@ -168,8 +168,8 @@ PostgreSQL también sería válido. Se elige MongoDB porque la configuración y 
 | `docs/backlog.md` | Incluido | Historias adicionales, tickets y dependencias |
 | `docs/openapi.yaml` | Incluido | Tres operaciones representativas |
 | `docs/wireframes.svg` | Incluido | Bocetos de interfaz |
-| `apps/web` | Implementado en ramas de entrega 2 | Acceso del recruiter, editor, invitaciones y formulario del postulante; informe del recruiter pendiente |
-| `apps/api` | Implementado en ramas de entrega 2 | NestJS/Express, MongoDB, autenticación, screenings, invitaciones, respuestas y evaluación; revisión humana pendiente |
+| `apps/web` | Implementado en ramas de entrega 2 | Acceso del recruiter, editor, invitaciones, formulario del postulante, informe y revisión humana |
+| `apps/api` | Implementado en ramas de entrega 2 | NestJS/Express, MongoDB, autenticación, screenings, invitaciones, evaluación, informes y revisión humana |
 | `.github/workflows` | [CI de la rama candidata completado](https://github.com/luislujan32/AI4Devs-finalproject/actions/runs/36584509325) | Tipos, lint, build, OpenSpec, pruebas de persistencia, acceso y flujo del candidato |
 
 El monorepo contiene frontend y backend como npm workspaces. Cada regla se mantiene en su documento de referencia. [Comandos y workflow OpenSpec](docs/desarrollo.md).
@@ -212,7 +212,7 @@ Prácticas previstas para la implementación:
 - **Credenciales:** contraseñas con Argon2id; códigos generados criptográficamente, almacenados como HMAC con clave del servidor y vinculados al desafío/invitación; secretos fuera del repositorio. Los límites contra fuerza bruta se guardan por invitación y se complementan por IP. Consumo y verificación del código son atómicos. [Almacenamiento de contraseñas](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html), [principios para códigos y tokens](https://cheatsheetseries.owasp.org/cheatsheets/Forgot_Password_Cheat_Sheet.html).
 - **Minimización:** correo, nombre opcional y respuestas pertinentes. No se piden documentos de identidad, foto, fecha de nacimiento ni datos sensibles por defecto. Banco inicial sin criterios de características personales ajenas al puesto. La revisión humana debe verificar la pertinencia de preguntas propias o sugeridas.
 - **Transparencia:** aviso antes de responder con propósito, responsable/contacto configurado, acceso del recruiter y plazo de conservación. Identificar afirmaciones como declaraciones del candidato; no presentar niveles o competencias como certificados.
-- **Conservación:** invitaciones, respuestas, informe y revisión se eliminan a los 90 días desde su creación, configurables antes del uso. El recruiter puede eliminarlos antes. Consultas y autorización niegan acceso tras el plazo aunque la limpieza física esté pendiente. El borrado de una invitación invalida su acceso y permite limpiar sus sesiones. No se incluye backup de datos personales en la demo; cualquier despliegue con backups deberá definir también su eliminación.
+- **Conservación:** invitaciones, respuestas, informe y revisión se eliminan a los 90 días desde la invitación en la demo. Consultas y autorización niegan acceso tras el plazo aunque la limpieza física esté pendiente. El borrado anticipado de invitaciones y limpieza de sesiones relacionadas sigue pendiente en T-09. No se incluye backup de datos personales en la demo; cualquier despliegue con backups deberá definir también su eliminación.
 - **IA limitada:** solo descripción del puesto, área y preguntas pertinentes del banco. No se envían identidades, respuestas ni informes de candidatos. La salida es una propuesta validada, sin herramientas para publicar o modificar datos. La descripción se trata como entrada no confiable. No se garantiza filtrado semántico perfecto: el recruiter revisa antes de publicar.
 - **Operación:** HTTPS, validación de entradas y límites de tamaño; logs de errores sin respuestas, contraseñas, códigos ni cuerpos de solicitudes. Fixtures y demostración con datos ficticios.
 
@@ -256,7 +256,7 @@ Todos los documentos de dominio tienen `_id: ObjectId`, `createdAt: Date` y `upd
 | Colección | Atributos principales y restricciones |
 | --- | --- |
 | `users` | `email: string` normalizado, único; `passwordHash: string`; `displayName: string`; `active: boolean`. Solo recruiter; sin roles múltiples |
-| `screenings` | `ownerId: ObjectId` requerido; `title: string` 1–120; `area: string`; `description: string` hasta 6000; `status: draft/published`; `revision: integer >= 0`; `threshold: integer 0–100`; `questions: Question[]` máximo 20; `publishedAt: Date?`. Campos incompletos permitidos en borrador; publicación exige configuración válida |
+| `screenings` | `ownerId: ObjectId` requerido; `title: string` 1–120; `area: string`; `description: string` hasta 6000; `status: draft/published/closed`; `revision: integer >= 0`; `threshold: integer 0–100`; `questions: Question[]` máximo 20; `publishedAt: Date?`, `closedAt: Date?`. Campos incompletos permitidos en borrador; publicación exige configuración válida |
 | `question_bank` | `area: string`; `criterion: string`; `text: string`; `type: boolean/single_choice/text`; `options: {id,label}[]`; `guidance: string`; `active: boolean`. Sin pesos ni condiciones excluyentes heredados automáticamente |
 | `invitations` | `screeningId`, `ownerId: ObjectId`; `publicId: string` aleatorio opaco único; `candidateEmail: string` normalizado; `candidateName: string?`; `status: invited/in_progress/submitted`; `expiresAt`, `purgeAt: Date`; `answerRevision: integer >= 0`; `answers: Answer[]`; `submittedAt: Date?`; `report: Report?`; `review: Review?`; `auth: objeto` con desafío, HMAC, expiración, fallos y límite horario |
 | `sessions` | Sesión del store: identificador opaco, principal recruiter/candidato, `userId` o `invitationId`, token CSRF y expiración. No guarda contraseñas, respuestas ni códigos |
