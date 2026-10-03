@@ -12,7 +12,7 @@ const questionTypes = ['boolean', 'single_choice', 'text'];
 const uniqueIds = (items: { id: string }[]) => new Set(items.map((item) => item.id)).size === items.length;
 
 const OptionSchema = new Schema({
-  id: identifier, label: { type: String, required: true }, score: integer(0, 100),
+  id: identifier, label: { type: String, maxlength: 300 }, score: integer(0, 100),
 }, embedded);
 const BankOptionSchema = new Schema({ id: identifier, label: { type: String, required: true } }, embedded);
 const ExclusionSchema = new Schema({
@@ -87,6 +87,7 @@ UserSchema.index({ email: 1 }, { unique: true });
 
 export const ScreeningSchema = new Schema({
   ownerId: { type: Schema.Types.ObjectId, required: true },
+  basedOnScreeningId: Schema.Types.ObjectId,
   title: { type: String, minlength: 1, maxlength: 120 }, area: String,
   description: { type: String, maxlength: 6000 },
   status: { type: String, enum: ['draft', 'published', 'closed'], default: 'draft' },
@@ -117,6 +118,7 @@ export const InvitationSchema = new Schema({
     validate: (answers: { questionId: string }[]) => new Set(answers.map((answer) => answer.questionId)).size === answers.length },
   submittedAt: Date, report: { type: ReportSchema, default: undefined }, review: { type: ReviewSchema, default: undefined },
   auth: { type: AuthSchema, default: undefined },
+  emailAccess: { tokenHash: { type: String, select: false }, expiresAt: Date, usedAt: Date },
 }, { ...stored, collection: 'invitations' });
 InvitationSchema.index({ publicId: 1 }, { unique: true });
 InvitationSchema.index({ screeningId: 1, candidateEmail: 1 }, { unique: true });

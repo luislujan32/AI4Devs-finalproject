@@ -24,13 +24,14 @@ export class PersistenceRepository implements OnModuleInit {
   }
 
   async createInvitation(ownerId: Id, screeningId: Id, input: {
-    candidateEmail: string; candidateName?: string; expiresAt: Date; purgeAt: Date;
+    candidateEmail: string; candidateName?: string; expiresAt: Date; purgeAt: Date; emailTokenHash: string;
   }) {
     const screening = await this.models.Screening.exists({ _id: screeningId, ownerId, status: 'published' });
     if (!screening) return null;
     return this.models.Invitation.create({
       screeningId, ownerId, candidateEmail: input.candidateEmail, candidateName: input.candidateName,
       expiresAt: input.expiresAt, purgeAt: input.purgeAt, publicId: randomBytes(32).toString('base64url'),
+      emailAccess: { tokenHash: input.emailTokenHash, expiresAt: input.expiresAt },
     });
   }
 

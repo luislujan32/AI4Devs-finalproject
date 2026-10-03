@@ -2,7 +2,7 @@
 
 [README](../readme.md) · [Reglas de producto](producto.md) · [UX-02](backlog.md#ux-02--formulario-del-postulante).
 
-T-05 permite crear invitaciones individuales para un screening publicado propio y verificar el correo ficticio del postulante. El acceso ya funciona con MongoDB y Mailpit locales. La rama dependiente `feature/candidate-attempt-T07-LL` añade [cuestionario, guardado, revisión y envío](candidatos-formulario.md); un enlace por sí solo nunca muestra preguntas.
+T-05 permite crear invitaciones individuales para un screening publicado propio y verificar el correo ficticio del postulante. El acceso ya funciona con MongoDB y Mailpit locales. El desarrollo posterior añadió [cuestionario, guardado, revisión y envío](candidatos-formulario.md); el enlace compartido por el recruiter no autoriza por sí solo, mientras que el correo contiene una credencial de un uso.
 
 El [cierre posterior de un SC](resultados-recruiter.md) impide nuevas invitaciones, pero las ya enviadas conservan su plazo original de siete días y pueden terminarse.
 
@@ -10,8 +10,8 @@ El [cierre posterior de un SC](resultados-recruiter.md) impide nuevas invitacion
 
 1. Iniciar MongoDB y Mailpit con `npm run infra:up`, configurar `.env` y ejecutar la app según [desarrollo](desarrollo.md). Mailpit se abre en `http://127.0.0.1:8026`.
 2. Entrar como recruiter ficticio, abrir un screening publicado e introducir un correo terminado en `example.test`. El nombre es opcional.
-3. En Postulantes, enviar una invitación. Mailpit recibe un mensaje con el enlace `#invite=<publicId>` y el recruiter también puede copiarlo desde la lista. El enlace por sí solo **no autoriza** ver el cuestionario.
-4. Abrir el enlace, pedir el código, leerlo en Mailpit e introducir los seis dígitos. El correo demuestra acceso a ese buzón de pruebas, no identidad civil. Una sesión vigente vuelve a abrir el mismo intento.
+3. En Postulantes, enviar una invitación. Mailpit recibe un enlace con `#invite=<publicId>&access=<token>` que abre la invitación sin código la primera vez. El recruiter puede copiar un enlace con solo `#invite=<publicId>`, que exige verificar el correo.
+4. Si el enlace del correo ya se usó, venció o se abre el enlace copiado, pedir el código, leerlo en Mailpit e introducir los seis dígitos. El correo demuestra acceso a ese buzón de pruebas, no identidad civil. Una sesión vigente vuelve a abrir el mismo intento.
 
 La API envía tanto la invitación inicial (HTML y texto con enlace) como el código posterior a Mailpit mediante su [API HTTP local de pruebas](https://mailpit.axllent.org/docs/usage/sending-messages/), restringida a `127.0.0.1`; no acepta direcciones reales ni envía correo fuera del equipo. Si falla el primer envío, se informa el error y se revierte la invitación aún intacta. Antes de trabajar con datos reales habrá que decidir proveedor de correo, HTTPS, avisos de privacidad y borrado operativo.
 
@@ -25,10 +25,11 @@ Todas las rutas están bajo `/api`. Las mutaciones exigen `Origin` permitido y `
 | `GET /screenings/:id/invitations` | Lista hasta 100 invitaciones propias, sin HMAC ni desafíos |
 | `POST /candidate/access/request` | Preacceso; `{publicId}`; entrega código a Mailpit y devuelve solo estado/espera |
 | `POST /candidate/access/verify` | Preacceso; `{publicId, code}`; consume desafío y crea/rota cookie de sesión candidata |
+| `POST /candidate/access/email-link` | Preacceso; `{publicId, token}`; consume el token del correo y crea sesión candidata |
 | `GET /candidate/session` | Revalida sesión, invitación y plazo de conservación; devuelve estado propio sin preguntas ni reglas internas |
 | `POST /candidate/logout` | Revoca sesión candidata |
 
-La invitación dura siete días y se conserva como máximo 90 días desde la creación. El código aleatorio dura diez minutos, permite cinco fallos y se consume una vez. Entre envíos deben pasar 60 segundos; máximo cinco envíos por invitación/hora, más límite por IP. Reenviar reemplaza el código anterior sin reiniciar la ventana horaria. La sesión candidata dura hasta dos horas y nunca supera la invitación. Usa una cookie distinta de la del recruiter, de modo que verificar un código en el mismo navegador no cierra la sesión del recruiter. MongoDB puede limpiar por TTL más tarde: cada acceso aplica los plazos directamente. El código se guarda como HMAC vinculado a invitación y desafío; el valor en claro no aparece en respuestas del producto, logs ni almacenamiento del navegador.
+La invitación dura siete días y se conserva como máximo 90 días desde la creación. El token del correo dura hasta el vencimiento, se almacena solo como HMAC y se consume atómicamente una vez. El navegador lo retira del fragmento URL al abrir; el enlace copiado carece de él y mantiene el código. El código aleatorio dura diez minutos, permite cinco fallos y se consume una vez. Entre envíos deben pasar 60 segundos; máximo cinco envíos por invitación/hora, más límite por IP. Reenviar reemplaza el código anterior sin reiniciar la ventana horaria. La sesión candidata dura hasta dos horas y nunca supera la invitación. Usa una cookie distinta de la del recruiter, de modo que verificar un código en el mismo navegador no cierra la sesión del recruiter. MongoDB puede limpiar por TTL más tarde: cada acceso aplica los plazos directamente. El código se guarda como HMAC vinculado a invitación y desafío; el valor en claro no aparece en respuestas del producto, logs ni almacenamiento del navegador.
 
 `401` significa sesión o código inválido/vencido; `403`, origen/CSRF; `404`, invitación inexistente, vencida o fuera de retención; `409`, correo ya invitado a ese screening; `422`, forma inválida; `429`, límite temporal; `503`, fallo de entrega local. Un recruiter no puede usar su sesión en rutas candidatas y viceversa. Cada sesión candidata se limita a una sola invitación; el cliente no elige otro ID para leer un intento.
 

@@ -62,3 +62,6 @@ La prueba de navegador con datos ficticios cubrió creación, pregunta manual, n
 | Tras T-06 | Vista previa de candidato | Comparar vista previa con el cuestionario real, incluida respuesta desconocida y reglas no visibles para candidatos. |
 
 Probar primero con tareas ficticias y recruiters representativos: crear un puesto con tres preguntas, configurar una puntuable y una excluyente, guardar/retomar, corregir un rechazo de publicación y añadir desde el banco. Registrar finalización, errores, vueltas atrás, tiempo, ubicación de dudas y comentarios; comparar con la versión actual. Una evaluación experta como esta identifica riesgos, pero no reemplaza esa observación.
+# Actualización de la revisión del 03/10
+
+El editor ahora guarda automáticamente el borrador completo con revisión optimista y muestra pendiente, guardando, guardado o error con reintento. La publicación espera confirmación del guardado y muestra los requisitos faltantes; el servidor rechaza umbrales que superan el máximo posible del promedio ponderado. Esta actualización sustituye la recomendación histórica de mantener «Guardar borrador» como acción explícita en la primera iteración.

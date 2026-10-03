@@ -24,6 +24,7 @@ export function RecruiterReport({ invitationId, candidate, session, onExpired, o
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
+  const [reload, setReload] = useState(0);
   useEffect(() => {
     let active = true;
     setData(null); setError(''); setNotice('');
@@ -35,7 +36,7 @@ export function RecruiterReport({ invitationId, candidate, session, onExpired, o
       else setError(problem instanceof Error ? problem.message : 'No pudimos cargar el informe.');
     });
     return () => { active = false; };
-  }, [invitationId, session, onExpired]);
+  }, [invitationId, session, onExpired, reload]);
 
   async function save(event: FormEvent) {
     event.preventDefault(); if (!data || !decision) return;
@@ -50,12 +51,10 @@ export function RecruiterReport({ invitationId, candidate, session, onExpired, o
     } finally { setBusy(false); }
   }
 
-  return <section className="recruiter-report" aria-labelledby="report-title">
+  return <section className="stage-panel recruiter-report" aria-labelledby="report-title">
     <div className="panel-heading"><div><p className="eyebrow">Respuestas recibidas</p><h3 id="report-title">Informe de {candidate}</h3></div>
-      <button className="text-action" type="button" onClick={onClose}>Cerrar informe</button></div>
-    {error && <p className="inline-error" role="alert">{error} {data && <button className="text-action" type="button" onClick={() => {
-      setError(''); api<Envelope>(`/invitations/${invitationId}/report`, session).then((result) => { setData(result);
-        setDecision(result.review?.decision ?? ''); setReason(result.review?.reason ?? ''); }).catch(() => setError('No pudimos recargar el informe.')); }}>Recargar informe</button>}</p>}
+      <button className="outline-button" type="button" onClick={onClose}>← Volver a postulantes</button></div>
+    {error && <div className="inline-error" role="alert"><p>{error}</p><button className="outline-button" type="button" onClick={() => setReload((value) => value + 1)}>Reintentar</button></div>}
     {!data ? !error && <p role="status">Cargando informe…</p> : <>
       <p className="report-note">Este resultado aplica las reglas configuradas para el puesto. La decisión sobre la postulación corresponde a una persona.</p>
       <div className="report-summary"><div><span className="field-caption">Resultado de criterios</span><strong>{outcomes[data.report.outcome]}</strong>

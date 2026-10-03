@@ -120,6 +120,28 @@ test('solo el propietario invita en publicado; duplicado y datos reales se recha
   assert.equal((await call('/candidate/session')).status, 401);
 });
 
+test('enlace del correo abre una sesión una sola vez; enlace compartido conserva verificación por código', async () => {
+  const email = `email-link-${randomUUID()}@example.test`;
+  const invitation = await (await invite(email)).json();
+  const mailbox = await (await fetch(`${mailpit}/api/v1/messages?limit=100`)).json();
+  const message = mailbox.messages.find((item) => JSON.stringify(item.To).includes(email)
+    && item.Subject.startsWith('Te invitaron a responder'));
+  assert.ok(message);
+  const content = await (await fetch(`${mailpit}/api/v1/message/${message.ID}`)).json();
+  const match = content.Text.match(/#invite=([\w-]{43})&access=([\w-]{43})/);
+  assert.ok(match); assert.equal(match[1], invitation.publicId);
+  const csrf = await prelogin();
+  assert.equal((await call('/candidate/session')).status, 401);
+  const opened = await candidatePost('/access/email-link', { publicId: invitation.publicId, token: match[2] }, csrf);
+  assert.equal(opened.status, 200);
+  const candidateCookie = cookie(opened, 'sr_candidate_session');
+  assert.ok(candidateCookie);
+  assert.equal((await call('/candidate/session', 'GET', undefined, { cookie: candidateCookie })).status, 200);
+  assert.equal((await candidatePost('/access/email-link', { publicId: invitation.publicId, token: match[2] }, csrf)).status, 401);
+  assert.equal((await candidatePost('/access/email-link', { publicId: invitation.publicId, token: 'x'.repeat(43) }, csrf)).status, 401);
+  assert.equal((await candidatePost('/access/request', { publicId: invitation.publicId }, csrf)).status, 200);
+});
+
 test('código Mailpit de un uso, CSRF, principal separado y recarga', async () => {
   const email = `flow-${randomUUID()}@example.test`;
   const invitation = await (await invite(email)).json();

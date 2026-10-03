@@ -45,7 +45,7 @@ export class AttemptService {
     const questions: EvaluationQuestion[] = screening.questions.map((question) => ({
       id: question.id, criterion: question.criterion ?? '', text: question.text ?? '', type: question.type as EvaluationQuestion['type'],
       scored: question.scored, weight: question.weight ?? undefined, options: question.options.map((option) => ({
-        id: option.id, label: option.label, score: option.score ?? undefined })),
+        id: option.id, label: option.label ?? '', score: option.score ?? undefined })),
       ...(question.exclusion ? { exclusion: { acceptedOptionIds: question.exclusion.acceptedOptionIds ?? [] } } : {}),
     }));
     return { invitation, screening, questions };
