@@ -13,6 +13,10 @@ import { domainModels } from '../apps/api/dist/persistence/models.js';
 import { provisionDemo, demoEmails } from '../apps/api/dist/auth/provision.js';
 import { loadCatalog, catalogAreas } from '../apps/api/dist/screenings/catalog.js';
 import { evaluate } from '../apps/api/dist/candidate/evaluation.js';
+import { AttemptService } from '../apps/api/dist/candidate/attempt.service.js';
+import { PersistenceRepository } from '../apps/api/dist/persistence/persistence.repository.js';
+import { ScreeningsService } from '../apps/api/dist/screenings/screenings.service.js';
+import { CandidateService } from '../apps/api/dist/candidate/candidate.service.js';
 
 const database = `screeningroom_demo_test_${randomUUID().replaceAll('-', '')}`;
 const passwords = [randomBytes(24).toString('base64url'), randomBytes(24).toString('base64url')];
@@ -184,6 +188,7 @@ test('cerrar un publicado impide nuevas invitaciones y conserva configuración, 
   assert.ok(listed.invitations.some((item) => item.id === invitation.id));
   const report = await result(await request(`/invitations/${invitation.id}/report`), 200);
   assert.equal(report.report.outcome, 'meets'); assert.equal(report.review, null);
+  assert.equal(report.candidateEmail, invitation.candidateEmail); assert.equal(report.candidateName, null);
   assert.equal((await request(`/invitations/${invitation.id}/report`, accounts[1])).status, 404);
   const copy = await result(await request(`/screenings/${draft.id}/copy`, accounts[0], 'POST', {}), 201);
   assert.equal(copy.status, 'draft'); assert.equal(await models.Invitation.countDocuments({ screeningId: copy.id }), 0);
@@ -307,4 +312,152 @@ test('copias simultáneas del banco y límite veinte preguntas no pierden cambio
   assert.ok(unused);
   assert.equal((await request(`/screenings/${draft.id}/questions/from-bank`, accounts[0], 'POST', { expectedRevision: 1, bankQuestionId: unused.id })).status, 422);
   assert.equal((await models.Screening.findById(draft.id)).questions.length, 20);
+});
+
+test('lista de 101 screenings permite filtrar y recorrer todas las páginas propias', async () => {
+  await models.Screening.insertMany(Array.from({ length: 101 }, (_, n) => ({ ownerId: accounts[0].user.id,
+    title: `Paginado ${String(n).padStart(3, '0')}`, area: 'Tecnología', status: 'draft' })));
+  const pages = await Promise.all([1, 2, 3].map(async (page) => result(await request(`/screenings?search=Paginado&page=${page}&pageSize=50`), 200)));
+  assert.deepEqual(pages.map((item) => item.screenings.length), [50, 50, 1]);
+  assert.ok(pages.every((item) => item.total === 101));
+  assert.equal(new Set(pages.flatMap((item) => item.screenings.map((entry) => entry.id))).size, 101);
+  const filtered = await result(await request('/screenings?search=Paginado&status=closed'), 200);
+  assert.equal(filtered.total, 0);
+  const other = await result(await request('/screenings?search=Paginado', accounts[1]), 200);
+  assert.equal(other.total, 0);
+  assert.equal((await request('/screenings?pageSize=100')).status, 422);
+  const literal = await result(await request('/screenings?search=.'), 200);
+  assert.equal(literal.total, 0);
+});
+
+test('editar publicado conserva v1 legacy, fija v2 futura y agrupa el SC con historial íntegro', async () => {
+  const draft = await create(valid()); await result(await publish(draft.id), 200);
+  const repository = new PersistenceRepository(connection); const attempts = new AttemptService(connection);
+  const invite = (name) => repository.createInvitation(accounts[0].user.id, draft.id, { candidateEmail: `${name}-${randomUUID()}@example.test`,
+    expiresAt: new Date(Date.now() + 86400000), purgeAt: new Date(Date.now() + 90 * 86400000), emailTokenHash: 'test-only' });
+  const legacy = await invite('legacy'); assert.equal(legacy.configurationId, undefined);
+  const context = { invitationId: legacy.id };
+  await attempts.save(context, { expectedRevision: 0, answers: [{ questionId: 'experience', kind: 'option', optionId: 'yes' }] });
+  const before = await attempts.read(context);
+  const edit = await result(await request(`/screenings/${draft.id}/edit`, accounts[0], 'POST', { expectedRevision: 1 }), 201);
+  assert.equal(edit.editingPublished, true); assert.equal(edit.configurationVersion, 2);
+  assert.deepEqual(await attempts.read(context), before);
+  const during = await invite('during'); assert.equal(during.configurationVersion, 1); assert.ok(during.configurationId);
+  const replacement = { ...valid(), title: 'Título v2', threshold: 85,
+    questions: valid().questions.map((q) => q.id === 'experience' ? { ...q, id: 'new-experience', text: '¿Usaste otra herramienta?' } : q) };
+  const saved = await result(await request(`/screenings/${draft.id}/edit`, accounts[0], 'PUT', { ...replacement, expectedRevision: edit.revision }), 200);
+  const currentWhileEditing = await result(await request(`/screenings/${draft.id}`), 200);
+  assert.equal(currentWhileEditing.title, valid().title); assert.equal(currentWhileEditing.hasEditingDraft, true);
+  assert.equal((await request(`/screenings/${draft.id}/close`, accounts[0], 'POST', { expectedRevision: saved.revision, confirmClosure: true })).status, 409);
+  const published = await result(await request(`/screenings/${draft.id}/edit/publish`, accounts[0], 'POST', { expectedRevision: saved.revision, confirmConfiguration: true }), 200);
+  assert.equal(published.configurationVersion, 2); assert.equal(published.title, replacement.title);
+  assert.equal(published.questions[0].id, 'new-experience'); assert.equal(published.threshold, 85);
+  assert.equal(published.hasEditingDraft, false); assert.deepEqual(published.versions.map((v) => v.versionNumber), [1, 2]);
+  const future = await invite('future'); assert.equal(future.configurationVersion, 2); assert.ok(future.configurationId);
+  assert.deepEqual(await attempts.read(context), before);
+  const futureRead = await attempts.read({ invitationId: future.id }); assert.equal(futureRead.title, 'Título v2'); assert.equal(futureRead.questions[0].id, 'new-experience');
+  await attempts.submit(context, { expectedRevision: 1 });
+  const report = await result(await request(`/invitations/${legacy.id}/report`), 200);
+  assert.equal(report.configurationVersion, 1); assert.equal(report.report.threshold, 70); assert.equal(report.report.criteria[0].questionId, 'experience');
+  const history = await result(await request(`/screenings/${draft.id}?version=1`), 200);
+  assert.equal(history.title, valid().title); assert.equal(history.threshold, 70); assert.equal(history.questions[0].id, 'experience');
+  assert.equal((await request(`/screenings/${draft.id}?version=1`, accounts[1])).status, 404);
+  assert.equal((await request(`/screenings/${draft.id}?version=99`)).status, 404);
+  const listing = await result(await request(`/screenings?search=Título%20v2`), 200);
+  assert.equal(listing.total, 1); assert.equal(listing.screenings[0].invited, 3);
+  const copy = await result(await request(`/screenings/${draft.id}/copy`, accounts[0], 'POST', {}), 201);
+  assert.equal(copy.threshold, 85); assert.equal(copy.questions[0].text, replacement.questions[0].text); assert.notEqual(copy.questions[0].id, 'new-experience');
+  const edit3 = await result(await request(`/screenings/${draft.id}/edit`, accounts[0], 'POST', { expectedRevision: published.revision }), 201);
+  const discarded = await result(await request(`/screenings/${draft.id}/edit`, accounts[0], 'DELETE', { expectedRevision: edit3.revision }), 200);
+  assert.equal(discarded.configurationVersion, 2); assert.equal(discarded.hasEditingDraft, false);
+  assert.equal((await request(`/screenings/${draft.id}/edit`, accounts[0], 'PUT', { ...replacement, expectedRevision: edit3.revision })).status, 409);
+  const nextEdit = await result(await request(`/screenings/${draft.id}/edit`, accounts[0], 'POST', { expectedRevision: discarded.revision }), 201);
+  const saved3 = await result(await request(`/screenings/${draft.id}/edit`, accounts[0], 'PUT', { ...replacement, title: 'Título v3', threshold: 95, expectedRevision: nextEdit.revision }), 200);
+  const version3 = await result(await request(`/screenings/${draft.id}/edit/publish`, accounts[0], 'POST', { expectedRevision: saved3.revision, confirmConfiguration: true }), 200);
+  assert.equal(version3.configurationVersion, 3); assert.deepEqual(await attempts.read({ invitationId: future.id }), futureRead);
+  const closed = await result(await request(`/screenings/${draft.id}/close`, accounts[0], 'POST', { expectedRevision: version3.revision, confirmClosure: true }), 200);
+  assert.equal(closed.status, 'closed'); assert.deepEqual(await attempts.read({ invitationId: future.id }), futureRead);
+});
+
+test('carrera de invitación con edición/publicación/cierre selecciona configuración completa o limpia el intento propio', async () => {
+  const service = new ScreeningsService(connection); const repository = new PersistenceRepository(connection); const owner = accounts[0].user.id;
+  for (const transition of ['begin', 'publish', 'close']) {
+    const draft = await create(valid()); await result(await publish(draft.id), 200);
+    const edit = transition === 'publish' ? await service.beginEdit(owner, draft.id, { expectedRevision: 1 }) : null;
+    const original = models.Invitation.create; let first = true;
+    try {
+      models.Invitation.create = async (...args) => {
+        const row = await original.apply(models.Invitation, args);
+        if (first) { first = false;
+          if (transition === 'begin') await service.beginEdit(owner, draft.id, { expectedRevision: 1 });
+          else if (transition === 'publish') await service.publishEditing(owner, draft.id, { expectedRevision: edit.revision, confirmConfiguration: true });
+          else await service.close(owner, draft.id, { expectedRevision: 1, confirmClosure: true });
+        }
+        return row;
+      };
+      const invitation = await repository.createInvitation(owner, draft.id, { candidateEmail: `race-${randomUUID()}@example.test`,
+        expiresAt: new Date(Date.now() + 86400000), purgeAt: new Date(Date.now() + 90 * 86400000), emailTokenHash: 'test-only' });
+      if (transition === 'close') { assert.equal(invitation, null); assert.equal(await models.Invitation.countDocuments({ screeningId: draft.id }), 0); }
+      else { const root = await models.Screening.findById(draft.id); assert.equal(invitation.configurationId.toString(), root.activeConfigurationId.toString());
+        assert.equal(invitation.configurationVersion, transition === 'publish' ? 2 : 1); assert.equal(await models.Invitation.countDocuments({ screeningId: draft.id }), 1); }
+    } finally { models.Invitation.create = original; }
+  }
+});
+
+test('dos aperturas/publicaciones de versión usan un borrador y un ganador, con referencias oficiales válidas', async () => {
+  const draft = await create(valid()); await result(await publish(draft.id), 200);
+  const edits = await Promise.all([1, 2].map(async () => result(await request(`/screenings/${draft.id}/edit`, accounts[0], 'POST', { expectedRevision: 1 }), 201)));
+  assert.equal(edits[0].revision, edits[1].revision);
+  let root = await models.Screening.findById(draft.id);
+  assert.equal(root.configurationIds.length, 1); assert.equal(await models.ScreeningConfiguration.countDocuments({ screeningId: draft.id }), 1);
+  const publications = await Promise.all([1, 2].map(() => request(`/screenings/${draft.id}/edit/publish`, accounts[0], 'POST', { expectedRevision: edits[0].revision, confirmConfiguration: true })));
+  assert.deepEqual(publications.map((r) => r.status).sort(), [200, 409]);
+  root = await models.Screening.findById(draft.id); assert.equal(root.configurationVersion, 2); assert.equal(root.configurationIds.length, 2);
+  assert.equal(await models.ScreeningConfiguration.countDocuments({ _id: { $in: root.configurationIds } }), 2);
+  assert.equal(await models.ScreeningConfiguration.countDocuments({ screeningId: draft.id }), 2);
+  assert.equal((await request(`/screenings/${draft.id}/edit`, accounts[1])).status, 404);
+});
+
+test('fallo de publicación antes/después de CAS deja activa válida y reintento coherente', async () => {
+  const service = new ScreeningsService(connection); const owner = accounts[0].user.id;
+  const draft = await create(valid()); await result(await publish(draft.id), 200);
+  const edit = await service.beginEdit(owner, draft.id, { expectedRevision: 1 });
+  const original = models.Screening.findOneAndUpdate;
+  try {
+    models.Screening.findOneAndUpdate = () => { throw new Error('Fallo ficticio antes de CAS'); };
+    await assert.rejects(service.publishEditing(owner, draft.id, { expectedRevision: edit.revision, confirmConfiguration: true }), /Fallo ficticio/);
+  } finally { models.Screening.findOneAndUpdate = original; }
+  let root = await models.Screening.findById(draft.id); assert.equal(root.configurationVersion, 1); assert.ok(root.editingDraft);
+  try {
+    models.Screening.findOneAndUpdate = async (...args) => { await original.apply(models.Screening, args); throw new Error('Respuesta ficticia perdida'); };
+    await assert.rejects(service.publishEditing(owner, draft.id, { expectedRevision: edit.revision, confirmConfiguration: true }), /Respuesta ficticia/);
+  } finally { models.Screening.findOneAndUpdate = original; }
+  root = await models.Screening.findById(draft.id); assert.equal(root.configurationVersion, 2); assert.equal(root.editingDraft, undefined);
+  assert.ok(await models.ScreeningConfiguration.findById(root.activeConfigurationId));
+  const detail = await service.detail(owner, draft.id); assert.deepEqual(detail.versions.map((v) => v.versionNumber), [1, 2]);
+  await assert.rejects(service.publishEditing(owner, draft.id, { expectedRevision: edit.revision, confirmConfiguration: true }), /borrador cambió/);
+});
+
+test('fallos antes del correo limpian la invitación propia y permiten reintentar el mismo correo', async () => {
+  const draft = await create(valid()); await result(await publish(draft.id), 200);
+  const owner = accounts[0].user.id; const repository = new PersistenceRepository(connection);
+  const input = { candidateEmail: `retry-${randomUUID()}@example.test`, expiresAt: new Date(Date.now() + 86400000),
+    purgeAt: new Date(Date.now() + 90 * 86400000), emailTokenHash: 'test-only' };
+  const original = models.Screening.exists;
+  try {
+    models.Screening.exists = () => { throw new Error('Fallo ficticio de recheck'); };
+    await assert.rejects(repository.createInvitation(owner, draft.id, input), /Fallo ficticio/);
+  } finally { models.Screening.exists = original; }
+  assert.equal(await models.Invitation.countDocuments({ screeningId: draft.id }), 0);
+  const retry = await repository.createInvitation(owner, draft.id, input); assert.ok(retry);
+  await models.Invitation.deleteOne({ _id: retry._id });
+  await new ScreeningsService(connection).beginEdit(owner, draft.id, { expectedRevision: 1 });
+  const service = new CandidateService(connection, { digest: () => 'test-only' }, repository);
+  const find = models.ScreeningConfiguration.findOne;
+  try {
+    models.ScreeningConfiguration.findOne = () => { throw new Error('Fallo ficticio de configuración'); };
+    await assert.rejects(service.create(owner, draft.id, { candidateEmail: input.candidateEmail }, origin), /Fallo ficticio/);
+  } finally { models.ScreeningConfiguration.findOne = find; }
+  assert.equal(await models.Invitation.countDocuments({ screeningId: draft.id }), 0);
+  assert.ok(await repository.createInvitation(owner, draft.id, input));
 });

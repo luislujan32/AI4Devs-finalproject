@@ -84,8 +84,11 @@ export function App() {
   if (invitation) return <CandidateAccess key={invitation} publicId={invitation} />;
   return (
     <main className="shell">
-      <header><a className="brand" href="/" aria-label="Screeningroom, inicio"><span className="brand-mark">S</span>screeningroom</a>
-        {session ? <button className="logout" disabled={busy} onClick={() => void logout()}>Cerrar sesión</button> : <span className="badge">En desarrollo</span>}</header>
+      <header className="app-header"><a className="brand" href="/" aria-label="Screeningroom, inicio"><span className="brand-mark">S</span>screeningroom</a>
+        {session ? <><nav className="global-nav" aria-label="Navegación principal"><a href="/">Screenings</a></nav>
+          <details className="user-menu"><summary>{session.user.displayName}<span aria-hidden="true"> ▾</span></summary>
+            <div><span className="user-email">{session.user.email}</span><button className="logout" disabled={busy} onClick={() => void logout()}>Cerrar sesión</button></div></details></>
+          : <span className="badge">En desarrollo</span>}</header>
       {initializing ? <p className="loading" role="status">Comprobando acceso…</p> : session ? (
         <Workspace session={session} onExpired={expired} onDirtyChange={setEditingDirty} />
       ) : (

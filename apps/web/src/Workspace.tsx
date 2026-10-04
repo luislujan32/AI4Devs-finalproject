@@ -6,8 +6,11 @@ type Option = { id: string; label: string; score?: number };
 type Question = { id: string; bankQuestionId?: string; criterion?: string; text?: string; type: 'boolean' | 'single_choice' | 'text';
   required: boolean; scored: boolean; weight?: number; options: Option[]; guidance?: string; exclusion?: { acceptedOptionIds: string[] } };
 type Screening = { id: string; title?: string; area?: string; description?: string; status: 'draft' | 'published' | 'closed'; revision: number;
-  threshold?: number; questions: Question[]; publishedAt?: string; closedAt?: string; basedOnScreeningId?: string };
-type Row = Pick<Screening, 'id' | 'title' | 'area' | 'status' | 'revision'>;
+  threshold?: number; questions: Question[]; publishedAt?: string; closedAt?: string; basedOnScreeningId?: string;
+  editingPublished?: boolean; activeVersion?: number; configurationVersion?: number; hasEditingDraft?: boolean;
+  activeConfiguration?: Pick<Screening, 'title' | 'area' | 'description' | 'threshold' | 'questions'>;
+  versions?: { versionNumber: number; publishedAt: string }[] };
+type Row = Pick<Screening, 'id' | 'title' | 'area' | 'status' | 'revision' | 'configurationVersion' | 'hasEditingDraft'> & { invited: number; pendingReview: number; updatedAt: string };
 type BankQuestion = { id: string; area: string; criterion: string; text: string; type: Question['type']; options: Option[]; guidance?: string };
 type EditorStep = 'puesto' | 'preguntas' | 'revision';
 type PendingEditAction = { kind: 'remove'; id: string } | { kind: 'type'; id: string; type: Question['type'] };
@@ -16,7 +19,10 @@ const typeLabels: Record<Question['type'], string> = { boolean: 'Sí / No', sing
 const number = (value: string) => value === '' ? undefined : Number(value);
 const readable = (value: string) => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('es');
 const readRoute = () => { const id = new URLSearchParams(window.location.hash.slice(1)).get('screening'); return id && /^[a-fA-F0-9]{24}$/.test(id) ? id : undefined; };
-const hash = (id?: string) => id ? `#screening=${id}` : '';
+const readArea = () => new URLSearchParams(window.location.hash.slice(1)).get('view') === 'configuracion' ? 'configuracion' : 'postulantes';
+const readEditing = () => new URLSearchParams(window.location.hash.slice(1)).get('edit') === '1';
+const readConfigurationVersion = () => new URLSearchParams(window.location.hash.slice(1)).get('version');
+const hash = (id?: string, view?: 'configuracion' | 'postulantes') => id ? `#screening=${id}${view ? `&view=${view}` : ''}` : '';
 function questionState(q: Question) {
   if (!q.criterion?.trim() || !q.text?.trim()) return 'Falta contenido';
   if (q.scored && (!q.weight || q.options.some((option) => option.score === undefined))) return 'Faltan valores';
@@ -39,11 +45,42 @@ function draftBody(screening: Screening) {
   return { title: screening.title, area: screening.area, description: screening.description, threshold: screening.threshold,
     questions: screening.questions, expectedRevision: screening.revision };
 }
+function readOnlyVersion(screening: Screening | null) { return !!screening?.activeVersion && screening.configurationVersion !== screening.activeVersion && !screening.editingPublished; }
+function changesFor(screening: Screening) {
+  const active = screening.activeConfiguration;
+  if (!active) return [];
+  const changes: string[] = [];
+  if (screening.title !== active.title) changes.push(`Título: ${active.title} → ${screening.title || 'Pendiente'}`);
+  if (screening.area !== active.area) changes.push('Área del puesto modificada');
+  if (screening.description !== active.description) changes.push('Descripción del puesto modificada');
+  if (screening.threshold !== active.threshold) changes.push(`Umbral: ${active.threshold} → ${screening.threshold ?? 'Pendiente'}`);
+  for (const question of screening.questions) {
+    const prior = active.questions.find((item) => item.id === question.id);
+    if (!prior) { changes.push(`Pregunta agregada: ${question.criterion || 'Sin criterio'}`); continue; }
+    const details: string[] = [];
+    if (question.text !== prior.text || question.criterion !== prior.criterion || question.type !== prior.type) details.push('contenido');
+    if (question.required !== prior.required) details.push('respuesta requerida');
+    if (question.weight !== prior.weight) details.push(`peso ${prior.weight ?? 'sin peso'} → ${question.weight ?? 'sin peso'}`);
+    if (question.scored !== prior.scored || JSON.stringify(question.options) !== JSON.stringify(prior.options)) details.push('opciones y valores');
+    if (JSON.stringify(question.exclusion) !== JSON.stringify(prior.exclusion)) details.push('requisito excluyente');
+    if (question.guidance !== prior.guidance) details.push('orientación');
+    if (details.length) changes.push(`${question.criterion || prior.criterion}: ${details.join(', ')}`);
+  }
+  for (const prior of active.questions) if (!screening.questions.some((item) => item.id === prior.id)) changes.push(`Pregunta quitada: ${prior.criterion}`);
+  if (screening.questions.map((item) => item.id).join(',') !== active.questions.map((item) => item.id).join(',')) changes.push('Lista u orden de preguntas modificado');
+  return changes;
+}
 
 export function Workspace({ session, onExpired, onDirtyChange }: { session: Session; onExpired: () => void; onDirtyChange: (value: boolean) => void }) {
   const [route, setRoute] = useState(readRoute);
   const [refresh, setRefresh] = useState(0);
   const [rows, setRows] = useState<Row[]>([]);
+  const [listSearch, setListSearch] = useState('');
+  const [listTerm, setListTerm] = useState('');
+  const [listStatus, setListStatus] = useState('');
+  const [listPage, setListPage] = useState(1);
+  const [listTotal, setListTotal] = useState(0);
+  const [listSummary, setListSummary] = useState({ draft: 0, published: 0, closed: 0, pendingReview: 0 });
   const [screening, setScreening] = useState<Screening | null>(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -65,7 +102,7 @@ export function Workspace({ session, onExpired, onDirtyChange }: { session: Sess
   const [bankError, setBankError] = useState('');
   const [bankRefresh, setBankRefresh] = useState(0);
   const [step, setStep] = useState<EditorStep>('puesto');
-  const [area, setArea] = useState<'configuracion' | 'postulantes'>('configuracion');
+  const [area, setArea] = useState<'configuracion' | 'postulantes'>(readArea);
   const [activeQuestionId, setActiveQuestionId] = useState<string>();
   const [bankOpen, setBankOpen] = useState(false);
   const [bankSearch, setBankSearch] = useState('');
@@ -74,6 +111,8 @@ export function Workspace({ session, onExpired, onDirtyChange }: { session: Sess
   const [focusTarget, setFocusTarget] = useState<string>();
   const cancelActionRef = useRef<HTMLButtonElement>(null);
   const published = screening?.status === 'published';
+  const editingPublished = !!screening?.editingPublished;
+  const historical = readOnlyVersion(screening);
   const readOnly = !!screening && screening.status !== 'draft';
   const closed = screening?.status === 'closed';
   const activeQuestion = screening?.questions.find((q) => q.id === activeQuestionId) ?? screening?.questions[0];
@@ -113,7 +152,7 @@ export function Workspace({ session, onExpired, onDirtyChange }: { session: Sess
         const snapshot = draftRef.current;
         const version = editVersion.current;
         setSaveState('saving');
-        const saved = await api<Screening>(`/screenings/${snapshot.id}`, session, 'PUT', draftBody(snapshot));
+        const saved = await api<Screening>(`/screenings/${snapshot.id}${snapshot.editingPublished ? '/edit' : ''}`, session, 'PUT', draftBody(snapshot));
         savedVersion.current = version;
         if (draftRef.current?.id !== saved.id) return null;
         const next = { ...draftRef.current, revision: saved.revision };
@@ -141,31 +180,38 @@ export function Workspace({ session, onExpired, onDirtyChange }: { session: Sess
     setFocusTarget(undefined);
   }, [focusTarget, step, activeQuestionId]);
   useEffect(() => { if (error) document.getElementById('workspace-error')?.focus(); }, [error]);
+  useEffect(() => { const timer = window.setTimeout(() => { setListPage(1); setListTerm(listSearch.trim()); }, 300);
+    return () => window.clearTimeout(timer); }, [listSearch]);
   useEffect(() => {
     const handler = (event: BeforeUnloadEvent) => { if (dirty) { event.preventDefault(); event.returnValue = ''; } };
     const navigation = () => {
       const next = readRoute();
-      if (next === route) return;
+      if (next === route) { setArea(readArea());
+        if (readEditing() !== !!screening?.editingPublished || readConfigurationVersion() !== (historical ? String(screening?.configurationVersion) : null)) setRefresh((value) => value + 1);
+        return; }
       if (dirty) { setPending({ kind: 'navigate', id: next }); window.history.replaceState(null, '', window.location.pathname + window.location.search + hash(route)); }
       else { setLoading(true); setRoute(next); }
     };
     window.addEventListener('beforeunload', handler); window.addEventListener('hashchange', navigation);
     return () => { window.removeEventListener('beforeunload', handler); window.removeEventListener('hashchange', navigation); };
-  }, [dirty, route]);
+  }, [dirty, route, screening?.editingPublished, screening?.configurationVersion, historical]);
   useEffect(() => {
     let active = true; setLoading(true); setError(null); setNotice('');
     const load = async () => {
       try {
-        if (route) { const data = await api<Screening>(`/screenings/${route}`, session); if (active) { draftRef.current = data; editVersion.current = 0; savedVersion.current = 0;
+        if (route) { const version = readConfigurationVersion(); const data = await api<Screening>(`/screenings/${route}${readEditing() ? '/edit' : version ? `?version=${encodeURIComponent(version)}` : ''}`, session); if (active) { draftRef.current = data; editVersion.current = 0; savedVersion.current = 0;
           setScreening(data); setDirty(false); setSaveState('saved'); setConfirmed(false);
-          setStep(data.status !== 'draft' ? 'revision' : data.questions.length ? 'preguntas' : 'puesto'); setArea(data.status !== 'draft' ? 'postulantes' : 'configuracion'); setActiveQuestionId(data.questions[0]?.id); setBankOpen(false); setPendingEditAction(null); setConfirmDelete(false); setConfirmClose(false); } }
-        else { const data = await api<{ screenings: Row[] }>('/screenings', session); if (active) { setRows(data.screenings); draftRef.current = null;
+          setStep(data.status !== 'draft' ? 'revision' : data.questions.length ? 'preguntas' : 'puesto'); setArea(data.status !== 'draft' ? readArea() : 'configuracion'); setActiveQuestionId(data.questions[0]?.id); setBankOpen(false); setPendingEditAction(null); setConfirmDelete(false); setConfirmClose(false); } }
+        else { const params = new URLSearchParams({ page: String(listPage), pageSize: '20' });
+          if (listStatus) params.set('status', listStatus); if (listTerm) params.set('search', listTerm);
+          const data = await api<{ screenings: Row[]; total: number; summary: typeof listSummary }>(`/screenings?${params}`, session);
+          if (active) { setRows(data.screenings); setListTotal(data.total); setListSummary(data.summary); draftRef.current = null;
           setScreening(null); setDirty(false); setSaveState('saved'); } }
-      } catch (reason) { if (active) fail(reason); }
+      } catch (reason) { if (active) { if (!route) { setRows([]); setListTotal(0); } fail(reason); } }
       finally { if (active) setLoading(false); }
     };
     void load(); return () => { active = false; };
-  }, [route, refresh, session, fail]);
+  }, [route, refresh, session, fail, listPage, listStatus, listTerm]);
   useEffect(() => {
     if (!screening || readOnly) return;
     let active = true; setBankLoading(true); setBankError(''); setBank([]);
@@ -179,6 +225,11 @@ export function Workspace({ session, onExpired, onDirtyChange }: { session: Sess
   function go(id?: string) {
     if (dirty) { setPending({ kind: 'navigate', id }); return; }
     setLoading(true); window.history.pushState(null, '', window.location.pathname + window.location.search + hash(id)); setRoute(id); setScreening(null); setPendingEditAction(null);
+  }
+  function changeArea(next: 'configuracion' | 'postulantes') {
+    if (!screening || area === next) return;
+    window.history.pushState(null, '', window.location.pathname + window.location.search + hash(screening.id, next));
+    setArea(next); setNotice(''); if (historical) setRefresh((value) => value + 1);
   }
   function reload() { if (dirty) setPending({ kind: 'reload' }); else { setLoading(true); setRefresh((value) => value + 1); } }
   function discard() {
@@ -203,9 +254,28 @@ export function Workspace({ session, onExpired, onDirtyChange }: { session: Sess
   }
   async function publish() {
     if (!screening || dirty || !confirmed) return; setBusy(true); setError(null);
-    try { const data = await api<Pick<Screening, 'id' | 'status' | 'revision' | 'publishedAt'>>(`/screenings/${screening.id}/publish`, session, 'POST', { expectedRevision: screening.revision, confirmConfiguration: confirmed }); const next = { ...screening, ...data }; draftRef.current = next;
-      setScreening(next); setArea('postulantes'); setConfirmed(false); setNotice('Screening publicado. Ya podés invitar postulantes.'); }
+    try { const data = await api<Screening>(`/screenings/${screening.id}${editingPublished ? '/edit' : ''}/publish`, session, 'POST', { expectedRevision: screening.revision, confirmConfiguration: confirmed }); const next = editingPublished ? data : { ...screening, ...data }; draftRef.current = next;
+      setScreening(next); setArea('postulantes'); window.history.replaceState(null, '', window.location.pathname + window.location.search + hash(next.id, 'postulantes'));
+      setConfirmed(false); setNotice(editingPublished ? `Cambios publicados. Las nuevas invitaciones usarán la versión ${next.configurationVersion}.` : 'Screening publicado. Ya podés invitar postulantes.'); document.getElementById('workspace-title')?.focus(); }
     catch (reason) { fail(reason); } finally { setBusy(false); }
+  }
+  async function beginEdit() {
+    if (!screening || !published) return; setBusy(true); setError(null);
+    try { const data = await api<Screening>(`/screenings/${screening.id}/edit`, session, 'POST', { expectedRevision: screening.revision });
+      draftRef.current = data; editVersion.current = 0; savedVersion.current = 0; setScreening(data); setDirty(false); setSaveState('saved');
+      setArea('configuracion'); setStep('puesto'); setConfirmed(false); setNotice(''); setActiveQuestionId(data.questions[0]?.id);
+      window.history.pushState(null, '', `${hash(data.id, 'configuracion')}&edit=1`); setFocusTarget('screening-title'); }
+    catch (reason) { fail(reason); } finally { setBusy(false); }
+  }
+  async function leaveEditing() {
+    if (!screening) return;
+    try { if (dirty) await flushDraft(); window.history.pushState(null, '', hash(screening.id, 'configuracion')); setRefresh((value) => value + 1); }
+    catch { /* Mantener edición visible ante error. */ }
+  }
+  function selectVersion(version: number) {
+    if (!screening) return;
+    window.history.pushState(null, '', `${hash(screening.id, 'configuracion')}${version === screening.activeVersion ? '' : `&version=${version}`}`);
+    setRefresh((value) => value + 1);
   }
   async function copy() {
     if (!screening) return; setBusy(true); setError(null);
@@ -226,6 +296,11 @@ export function Workspace({ session, onExpired, onDirtyChange }: { session: Sess
     setBusy(true); setError(null);
     try { const current = dirty ? await flushDraft() : screening;
       if (!current) return;
+      if (current.editingPublished) {
+        const data = await api<Screening>(`/screenings/${current.id}/edit`, session, 'DELETE', { expectedRevision: current.revision });
+        draftRef.current = data; setScreening(data); setDirty(false); setSaveState('saved'); setConfirmDelete(false); setStep('revision');
+        window.history.replaceState(null, '', hash(data.id, 'configuracion')); setNotice('Borrador descartado. La configuración activa y los postulantes se conservan.'); return;
+      }
       await api<void>(`/screenings/${current.id}`, session, 'DELETE', { expectedRevision: current.revision });
       setConfirmDelete(false); setDirty(false); setScreening(null); setLoading(true);
       window.history.pushState(null, '', window.location.pathname + window.location.search); setRoute(undefined); }
@@ -235,7 +310,7 @@ export function Workspace({ session, onExpired, onDirtyChange }: { session: Sess
     if (!screening) return; setBusy(true); setError(null);
     try { const current = dirty ? await flushDraft() : screening;
       if (!current) return;
-      const data = await api<Screening>(`/screenings/${current.id}/questions/from-bank`, session, 'POST', { expectedRevision: current.revision, bankQuestionId: id });
+      const data = await api<Screening>(`/screenings/${current.id}${current.editingPublished ? '/edit' : ''}/questions/from-bank`, session, 'POST', { expectedRevision: current.revision, bankQuestionId: id });
       draftRef.current = data; setScreening(data); setDirty(false); setSaveState('saved'); setActiveQuestionId(data.questions.at(-1)?.id);
       setBankOpen(false); setConfirmed(false); setNotice('Pregunta del banco incorporada. Revisá sus reglas para este puesto.'); }
     catch (reason) { fail(reason); } finally { setBusy(false); }
@@ -315,47 +390,59 @@ export function Workspace({ session, onExpired, onDirtyChange }: { session: Sess
         <li key={n}><button className="text-action issue-action" onClick={() => jumpToIssue(issue)}>{issue} <span aria-hidden="true">↗</span></button></li>)}</ul>}
       {error.status === 409 && <><p>Tu edición local sigue disponible. Recargá la versión guardada cuando decidas descartarla.</p>
         <button className="outline-button" disabled={busy} onClick={reload}>Recargar versión guardada</button></>}
+      {!route && <button className="outline-button" disabled={busy} onClick={() => { setError(null); setRefresh((value) => value + 1); }}>Reintentar carga</button>}
     </div>}
-    {notice && <p className="success" role="status">{notice}</p>}
+    {notice && <div className="invitation-notice" role="status"><span>{notice}</span><button className="text-action" type="button" aria-label="Cerrar confirmación" onClick={() => setNotice('')}>Cerrar</button></div>}
     {loading ? <p role="status">Cargando screenings…</p> : route && screening?.id === route ? <>
       <div className="editor-toolbar">
         <button className="text-action back-action" disabled={busy} onClick={() => go()}><span aria-hidden="true">←</span> Tus screenings</button>
         <div className="toolbar-actions">
-          <span className={`save-state ${dirty ? 'is-dirty' : ''}`} role="status">{closed ? 'Cerrado' : published ? 'Publicado'
+          <span className={`badge screening-${screening.status} ${dirty ? 'is-dirty' : ''}`} role="status">{closed ? 'Cerrado' : published ? `Publicado · v${screening.activeVersion ?? 1} activa`
             : saveState === 'saving' ? 'Guardando…' : saveState === 'error' ? 'No se pudo guardar' : dirty ? 'Cambios pendientes' : 'Borrador guardado'}</span>
           {!readOnly && <>{saveState === 'error' && <button className="outline-button" onClick={() => void flushDraft().catch(() => undefined)}>Reintentar guardado</button>}
-            <button className="outline-button" disabled={busy} onClick={() => setStep('revision')}>Revisar publicación</button>
-            <button className="text-action danger-action" disabled={busy} onClick={() => setConfirmDelete(true)}>Eliminar borrador</button></>}
-          {readOnly && <button className="save-action" disabled={busy} onClick={copy}>Crear nueva versión</button>}
-          {published && <button className="text-action danger-action" disabled={busy} onClick={() => setConfirmClose(true)}>Cerrar SC</button>}
+            <button className="outline-button" disabled={busy} onClick={() => setStep('revision')}>{editingPublished ? 'Revisar cambios' : 'Revisar publicación'}</button></>}
+          {published && <button className="outline-button" disabled={busy} onClick={() => void beginEdit()}>{screening.hasEditingDraft ? 'Continuar edición' : historical ? 'Editar configuración activa' : 'Editar para nuevas invitaciones'}</button>}
+          {editingPublished && <button className="text-action" disabled={busy} onClick={() => void leaveEditing()}>Ver configuración activa</button>}
+          <details className="lifecycle-menu"><summary>Acciones del SC</summary><div>
+            {!readOnly && <button className="text-action danger-action" disabled={busy} onClick={() => setConfirmDelete(true)}>{editingPublished ? 'Descartar borrador de cambios' : 'Eliminar borrador'}</button>}
+            {readOnly && <button className="text-action" disabled={busy} onClick={copy}>Crear SC basado en este</button>}
+            {published && <button className="text-action danger-action" disabled={busy} onClick={() => setConfirmClose(true)}>Cerrar SC</button>}
+          </div></details>
         </div>
       </div>
-      {confirmDelete && <div className="confirm-inline" role="alertdialog" aria-label="Eliminar borrador">
-        <p>¿Eliminar este borrador? Se perderán su configuración y los cambios sin guardar. Esta acción no se puede deshacer.</p>
-        <div className="actions"><button className="danger-button" disabled={busy} onClick={() => void remove()}>Eliminar borrador</button>
+      {confirmDelete && <div className="confirm-inline" role="alertdialog" aria-label={editingPublished ? 'Descartar borrador de cambios' : 'Eliminar borrador'}>
+        <p>{editingPublished ? '¿Descartar los cambios en preparación? La versión activa, las invitaciones y los resultados se conservan.' : '¿Eliminar este borrador? Se perderán su configuración y los cambios sin guardar. Esta acción no se puede deshacer.'}</p>
+        <div className="actions"><button className="danger-button" disabled={busy} onClick={() => void remove()}>{editingPublished ? 'Descartar cambios' : 'Eliminar borrador'}</button>
           <button className="outline-button" disabled={busy} onClick={() => setConfirmDelete(false)}>Cancelar</button></div>
       </div>}
       {confirmClose && <div className="confirm-inline" role="alertdialog" aria-label="Cerrar screening">
-        <p>¿Cerrar este screening? No se podrán enviar nuevas invitaciones. Quienes ya recibieron una podrán responder hasta que venza su enlace. Los resultados enviados seguirán disponibles durante el plazo de conservación.</p>
-        <div className="actions"><button className="danger-button" disabled={busy} onClick={() => void close()}>Confirmar cierre</button>
+        <p>{screening.hasEditingDraft ? 'Hay cambios en preparación. Continuá la edición para publicarlos o descartarlos antes de cerrar este screening.' : '¿Cerrar este screening? No se podrán enviar nuevas invitaciones. Quienes ya recibieron una podrán responder hasta que venza su enlace. Los resultados enviados seguirán disponibles durante el plazo de conservación.'}</p>
+        <div className="actions">{!screening.hasEditingDraft && <button className="danger-button" disabled={busy} onClick={() => void close()}>Confirmar cierre</button>}
           <button className="outline-button" disabled={busy} onClick={() => setConfirmClose(false)}>Cancelar</button></div>
       </div>}
       <div className="editor-intro">
-        <p className="eyebrow">{closed ? 'Screening cerrado' : published ? 'Screening publicado' : 'Editor de screening'}</p>
-        <h1 id="workspace-title">{screening.title || 'Nuevo screening'}</h1>
-        <p className="help">{readOnly ? 'Las personas ya invitadas conservan estas preguntas y reglas. Para cambiarlas para futuras invitaciones, creá una nueva versión editable.'
+        <p className="eyebrow">{editingPublished ? `Versión ${screening.configurationVersion} en preparación` : historical ? `Configuración histórica · v${screening.configurationVersion}` : closed ? 'Screening cerrado' : published ? 'Screening publicado' : 'Editor de screening'}</p>
+        <h1 id="workspace-title" tabIndex={-1}>{screening.title || 'Nuevo screening'}</h1>
+        <p className="help">{editingPublished ? `Las personas ya invitadas conservarán sus preguntas. Hasta que publiques los cambios, las nuevas invitaciones usarán la versión ${screening.activeVersion}.`
+          : historical ? `Estás consultando la versión ${screening.configurationVersion}. Las nuevas invitaciones usan la versión ${screening.activeVersion}.`
+          : readOnly ? 'Cada invitación conserva las preguntas y reglas que recibió. Editar prepara cambios para las nuevas invitaciones.'
           : 'Prepará el puesto, sus preguntas y la evaluación. El borrador se guarda automáticamente, incluso si está incompleto.'}</p>
-        {screening.basedOnScreeningId && <p className="field-hint">Esta versión se creó a partir de un screening anterior.
-          <button className="text-action" onClick={() => go(screening.basedOnScreeningId)}>Ver versión original</button>
-          Sus postulantes y resultados permanecen en la versión original.</p>}
+        {screening.hasEditingDraft && <p className="version-notice">Cambios en preparación. La versión {screening.activeVersion} sigue activa hasta que los publiques.</p>}
+        {screening.basedOnScreeningId && <p className="field-hint">Este SC se creó a partir de otro, pero tiene sus propias invitaciones.
+          <button className="text-action" onClick={() => go(screening.basedOnScreeningId)}>Ver SC de origen</button>
+          Los postulantes y resultados del original permanecen allí.</p>}
       </div>
       {readOnly && <nav className="workspace-areas" aria-label="Áreas del screening">
-        <button className={area === 'configuracion' ? 'active' : ''} aria-current={area === 'configuracion' ? 'page' : undefined} onClick={() => setArea('configuracion')}>Configuración</button>
-        <button className={area === 'postulantes' ? 'active' : ''} aria-current={area === 'postulantes' ? 'page' : undefined} onClick={() => setArea('postulantes')}>Postulantes</button>
+        <button className={area === 'postulantes' ? 'active' : ''} aria-current={area === 'postulantes' ? 'page' : undefined} onClick={() => changeArea('postulantes')}>Postulantes</button>
+        <button className={area === 'configuracion' ? 'active' : ''} aria-current={area === 'configuracion' ? 'page' : undefined} onClick={() => changeArea('configuracion')}>Preguntas y reglas</button>
       </nav>}
       {area === 'configuracion' && <>
+      {readOnly && screening.versions && screening.versions.length > 1 && <div className="field configuration-picker"><label htmlFor="configuration-version">Configuración publicada</label>
+        <select id="configuration-version" value={screening.configurationVersion} onChange={(event) => selectVersion(Number(event.target.value))}>
+          {screening.versions.map((item) => <option key={item.versionNumber} value={item.versionNumber}>Versión {item.versionNumber}{item.versionNumber === screening.activeVersion ? ' · activa para nuevas invitaciones' : ' · anterior'}</option>)}
+        </select></div>}
       <nav className="editor-steps" aria-label="Secciones del screening">
-        {([{ id: 'puesto', label: '1. Puesto' }, { id: 'preguntas', label: `2. Preguntas (${screening.questions.length})` }, { id: 'revision', label: '3. Revisión' }] as const).map((item) =>
+        {([{ id: 'puesto', label: readOnly ? 'Puesto' : '1. Puesto' }, { id: 'preguntas', label: readOnly ? `Preguntas (${screening.questions.length})` : `2. Preguntas (${screening.questions.length})` }, { id: 'revision', label: readOnly ? 'Resumen de reglas' : '3. Revisión' }] as const).map((item) =>
           <button key={item.id} className={`step-action ${step === item.id ? 'active' : ''}`} aria-current={step === item.id ? 'step' : undefined}
             onClick={() => { setStep(item.id); setBankOpen(false); setPendingEditAction(null); }}>{item.label}</button>)}
       </nav>
@@ -486,8 +573,12 @@ export function Workspace({ session, onExpired, onDirtyChange }: { session: Sess
         </div>}
       </section>}
       {step === 'revision' && <section className="stage-panel" aria-labelledby="revision-title">
-        <div className="stage-heading"><div><p className="eyebrow">Paso 3</p><h2 id="revision-title">Revisar antes de publicar</h2></div>
-          <p>Publicar fija las preguntas y reglas para quienes reciban esta versión. Los cambios futuros se hacen en una nueva versión.</p></div>
+        <div className="stage-heading"><div><p className="eyebrow">{readOnly ? 'Configuración publicada' : 'Paso 3'}</p><h2 id="revision-title">{readOnly ? 'Preguntas y reglas de este SC' : 'Revisar antes de publicar'}</h2></div>
+          <p>{readOnly ? `Esta versión es de solo lectura. Las invitaciones que recibieron v${screening.configurationVersion ?? 1} conservan estas reglas.`
+            : 'Publicar fija las preguntas y reglas de este SC. Revisá la configuración antes de continuar.'}</p></div>
+        {editingPublished && <div className="version-changes"><h3>Cambios respecto de la versión {screening.activeVersion}</h3>
+          {changesFor(screening).length ? <ul>{changesFor(screening).map((change) => <li key={change}>{change}</li>)}</ul> : <p>Todavía no modificaste la configuración activa.</p>}
+          <p>Solo las nuevas invitaciones usarán la versión {screening.configurationVersion}. Las anteriores y sus informes se conservan.</p></div>}
         <div className="review-section"><div className="panel-heading"><h3>Datos del puesto</h3>
           {!readOnly && <button className="text-action" onClick={() => setStep('puesto')}>Editar puesto</button>}</div>
           <dl className="review-grid"><div><dt>Título</dt><dd>{screening.title || 'Pendiente'}</dd></div>
@@ -521,18 +612,40 @@ export function Workspace({ session, onExpired, onDirtyChange }: { session: Sess
           <p className="field-hint">El servidor también revisa el contenido y las reglas de cada pregunta. Si algo falta, podrás ir al campo correspondiente.</p>
           <label className="check"><input type="checkbox" disabled={dirty || busy || basicIssues.length > 0} checked={confirmed}
             onChange={(e) => setConfirmed(e.target.checked)} />Revisé preguntas, valores, pesos, excluyentes, obligatoriedad y umbral para este puesto.</label>
-          <button className="publish-action" disabled={busy || dirty || !confirmed || basicIssues.length > 0} onClick={publish}>Publicar screening</button>
+          <button className="publish-action" disabled={busy || dirty || !confirmed || basicIssues.length > 0 || (editingPublished && !changesFor(screening).length)} onClick={publish}>{busy ? 'Publicando…' : editingPublished ? 'Publicar cambios' : 'Publicar screening'}</button>
           {!dirty && !confirmed && basicIssues.length === 0 && <p className="field-hint">Confirmá la revisión para habilitar la publicación.</p>}
         </div>}
-        {readOnly && <div className="stage-footer"><button className="outline-button" disabled={busy} onClick={copy}>Crear nueva versión editable</button></div>}
+        {readOnly && <div className="stage-footer"><button className="outline-button" disabled={busy} onClick={copy}>Crear SC basado en este</button></div>}
       </section>}
       </>}
-      {readOnly && area === 'postulantes' && <Invitations screeningId={screening.id} closed={closed} session={session} onExpired={onExpired} />}
+      {readOnly && area === 'postulantes' && <Invitations screeningId={screening.id} activeVersion={screening.activeVersion ?? 1} closed={closed} session={session} onExpired={onExpired} />}
     </> : route ? <><h1 id="workspace-title">No pudimos abrir el screening</h1><button className="outline-button" onClick={() => go()}>Volver a mis screenings</button></> : <>
-      <p className="eyebrow">Tu espacio de trabajo</p><h1 id="workspace-title">Tus screenings</h1><p className="description">Hola, {session.user.displayName}. Prepará las preguntas y criterios para cada puesto.</p>
-      <button disabled={busy} onClick={create}>Crear screening</button>
-      {rows.length ? <ul className="screening-list">{rows.map((row) => <li key={row.id}><div><h2><a href={hash(row.id)} onClick={(event) => { event.preventDefault(); go(row.id); }}>{row.title || 'Sin título'}</a></h2><p>{row.area || 'Área pendiente'}</p></div><span className={`badge screening-${row.status}`}>{row.status === 'draft' ? 'Borrador' : row.status === 'published' ? 'Publicado' : 'Cerrado'}</span></li>)}</ul> : <p className="empty">Todavía no tenés screenings. Creá el primero para comenzar.</p>}
-      {rows.length === 100 && <p>Se muestran los primeros 100 screenings.</p>}
+      <div className="dashboard-heading"><div><p className="eyebrow">Tu espacio de trabajo</p><h1 id="workspace-title">Screenings</h1>
+        <p className="help">Prepará puestos y seguí las respuestas que necesitan tu revisión.</p></div>
+        <button disabled={busy} onClick={create}>Crear screening</button></div>
+      {!error && <div className="dashboard-summary" aria-label="Resumen de trabajo">
+        <div><strong>{listSummary.pendingReview}</strong><span>Postulantes por revisar</span></div>
+        <div><strong>{listSummary.published}</strong><span>Screenings publicados</span></div>
+        <div><strong>{listSummary.draft}</strong><span>Borradores</span></div>
+      </div>}
+      <section className="listing-section" aria-labelledby="screenings-list-title">
+        <div className="listing-heading"><div><h2 id="screenings-list-title">Todos tus screenings</h2><p>{listTotal} {listTotal === 1 ? 'resultado' : 'resultados'}</p></div></div>
+        <div className="listing-filters"><div className="field"><label htmlFor="screening-search">Buscar por título</label><input id="screening-search" type="search" value={listSearch} maxLength={120} placeholder="Buscar screening" onChange={(event) => setListSearch(event.target.value)} /></div>
+          <div className="field"><label htmlFor="screening-status">Estado</label><select id="screening-status" value={listStatus} onChange={(event) => { setListStatus(event.target.value); setListPage(1); }}>
+            <option value="">Todos</option><option value="published">Publicados</option><option value="draft">Borradores</option><option value="closed">Cerrados</option></select></div>
+          {(listSearch || listStatus) && <button className="text-action" type="button" onClick={() => { setListSearch(''); setListStatus(''); setListPage(1); }}>Limpiar filtros</button>}</div>
+        {error ? <p className="listing-empty">La lista no está disponible. Reintentá la carga.</p> : rows.length ? <><div className="screening-columns" aria-hidden="true"><span>Puesto</span><span>Estado</span><span>Postulantes</span><span>Por revisar</span><span>Última edición</span><span></span></div>
+          <ul className="screening-list">{rows.map((row) => <li key={row.id}>
+            <div className="screening-name"><h3><a href={hash(row.id)} onClick={(event) => { event.preventDefault(); go(row.id); }}>{row.title || 'Sin título'}</a></h3><p>{row.area || 'Área pendiente'}</p></div>
+            <div className="screening-cell" data-label="Estado"><span className="cell-label">Estado</span><span className={`badge screening-${row.status}`}>{row.status === 'draft' ? 'Borrador' : row.status === 'published' ? 'Publicado' : 'Cerrado'}</span>{row.hasEditingDraft && <small>Cambios en preparación</small>}</div>
+            <div className="screening-cell" data-label="Postulantes"><span className="cell-label">Postulantes</span>{row.invited}</div><div className="screening-cell" data-label="Por revisar"><span className="cell-label">Por revisar</span>{row.pendingReview}</div>
+            <div className="screening-cell" data-label="Última edición"><span className="cell-label">Última edición</span>{new Date(row.updatedAt).toLocaleDateString('es-AR', { dateStyle: 'medium' })}</div>
+            <button className="outline-button row-open" type="button" onClick={() => go(row.id)}>Abrir<span className="sr-only"> {row.title || 'screening sin título'}</span></button>
+          </li>)}</ul></> : <div className="listing-empty">{listSearch || listStatus ? <><h3>No encontramos screenings con esos filtros</h3><p>Probá otra búsqueda o limpiá los filtros.</p></>
+            : <><h3>Tu primer screening empieza acá</h3><p>Creá un puesto para preparar las preguntas y reglas.</p></>}</div>}
+        {listTotal > 20 && <nav className="pagination" aria-label="Páginas de screenings"><button className="outline-button" disabled={listPage === 1} onClick={() => setListPage((value) => value - 1)}>Anterior</button>
+          <span>Página {listPage} de {Math.ceil(listTotal / 20)}</span><button className="outline-button" disabled={listPage * 20 >= listTotal} onClick={() => setListPage((value) => value + 1)}>Siguiente</button></nav>}
+      </section>
     </>}
   </section>;
 }

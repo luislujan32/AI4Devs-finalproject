@@ -22,7 +22,7 @@ Todas las rutas están bajo `/api`. Las mutaciones exigen `Origin` permitido y `
 | Ruta | Comportamiento |
 | --- | --- |
 | `POST /screenings/:id/invitations` | Recruiter propietario; `{candidateEmail, candidateName?}`; solo publicado, correo `example.test`; devuelve invitación/enlace opaco sin código |
-| `GET /screenings/:id/invitations` | Lista hasta 100 invitaciones propias, sin HMAC ni desafíos |
+| `GET /screenings/:id/invitations` | Lista paginada y filtrable de invitaciones propias no purgadas, con total y cola Por revisar; sin HMAC ni desafíos |
 | `POST /candidate/access/request` | Preacceso; `{publicId}`; entrega código a Mailpit y devuelve solo estado/espera |
 | `POST /candidate/access/verify` | Preacceso; `{publicId, code}`; consume desafío y crea/rota cookie de sesión candidata |
 | `POST /candidate/access/email-link` | Preacceso; `{publicId, token}`; consume el token del correo y crea sesión candidata |
@@ -36,5 +36,7 @@ La invitación dura siete días y se conserva como máximo 90 días desde la cre
 ## Evidencia local del 28/09/2026
 
 `npm run test:candidate` pasó con API HTTP, MongoDB aislado y Mailpit real: propiedad/borrador/duplicado, correo ficticio, CSRF, código recibido y de un uso, cinco fallos, reenvío y límite horario, verificaciones concurrentes, separación de principales, revocación por retención, logout. El test elimina solo su base aleatoria y deja los mensajes de prueba en Mailpit local. `npm run check` y regresiones se ejecutan antes de integrar. El navegador integrado mostró creación de invitación, enlace, solicitud, lectura del buzón, verificación y sesión tras recarga. El control de viewport del navegador integrado no aplicó el ancho móvil solicitado; la comprobación visual a 375 px sigue pendiente.
+
+**Actualización 04/10/2026:** la lista ya está paginada y filtrada en la API, sin límite silencioso de 100. El correo muestra vencimiento absoluto en hora de Argentina y el mismo recorrido de recuperación en HTML/texto; [detalle](recruiter-workspace-foundations.md). `test:candidate` pasó 7/7, incluyendo 101 invitaciones. En la comprobación posterior del navegador sí se obtuvo un ancho efectivo de 375 px y no hubo desbordamiento horizontal del documento.
 
 La evidencia de este ticket no cubría el cuestionario ni la evaluación; su implementación posterior está en [T-07/T-06](candidatos-formulario.md). Tampoco acredita E2E académico ni entrega de correo real.

@@ -42,4 +42,4 @@ Los roles se convocan por necesidad, no como pasos obligatorios de todo ticket. 
 
 ## Prioridad de continuidad
 
-Para Entrega 2: integrar y comprobar el flujo actual en `feature/entrega-2-LL`, incluida la revisión móvil y errores recuperables. Después, paginar Postulantes (hoy se consultan como máximo 100 por SC) antes de añadir filtros o métricas globales. Para una etapa posterior: historial completo de decisiones, solicitud real de aclaración, canales de correo externos e integración de etapas; cada uno requiere un efecto verificable, no una etiqueta que lo simule.
+Para Entrega 2: integrar y comprobar el flujo actual en `feature/entrega-2-LL`, incluida la revisión móvil y errores recuperables. [El primer bloque del rediseño recruiter](recruiter-workspace-foundations.md) agregó paginación, filtros y totales; [el segundo](screening-versions.md) permite editar para futuras invitaciones con versiones estables. Queda validar tareas con recruiters. Para una etapa posterior: historial completo de decisiones, solicitud real de aclaración, canales de correo externos e integración de etapas; cada uno requiere un efecto verificable, no una etiqueta que lo simule.

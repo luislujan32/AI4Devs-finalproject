@@ -37,7 +37,7 @@ Para cambios de flujo, aplicar [el criterio de experiencia del producto](docs/ex
 
 ## Reglas del producto
 
-Preservar P-01 a P-08. Scoring determinista; texto libre sin puntuación ni exclusión por IA; desconocidos no equivalen a cero. Configuración publicada inmutable. Resultado y revisión humana independientes. Envío único con concurrencia controlada.
+Preservar P-01 a P-08. Scoring determinista; texto libre sin puntuación ni exclusión por IA; desconocidos no equivalen a cero. Cada versión publicada es inmutable; editar el mismo SC prepara otra configuración activa solo para futuras invitaciones (docs/screening-versions.md). Toda invitación existente conserva la versión inicial o fijada, nunca se resuelve con la activa por defecto. Resultado y revisión humana independientes. Envío único con concurrencia controlada.
 
 La IA solo propone preguntas, con revisión del recruiter. No enviar respuestas ni identidades de candidatos. Autorización por ownership; una sesión de candidato pertenece a una sola invitación. Datos ficticios en pruebas. No guardar secretos ni datos personales en código, logs, prompts o navegador.
 

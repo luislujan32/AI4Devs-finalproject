@@ -6,7 +6,9 @@ import { isObjectIdOrHexString, type Connection } from 'mongoose';
 import { AuthService } from '../auth/auth.service.js';
 import { domainModels } from '../persistence/models.js';
 import { PersistenceRepository } from '../persistence/persistence.repository.js';
+import { enumQuery, pageQuery, searchQuery } from '../persistence/list-query.js';
 import { sendLocalCode, sendLocalInvitation } from './local-mail.js';
+import { configurationFor } from '../screenings/configuration.js';
 
 const DAY = 86400000;
 const HOUR = 3600000;
@@ -25,21 +27,44 @@ export class CandidateService {
     this.models = domainModels(connection);
   }
   private invitationView(row: { _id: { toString(): string }; publicId: string; candidateEmail: string; candidateName?: string | null;
-    status: string; expiresAt: Date; createdAt?: Date; submittedAt?: Date | null;
+    status: string; expiresAt: Date; createdAt?: Date; submittedAt?: Date | null; configurationVersion?: number;
     report?: { outcome: string; score?: number | null; threshold: number } | null;
     review?: { decision: string; reviewedAt: Date } | null }) {
     return { id: row._id.toString(), publicId: row.publicId, candidateEmail: row.candidateEmail,
       candidateName: row.candidateName ?? null, status: row.status, expiresAt: row.expiresAt, createdAt: row.createdAt,
+      configurationVersion: row.configurationVersion ?? 1,
       submittedAt: row.submittedAt ?? null,
       result: row.report ? { outcome: row.report.outcome, score: row.report.score ?? null, threshold: row.report.threshold } : null,
       review: row.review ? { decision: row.review.decision, reviewedAt: row.review.reviewedAt } : null };
   }
-  async list(ownerId: string, screeningId: string) {
+  async list(ownerId: string, screeningId: string, query: Record<string, unknown> = {}) {
     if (!isObjectIdOrHexString(screeningId) || !await this.models.Screening.exists({ _id: screeningId, ownerId })) throw new NotFoundException('Screening no encontrado.');
-    const rows = await this.models.Invitation.find({ screeningId, ownerId, purgeAt: { $gt: new Date() } })
-      .select('publicId candidateEmail candidateName status expiresAt createdAt submittedAt report.outcome report.score report.threshold review.decision review.reviewedAt')
-      .sort({ createdAt: -1 }).limit(100).lean();
-    return { invitations: rows.map((row) => this.invitationView(row)) };
+    const { page, pageSize } = pageQuery(query);
+    const status = enumQuery(query.status, ['invited', 'in_progress', 'submitted'], 'respuesta');
+    const result = enumQuery(query.result, ['meets', 'not_meets', 'needs_review'], 'resultado');
+    const decision = enumQuery(query.decision, ['continue', 'do_not_continue', 'clarify', 'pending'], 'decisión');
+    const queue = enumQuery(query.queue, ['review'], 'cola');
+    const search = searchQuery(query.search);
+    if (queue && ((status && status !== 'submitted') || (decision && decision !== 'pending'))) {
+      throw new UnprocessableEntityException('La cola Por revisar requiere respuestas recibidas sin decisión.');
+    }
+    if (decision === 'pending' && status && status !== 'submitted') throw new UnprocessableEntityException('La decisión pendiente requiere respuestas recibidas.');
+    const now = new Date();
+    const scope = { screeningId, ownerId, purgeAt: { $gt: now } };
+    const filter = { ...scope, ...(status ? { status } : {}),
+      ...(queue ? { status: 'submitted' as const, 'review.decision': { $exists: false } } : {}), ...(result ? { 'report.outcome': result } : {}),
+      ...(decision ? { 'review.decision': decision === 'pending' ? { $exists: false } : decision } : {}),
+      ...(decision === 'pending' ? { status: 'submitted' as const } : {}),
+      ...(search ? { $or: [{ candidateName: search }, { candidateEmail: search }] } : {}) };
+    const [rows, total, invited, pendingReview] = await Promise.all([
+      this.models.Invitation.find(filter)
+      .select('publicId candidateEmail candidateName status expiresAt createdAt submittedAt configurationVersion report.outcome report.score report.threshold review.decision review.reviewedAt')
+      .sort({ createdAt: -1, _id: -1 }).skip((page - 1) * pageSize).limit(pageSize).lean(),
+      this.models.Invitation.countDocuments(filter),
+      this.models.Invitation.countDocuments(scope),
+      this.models.Invitation.countDocuments({ ...scope, status: 'submitted', 'review.decision': { $exists: false } }),
+    ]);
+    return { invitations: rows.map((row) => this.invitationView(row)), total, page, pageSize, summary: { invited, pendingReview } };
   }
   async create(ownerId: string, screeningId: string, input: unknown, origin: string) {
     if (!isObjectIdOrHexString(screeningId)) throw new NotFoundException('Screening no encontrado.');
@@ -59,17 +84,17 @@ export class CandidateService {
         emailTokenHash: this.auth.digest(`candidate-email-link:${emailToken}`),
       });
       if (!row) throw new NotFoundException('Screening publicado no encontrado.');
-      const screening = await this.models.Screening.findOne({ _id: screeningId, ownerId, status: 'published' }).select('title');
-      if (!screening) {
+      try {
+        const screening = await this.models.Screening.findOne({ _id: screeningId, ownerId, status: 'published' });
+        if (!screening) throw new ConflictException('El screening se cerró mientras se preparaba la invitación.');
+        const configuration = await configurationFor(this.models, screening, 'initial', row.configurationId);
+        try { await sendLocalInvitation(candidateEmail, candidateName, configuration.title ?? 'Screening', `${origin}/#invite=${row.publicId}&access=${emailToken}`, row.expiresAt); }
+        catch { throw new ServiceUnavailableException('No pudimos enviar la invitación. Intentá nuevamente.'); }
+        return { ...this.invitationView(row), emailSent: true };
+      } catch (error) {
         await this.models.Invitation.deleteOne({ _id: row._id, status: 'invited', answerRevision: 0 });
-        throw new ConflictException('El screening se cerró mientras se preparaba la invitación.');
+        throw error;
       }
-      try { await sendLocalInvitation(candidateEmail, candidateName, screening.title ?? 'Screening', `${origin}/#invite=${row.publicId}&access=${emailToken}`); }
-      catch {
-        await this.models.Invitation.deleteOne({ _id: row._id, status: 'invited', answerRevision: 0 });
-        throw new ServiceUnavailableException('No pudimos enviar la invitación. Intentá nuevamente.');
-      }
-      return { ...this.invitationView(row), emailSent: true };
     } catch (error) {
       if (error && typeof error === 'object' && 'code' in error && error.code === 11000) throw new ConflictException('Ya existe una invitación para ese correo.');
       throw error;
