@@ -26,6 +26,20 @@ La Entrega 1 definió entidades y reglas, pero dejó implícitas transiciones vi
 
 El agente de producto debe cuestionar promesas implícitas y estados imposibles; el de UX debe revisar jerarquía, lenguaje, accesibilidad y retorno. Ambos contrastan sus hallazgos con los contratos existentes. La implementación y las pruebas se completan antes de pedirle a Luis una revisión; su intervención se reserva para decisiones estratégicas como comunicaciones reales con candidatos, tratamiento de datos reales o integración con un ATS externo. La [revisión específica de resultados](ux-resultados-revision.md) muestra cómo aplicar este criterio.
 
+## Protocolo de revisión por roles — 04/10/2026
+
+Para cambios que crucen pantallas o alteren la tarea principal del recruiter, el agente principal prepara un encargo común: objetivo de la persona, capturas como **observaciones** (no requisitos por sí solas), contrato aprobado, comportamiento verificado en código, límites académicos y preguntas abiertas. Los revisores trabajan inicialmente en modo lectura y devuelven hechos con ruta, inferencias separadas, fuentes primarias enlazadas, alternativas, recomendación y criterios observables. Una fuente de diseño describe un patrón posible; no demuestra que ya funcione con nuestros usuarios.
+
+| Revisor | Pregunta principal | Salida necesaria |
+| --- | --- | --- |
+| Producto | ¿Qué tarea, estado y efecto real representa cada acción? ¿Se promete algo que el sistema no hace? | Mapa de recorrido, estados y transiciones; alcance MVP, alternativas y decisiones estratégicas. |
+| UX/UI | ¿Cómo encuentra, comprende y completa la tarea una persona, también en móvil y con teclado? | Arquitectura de información, jerarquía, lenguaje, patrón de lista/detalle, estados vacíos/error/éxito y comprobaciones de accesibilidad. |
+| Viabilidad técnica, bajo demanda | ¿El cambio afecta una versión publicada, respuestas, ownership, concurrencia o listas grandes? | Invariantes, fuente de verdad, efecto en datos/API, migración si aplica y pruebas de borde. |
+
+El agente principal contrasta los informes entre sí y con el código; no suma recomendaciones incompatibles ni delega la decisión final. Antes de implementar deja una propuesta única que indica: quién hace qué; qué cambia y qué permanece; dónde queda guardado; qué se ve después de volver, recargar o fallar; comportamiento con 0, 1 y más de 100 registros cuando corresponda; y evidencia que demostraría el resultado. Solo una elección estratégica se eleva a Luis. Los cambios menores de color, alineación, texto o espaciado se resuelven dentro del sistema visual ya acordado.
+
+Los roles se convocan por necesidad, no como pasos obligatorios de todo ticket. La auditoría [C1–C6 del espacio recruiter](ux-workspace-audit-2026-10-04.md) necesitó producto y UX, más una revisión técnica puntual porque se propuso editar publicados y mostrar filtros/conteos sobre listados truncados. No hace falta un cuarto rol permanente por ahora: primero hay que aplicar y evaluar este protocolo.
+
 ## Prioridad de continuidad
 
 Para Entrega 2: integrar y comprobar el flujo actual en `feature/entrega-2-LL`, incluida la revisión móvil y errores recuperables. Después, paginar Postulantes (hoy se consultan como máximo 100 por SC) antes de añadir filtros o métricas globales. Para una etapa posterior: historial completo de decisiones, solicitud real de aclaración, canales de correo externos e integración de etapas; cada uno requiere un efecto verificable, no una etiqueta que lo simule.

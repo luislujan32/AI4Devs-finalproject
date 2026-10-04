@@ -12,7 +12,7 @@ Las pautas del proyecto final determinan las entregas. README y P-01 a P-08 cons
 
 | Referencia | Criterio seleccionado | Aplicación en Screeningroom |
 | --- | --- | --- |
-| Contexto de agentes, S3 y transición | Harness proporcional; global breve; contexto específico bajo demanda | AGENTS enlaza contratos. Skills OpenSpec locales; sin añadir hooks, agentes por rol o workflows laborales |
+| Contexto de agentes, S3 y transición | Harness proporcional; global breve; contexto específico bajo demanda | AGENTS enlaza contratos. Skills OpenSpec locales y revisores de producto/UX por demanda; sin añadir hooks ni workflows laborales |
 | SDD/OpenSpec | Verificar la herramienta; change con escenarios; cierre actualiza specs vivas | CLI local fijada, schema spec-driven y config breve. T-00 se archiva con su contrato de infraestructura |
 | M4, planificación | Comportamiento observable, límites, supuestos y contraejemplos antes de implementar | Cada cambio refiere tickets y reglas; decisiones de producto pendientes se consultan cuando afectan el cambio |
 | M5, documentación | Capturar por qué y qué se comprobó; separar docs, API y operación | README orienta, producto conserva reglas, diseño OpenSpec registra decisiones, desarrollo registra comandos y límites |
@@ -54,3 +54,7 @@ El trabajo se publica en el fork de Luis. Entrega 1 conserva su contenido docume
 T-00 fue aprobado en el PR 1 del fork con base entrega 1. Se preservó todo su código en entrega 2 y se revirtió solo en entrega 1, sin reescribir historial. Su contenido documental volvió a coincidir con la versión posterior a las correcciones de CodeRabbit. No fusionar ese revert hacia entrega 2. No se realizaron publicaciones en el repositorio académico.
 
 Un cambio terminado se valida y archiva mediante la CLI con sincronización de sus deltas. Las tareas se marcan solo con evidencia; README/prompts registran resultados reales. El archivo de una especificación no convierte funcionalidades pendientes en implementadas ni acredita ejecución remota de CI.
+
+## Ajuste del harness tras la auditoría recruiter — 04/10/2026
+
+La [revisión C1–C6](ux-workspace-audit-2026-10-04.md) mostró que el cuello de botella no era agregar otra herramienta sino concretar decisiones de experiencia antes del código. [El protocolo de producto y UX](experiencia-producto.md#protocolo-de-revisión-por-roles--04102026) define encargos independientes, evidencia exigida y síntesis del agente principal. Un tercer revisor técnico se usa cuando la propuesta cambia invariantes o escala; no se instala como agente permanente hasta que el patrón se repita. Esta sección registra el estado actual y no reescribe la tabla histórica del 27/09.
