@@ -31,8 +31,9 @@ Una pregunta excluyente no puntuable desconocida puede dejar el resultado pendie
 
 ### P-04 — Publicación
 
-La publicación congela preguntas, opciones, pesos, umbral y excluyentes. No se edita el publicado. Una copia crea otro borrador con nuevos identificadores y sin invitaciones. Un candidato iniciado o enviado siempre conserva la configuración que recibió.
+La publicación congela cada versión de preguntas, opciones, pesos, umbral y excluyentes. **Decisión de Luis, 04/10/2026:** se puede preparar otro borrador dentro del mismo SC; publicarlo cambia la versión activa solo para nuevas invitaciones. Toda invitación existente conserva su versión, aunque todavía no haya sido abierta. El SC mantiene una sola lista de postulantes e historial de configuraciones. Una copia es otra acción: crea un SC independiente con nuevos identificadores y sin invitaciones. [Contrato y evidencia de versiones](screening-versions.md).
 El recruiter puede cerrar un publicado para impedir nuevas invitaciones sin borrar respuestas ni informes. Las invitaciones previas pueden terminarse hasta su vencimiento; el cerrado conserva configuración de solo lectura y resultados dentro de la retención. También puede copiarse como borrador nuevo.
+Si hay un borrador de cambios, primero se publica o descarta; el cierre no lo elimina silenciosamente.
 
 ### P-05 — Revisión
 

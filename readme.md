@@ -2,9 +2,9 @@
 
 Desarrollo en el fork; **feature/entrega-2-LL** es la rama de integración prevista. [Guía local](docs/desarrollo.md) · [Aplicación de los aprendizajes del máster](docs/harness.md). La entrega 1 conserva su documentación en feature/entrega-1-LL.
 
-**Entrega 2 en desarrollo · Luis Lujan (LL) · Actualización: 3 de octubre de 2026.**
+**Entrega 2 en desarrollo · Luis Lujan (LL) · Actualización: 4 de octubre de 2026.**
 
-La entrega 1 definió el MVP y su diseño. La rama `feature/entrega-2-LL` integra T-00 a T-03 y la primera [mejora UX-01 del editor](docs/ux-screening-editor-research.md). Las ramas dependientes `feature/candidate-access-T05-LL`, `feature/candidate-attempt-T07-LL` y `feature/ux-feedback-LL` agregan invitaciones, formulario del postulante y las correcciones de [la revisión UX](docs/ux-feedback-2026-10-03.md). Esta rama, `feature/recruiter-results-T08-LL`, agrega [informes, revisión humana y cierre de SC](docs/resultados-recruiter.md). El flujo web/API/BD se probó localmente con cuentas ficticias; falta integrarlo en `feature/entrega-2-LL`, completar T-04/T-09 y preparar despliegue y evidencia final. [Persistencia y sus límites](docs/datos.md) · [Acceso recruiter y demo](docs/acceso.md) · [Editor y banco](docs/screenings.md).
+La entrega 1 definió el MVP y su diseño. `feature/entrega-2-LL` es la rama de integración; el trabajo actual en `feature/review-feedback-LL` reúne invitaciones, formulario, evaluación, informes, revisión humana, cierre, [el rediseño recruiter](docs/recruiter-workspace-foundations.md) y [edición con versiones para nuevas invitaciones](docs/screening-versions.md). El flujo web/API/BD se probó localmente con cuentas ficticias. Falta integrar y verificar esta rama en entrega 2, completar T-04/T-09 y preparar despliegue y evidencia final. [Persistencia y sus límites](docs/datos.md) · [Acceso recruiter y demo](docs/acceso.md) · [Editor y banco](docs/screenings.md).
 
 ## Índice
 

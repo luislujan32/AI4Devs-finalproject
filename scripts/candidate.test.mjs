@@ -105,11 +105,13 @@ test('solo el propietario invita en publicado; duplicado y datos reales se recha
   assert.equal(invitation.emailSent, true);
   const mailbox = await (await fetch(`${mailpit}/api/v1/messages?limit=100`)).json();
   const message = mailbox.messages.find((item) => JSON.stringify(item.To).includes(email)
-    && item.Subject.startsWith('Te invitaron a responder'));
+    && item.Subject.startsWith('Invitación para responder preguntas'));
   assert.ok(message, 'Mailpit recibió la invitación inicial');
   const emailContent = await (await fetch(`${mailpit}/api/v1/message/${message.ID}`)).json();
   assert.match(emailContent.Text, new RegExp(`#invite=${invitation.publicId}`));
-  assert.match(emailContent.HTML, /Abrir mi invitación/);
+  assert.match(emailContent.HTML, /Responder preguntas/);
+  assert.match(emailContent.Text, /hora de Argentina/);
+  assert.match(emailContent.HTML, /hora de Argentina/);
   assert.equal((await invite(email.toUpperCase())).status, 409);
   const own = await call(`/screenings/${published._id}/invitations`, 'GET', undefined, accounts[0]);
   assert.equal(own.status, 200);
@@ -125,7 +127,7 @@ test('enlace del correo abre una sesión una sola vez; enlace compartido conserv
   const invitation = await (await invite(email)).json();
   const mailbox = await (await fetch(`${mailpit}/api/v1/messages?limit=100`)).json();
   const message = mailbox.messages.find((item) => JSON.stringify(item.To).includes(email)
-    && item.Subject.startsWith('Te invitaron a responder'));
+    && item.Subject.startsWith('Invitación para responder preguntas'));
   assert.ok(message);
   const content = await (await fetch(`${mailpit}/api/v1/message/${message.ID}`)).json();
   const match = content.Text.match(/#invite=([\w-]{43})&access=([\w-]{43})/);
@@ -235,4 +237,27 @@ test('verificaciones concurrentes consumen una sola vez y vigencia revoca la ses
   await models.Invitation.updateOne({ publicId: invitation.publicId }, { $set: { purgeAt: new Date(Date.now() - 1000) } });
   assert.equal((await call('/candidate/session', 'GET', undefined, { cookie: renewedCookie })).status, 401);
   assert.equal((await candidatePost('/access/request', { publicId: invitation.publicId }, csrf)).status, 404);
+});
+
+test('lista de 101 postulantes conserva total, filtros y aislamiento de dueño', async () => {
+  const now = Date.now();
+  const reports = { algorithmVersion: 'v1', outcome: 'meets', reason: 'criteria_met', score: 100, threshold: 70,
+    incomplete: false, generatedAt: new Date(now), criteria: [{ questionId: 'q1', criterion: 'Experiencia', question: '¿Usaste Git?',
+      evidence: { status: 'known', source: 'candidate_declaration', answerText: 'Sí' }, optionScore: 100, weight: 1,
+      weightedPoints: 100, exclusionStatus: 'not_applicable' }] };
+  await models.Invitation.insertMany(Array.from({ length: 101 }, (_, n) => ({ ownerId: published.ownerId, screeningId: published._id,
+    publicId: randomBytes(32).toString('base64url'), candidateEmail: `paging-${n}@example.test`, candidateName: `Persona paginada ${n}`,
+    expiresAt: new Date(now + 86400000), purgeAt: new Date(now + 90 * 86400000),
+    ...(n === 0 ? { status: 'submitted', submittedAt: new Date(now), report: reports } : {}) })));
+  const pages = await Promise.all([1, 2, 3].map(async (page) => {
+    const response = await call(`/screenings/${published._id}/invitations?search=paging-&page=${page}&pageSize=50`, 'GET', undefined, accounts[0]);
+    assert.equal(response.status, 200); return response.json();
+  }));
+  assert.deepEqual(pages.map((item) => item.invitations.length), [50, 50, 1]);
+  assert.ok(pages.every((item) => item.total === 101));
+  assert.equal(new Set(pages.flatMap((item) => item.invitations.map((entry) => entry.id))).size, 101);
+  const review = await (await call(`/screenings/${published._id}/invitations?queue=review&search=paging-`, 'GET', undefined, accounts[0])).json();
+  assert.equal(review.total, 1); assert.equal(review.invitations[0].candidateEmail, 'paging-0@example.test');
+  assert.equal((await call(`/screenings/${published._id}/invitations?search=paging-`, 'GET', undefined, accounts[1])).status, 404);
+  assert.equal((await call(`/screenings/${published._id}/invitations?page=0`, 'GET', undefined, accounts[0])).status, 422);
 });

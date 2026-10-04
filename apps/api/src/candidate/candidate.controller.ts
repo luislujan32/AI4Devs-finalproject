@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Header, HttpCode, Param, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Header, HttpCode, Param, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import { RecruiterGuard, type RecruiterRequest } from '../auth/recruiter.guard.js';
 import { AuthService } from '../auth/auth.service.js';
@@ -9,7 +9,7 @@ import { CandidateService } from './candidate.service.js';
 export class InvitationController {
   constructor(private readonly candidates: CandidateService) {}
   @Get() @Header('Cache-Control', 'no-store')
-  list(@Req() req: RecruiterRequest, @Param('id') id: string) { return this.candidates.list(req.auth.user.id, id); }
+  list(@Req() req: RecruiterRequest, @Param('id') id: string, @Query() query: Record<string, unknown>) { return this.candidates.list(req.auth.user.id, id, query); }
   @Post()
   create(@Req() req: RecruiterRequest, @Param('id') id: string, @Body() body: unknown) { return this.candidates.create(req.auth.user.id, id, body, req.headers.origin ?? ''); }
 }

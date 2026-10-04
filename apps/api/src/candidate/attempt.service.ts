@@ -5,6 +5,7 @@ import type { CandidateContext } from '../auth/auth.service.js';
 import { domainModels } from '../persistence/models.js';
 import { expectedRevision, object } from '../screenings/validation.js';
 import { evaluate, type EvaluationAnswer, type EvaluationQuestion } from './evaluation.js';
+import { configurationFor } from '../screenings/configuration.js';
 
 function answersInput(value: unknown, questions: EvaluationQuestion[]): EvaluationAnswer[] {
   if (!Array.isArray(value) || value.length > questions.length) throw new UnprocessableEntityException('Respuestas inválidas.');
@@ -39,9 +40,10 @@ export class AttemptService {
     const invitation = await this.models.Invitation.findOne({ _id: context.invitationId,
       expiresAt: { $gt: now }, purgeAt: { $gt: now } });
     if (!invitation) throw new NotFoundException('Invitación no disponible.');
-    const screening = await this.models.Screening.findOne({ _id: invitation.screeningId, ownerId: invitation.ownerId,
+    const root = await this.models.Screening.findOne({ _id: invitation.screeningId, ownerId: invitation.ownerId,
       status: { $in: ['published', 'closed'] } });
-    if (!screening) throw new NotFoundException('Screening no disponible.');
+    if (!root) throw new NotFoundException('Screening no disponible.');
+    const screening = await configurationFor(this.models, root, 'initial', invitation.configurationId);
     const questions: EvaluationQuestion[] = screening.questions.map((question) => ({
       id: question.id, criterion: question.criterion ?? '', text: question.text ?? '', type: question.type as EvaluationQuestion['type'],
       scored: question.scored, weight: question.weight ?? undefined, options: question.options.map((option) => ({

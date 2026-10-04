@@ -20,6 +20,8 @@ export class ResultsService {
     const row = await this.owned(ownerId, invitationId);
     if (row.status !== 'submitted' || !row.report) throw new ConflictException('Todavía no hay respuestas enviadas.');
     return { invitationId: row._id.toString(), screeningId: row.screeningId.toString(),
+      candidateName: row.candidateName ?? null, candidateEmail: row.candidateEmail,
+      configurationVersion: row.configurationVersion ?? 1,
       report: row.report, review: row.review ?? null };
   }
 

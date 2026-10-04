@@ -10,7 +10,7 @@ type Criterion = { questionId: string; criterion: string; question: string;
   exclusionStatus: 'met' | 'not_met' | 'unknown' | 'not_applicable' };
 type Report = { outcome: 'meets' | 'not_meets' | 'needs_review'; reason: string; score: number | null;
   threshold: number; incomplete: boolean; generatedAt: string; criteria: Criterion[] };
-type Envelope = { invitationId: string; screeningId: string; report: Report; review: Review | null };
+type Envelope = { invitationId: string; screeningId: string; candidateName: string | null; candidateEmail: string; configurationVersion: number; report: Report; review: Review | null };
 
 const outcomes = { meets: 'Cumple los criterios', not_meets: 'No cumple los criterios', needs_review: 'Requiere revisión' };
 const reasons: Record<string, string> = { knockout: 'Hay un requisito excluyente incumplido', score_below_threshold: 'El puntaje global quedó por debajo del umbral',
@@ -73,12 +73,14 @@ export function RecruiterReport({ invitationId, candidate, session, onExpired, o
     ? [...scored].sort((a, b) => (a.optionScore ?? 0) - (b.optionScore ?? 0)).slice(0, 3) : [];
 
   return <section className="stage-panel recruiter-report" aria-labelledby="report-title">
-    <div className="panel-heading"><div><p className="eyebrow">Respuestas recibidas</p><h3 id="report-title">Informe de {candidate}</h3></div>
+    <div className="panel-heading"><div><p className="eyebrow">Respuestas recibidas</p><h3 id="report-title">Informe de {data?.candidateName || data?.candidateEmail || candidate}</h3></div>
       <button className="outline-button" type="button" onClick={onClose}>← Volver a postulantes</button></div>
     {error && <div className="inline-error" role="alert"><p>{error}</p>{!data && <button className="outline-button" type="button"
       onClick={() => setReload((value) => value + 1)}>Reintentar</button>}</div>}
     {!data ? !error && <p role="status">Cargando informe…</p> : <>
-      <p className="report-note">El resultado aplica las reglas del screening. Tu decisión queda registrada por separado y puede ser distinta.</p>
+      <p className="field-hint">Evaluado con preguntas y reglas de v{data.configurationVersion}. <a href={`#screening=${data.screeningId}&view=configuracion&version=${data.configurationVersion}`}>Consultar esa configuración</a></p>
+      <div className="report-intro"><p className="report-note">El resultado aplica las reglas del screening. Tu decisión queda registrada por separado y puede ser distinta.</p>
+        <button className="text-action" type="button" onClick={() => { const target = document.getElementById('report-responses'); target?.scrollIntoView({ behavior: 'smooth' }); target?.focus(); }}>Ir a respuestas ↓</button></div>
       <div className="report-summary"><div className={`report-outcome outcome-${data.report.outcome}`}>
         <span className="field-caption">Resultado de criterios</span><strong>{outcomes[data.report.outcome]}</strong>
         <span>{reasons[data.report.reason] ?? data.report.reason}</span></div>
@@ -127,7 +129,7 @@ export function RecruiterReport({ invitationId, candidate, session, onExpired, o
           <ul>{lowest.map((item) => <li key={item.questionId}><strong>{item.criterion}</strong>
             <span>Valor de respuesta: {item.optionScore} / 100 · Peso: {item.weight}</span></li>)}</ul></>}
       </section>}
-      <h4>Respuestas y criterios</h4>
+      <h4 id="report-responses" tabIndex={-1}>Respuestas y criterios</h4>
       <p className="report-explainer">El valor de una respuesta puntuada y su peso forman el promedio global. Una pregunta informativa no suma puntos.</p>
       <ol className="report-criteria">{data.report.criteria.map((item) => <li key={item.questionId}
         className={item.exclusionStatus === 'not_met' ? 'criterion-alert' : item.exclusionStatus === 'unknown' || item.weight !== null && item.optionScore === null ? 'criterion-pending' : ''}>

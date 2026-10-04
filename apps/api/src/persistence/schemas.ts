@@ -85,18 +85,35 @@ export const UserSchema = new Schema({
 }, { ...stored, collection: 'users' });
 UserSchema.index({ email: 1 }, { unique: true });
 
-export const ScreeningSchema = new Schema({
-  ownerId: { type: Schema.Types.ObjectId, required: true },
-  basedOnScreeningId: Schema.Types.ObjectId,
+const configurationFields = {
   title: { type: String, minlength: 1, maxlength: 120 }, area: String,
   description: { type: String, maxlength: 6000 },
-  status: { type: String, enum: ['draft', 'published', 'closed'], default: 'draft' },
-  revision: { ...integer(0), default: 0 }, threshold: integer(0, 100),
+  threshold: integer(0, 100),
   questions: { type: [QuestionSchema], castNonArrays: false, default: [],
     validate: [(questions: { id: string }[]) => questions.length <= 20, uniqueIds].map((validator) => ({ validator, message: 'Preguntas inválidas.' })) },
+};
+const ConfigurationDraftSchema = new Schema(configurationFields, embedded);
+export const ScreeningConfigurationSchema = new Schema({
+  ...configurationFields,
+  screeningId: { type: Schema.Types.ObjectId, required: true }, ownerId: { type: Schema.Types.ObjectId, required: true },
+  versionNumber: { ...integer(1), required: true }, publishedAt: { type: Date, required: true },
+}, { ...stored, collection: 'screening_configurations' });
+ScreeningConfigurationSchema.index({ ownerId: 1, screeningId: 1 });
+
+export const ScreeningSchema = new Schema({
+  ...configurationFields,
+  ownerId: { type: Schema.Types.ObjectId, required: true },
+  basedOnScreeningId: Schema.Types.ObjectId,
+  status: { type: String, enum: ['draft', 'published', 'closed'], default: 'draft' },
+  revision: { ...integer(0), default: 0 },
+  configurationVersion: { ...integer(1), default: 1 },
+  initialConfigurationId: Schema.Types.ObjectId, activeConfigurationId: Schema.Types.ObjectId,
+  configurationIds: { type: [Schema.Types.ObjectId], default: [] },
+  editingDraft: { type: ConfigurationDraftSchema, default: undefined },
   publishedAt: Date, closedAt: Date,
 }, { ...stored, collection: 'screenings' });
 ScreeningSchema.index({ ownerId: 1, createdAt: -1 });
+ScreeningSchema.index({ ownerId: 1, status: 1, createdAt: -1, _id: -1 });
 
 export const BankQuestionSchema = new Schema({
   area: { type: String, required: true }, criterion: { type: String, required: true, maxlength: 120 },
@@ -110,6 +127,7 @@ BankQuestionSchema.index({ area: 1, active: 1 });
 
 export const InvitationSchema = new Schema({
   screeningId: { type: Schema.Types.ObjectId, required: true }, ownerId: { type: Schema.Types.ObjectId, required: true },
+  configurationId: Schema.Types.ObjectId, configurationVersion: { ...integer(1), default: 1 },
   publicId: identifier, candidateEmail: email, candidateName: String,
   status: { type: String, enum: ['invited', 'in_progress', 'submitted'], default: 'invited' },
   expiresAt: { type: Date, required: true }, purgeAt: { type: Date, required: true },
@@ -123,6 +141,7 @@ export const InvitationSchema = new Schema({
 InvitationSchema.index({ publicId: 1 }, { unique: true });
 InvitationSchema.index({ screeningId: 1, candidateEmail: 1 }, { unique: true });
 InvitationSchema.index({ ownerId: 1, createdAt: -1 });
+InvitationSchema.index({ ownerId: 1, screeningId: 1, createdAt: -1, _id: -1 });
 InvitationSchema.index({ purgeAt: 1 }, { expireAfterSeconds: 0 });
 
 export const SessionSchema = new Schema({
