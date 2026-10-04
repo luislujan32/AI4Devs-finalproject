@@ -1,6 +1,6 @@
 # Registro de uso de IA — Screeningroom
 
-**Autor:** Luis Lujan (LL). **Etapas:** entrega 1 documental y comienzo de entrega 2. **Actualización:** 27 de septiembre de 2026.
+**Autor:** Luis Lujan (LL). **Etapas:** entrega 1 documental y desarrollo de entrega 2. **Actualización:** 4 de octubre de 2026.
 
 Este registro documenta cómo se utilizó la IA y qué decisiones tomó el autor. Los workflows son resúmenes del trabajo real; solo los fragmentos expresamente marcados como literales reproducen instrucciones de la conversación. No se inventan prompts de implementación ni resultados de pruebas de una aplicación aún no desarrollada.
 
@@ -301,3 +301,13 @@ Por cada fase se añadirán las herramientas y modelos identificables, hasta tre
 **Decisión de producto:** «Solicitar aclaración» solo persistía un enum; no contactaba al postulante. Se retiró de nuevas revisiones y se conserva la lectura explicada de registros previos. La revisión vigente continúa siendo interna; una solicitud real se diseñará aparte. La lista obtiene un resumen mínimo sin respuestas ni motivo. El informe muestra factores relevantes, valor por respuesta, peso, decisión, motivo y fecha; tras guardar queda en lectura con acción explícita para cambiar.
 
 **Evidencia y límites:** `npm run check` pasó y la prueba de screenings cubrió proyección del resumen, rechazo de nuevas aclaraciones y reemplazo de decisión. En una base ficticia aislada, el navegador mostró los tres ejes en Postulantes, una decisión distinta del resultado, registro/confirmación, regreso, recarga, edición y cancelación; a 375 px efectivos no hubo desbordamiento horizontal. No se alteró la fórmula ni el informe enviado. El listado actual limita 100 invitaciones y necesitará paginación antes de escalar. Se usaron solo cuentas ficticias; no se atribuye un modelo exacto a los subagentes sin evidencia verificable.
+
+## Entrega 2 — Workflow 16: auditoría del espacio recruiter y mejora del harness
+
+**Entrada humana:** Luis aportó seis capturas C1–C6. Señaló falta de estructura y jerarquía en dashboard, detalle, postulantes, informe, invitaciones y correo; propuso evaluar Kanban y editar SC publicados. Pidió optimizar los revisores de producto y UX para reducir las decisiones pequeñas que llegan a su revisión. Aclaró que una edición debería afectar **solo futuras invitaciones**.
+
+**Trabajo con IA:** dos subagentes de solo lectura revisaron por separado producto y UX/UI; un tercero, convocado para esta tarea, verificó consecuencias de versionado y de listas de más de 100 registros. El agente principal contrastó sus hallazgos con código y P-04, abrió fuentes primarias de Carbon, GOV.UK, W3C y Greenhouse, y consolidó propuestas y criterios de aceptación en [la auditoría C1–C6](docs/ux-workspace-audit-2026-10-04.md). Se afinó el encargo de los revisores en [el criterio de experiencia](docs/experiencia-producto.md) y se corrigió contexto desactualizado de OpenSpec. Los agentes no editaron código ni datos.
+
+**Correcciones y decisiones:** un Kanban no representa los tres ejes actuales ni etapas de contratación reales; se propone lista filtrable y un informe de detalle. La edición directa de un publicado alteraría intentos que leen el SC actual; el objetivo es versionar y dirigir nuevas invitaciones a una versión activa, preservando las emitidas. Los conteos y filtros necesitan API paginada: las listas actuales terminan en 100 y `items.length` no es un total. No se añaden agentes permanentes por ceremonia; la revisión técnica se pide cuando cambian invariantes o escala.
+
+**Evidencia y límites:** investigación de código y fuentes oficiales, sin cambios de interfaz ni pruebas observadas con recruiters. El informe es una propuesta; no afirma que paginación, versiones activas o nuevo diseño estén implementados. Los nombres exactos de los modelos de estos subagentes no se comprobaron, por lo que no se atribuyen.

@@ -4,7 +4,9 @@ context: |
   Screeningroom es un proyecto individual del máster AI4Devs.
   Entrega 1 documenta el diseño. T-00 conecta aplicaciones/BD; T-01 implementa persistencia;
   T-02 implementa acceso del recruiter; T-03 autoría/publicación con banco inicial revisado.
-  Consultar docs para evidencia y límites; flujo principal de candidatos todavía pendiente.
+  La rama feature/review-feedback-LL contiene invitaciones, formulario, evaluación, informe,
+  revisión humana y cierre; aún debe integrarse y verificarse en feature/entrega-2-LL.
+  Consultar docs y código para evidencia y límites actuales; no tomar estados históricos como vigentes.
   Objetivo de entrega 2 (22/10/2026): web, API y MongoDB conectados y flujo principal operativo.
   Stack aprobado: React/Vite/TypeScript, NestJS/Express, MongoDB/Mongoose, npm workspaces.
   readme.md describe arquitectura; docs/producto.md contiene las reglas P-01 a P-08;
@@ -12,6 +14,8 @@ context: |
   Referenciar estos contratos; no duplicarlos completos ni afirmar que ya están implementados.
   La IA del producto solo sugiere preguntas; no evalúa ni recibe datos de candidatos.
   docs/harness.md aplica selectivamente los checkpoints del máster, sin importar contratos laborales.
+  docs/experiencia-producto.md define la revisión por roles para cambios de flujo;
+  docs/ux-workspace-audit-2026-10-04.md investiga el espacio recruiter.
   Publicar solo en el fork luislujan32/AI4Devs-finalproject; desarrollo en feature/entrega-2-LL.
   No publicar en el repositorio académico ni fusionar desarrollo hacia entrega 1.
   Cambios pequeños, sin secretos ni datos reales. Registrar evidencia y correcciones en prompts.md.

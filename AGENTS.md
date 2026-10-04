@@ -14,6 +14,8 @@ Proyecto individual AI4Devs. Stack aprobado: React/Vite/TypeScript, NestJS/Expre
 - docs/acceso.md: sesiones, cuentas ficticias, rutas implementadas y límites de T-02.
 - docs/screenings.md: autoría, publicación, CAS y banco inicial revisado de T-03.
 - docs/ux-screening-editor-research.md: diagnóstico, fuentes y primera mejora implementada del editor del recruiter.
+- docs/experiencia-producto.md: protocolo de revisión de producto, UX y viabilidad antes de cambios de flujo.
+- docs/ux-workspace-audit-2026-10-04.md: investigación C1–C6 del espacio de trabajo recruiter; propuestas, límites y aceptación.
 - docs/candidatos-acceso.md: invitaciones, correo local, sesión y límites de T-05.
 - docs/candidatos-formulario.md: respuestas, evaluación, envío y UX del postulante de T-07/T-06.
 
@@ -31,7 +33,7 @@ Distinguir contrato aprobado, comportamiento existente verificado, propuesta y p
 
 La instrucción del usuario para avanzar autoriza el trabajo acordado. Preservar cambios ajenos y evitar mutaciones destructivas. No agregar requisitos académicos, herramientas o abstracciones que no aporten al cambio. Buscar equivalentes antes de crear helpers; en este proyecto nuevo no exigir precedentes inexistentes.
 
-Para cambios de flujo, aplicar [el criterio de experiencia del producto](docs/experiencia-producto.md): definir efecto real y estados visibles antes del código, recorrer acción → confirmación → lista → reapertura → edición/cancelación con datos ficticios, y comprobar móvil/accesibilidad. Resolver autónomamente decisiones pequeñas de UX/UI; consultar a Luis solo elecciones estratégicas de alcance o comunicación externa.
+Para cambios de flujo, aplicar [el criterio de experiencia del producto](docs/experiencia-producto.md): definir efecto real y estados visibles antes del código, recorrer acción → confirmación → lista → reapertura → edición/cancelación con datos ficticios, y comprobar móvil/accesibilidad. En cambios de varias pantallas, contrastar por separado producto y UX; sumar revisión técnica cuando cambien versiones, datos o consultas a escala. El agente principal concilia hallazgos y entrega un contrato verificable antes de implementar. Resolver autónomamente decisiones pequeñas de UX/UI; consultar a Luis solo elecciones estratégicas de alcance o comunicación externa.
 
 ## Reglas del producto
 
