@@ -341,3 +341,13 @@ Por cada fase se añadirán las herramientas y modelos identificables, hasta tre
 **Trabajo con IA:** se identificaron el ancho automático distinto de la columna de acciones y la colisión de estilos entre el panel y la etiqueta «Sin decisión». Se fijaron anchos iguales de encabezado/fila, centrado de datos y cajas de estado completas; «Respuestas recibidas» pasó a «Recibidas». El informe usa un icono de documento con nombre accesible por postulante, título y el mismo tamaño que copia. Ajuste reversible dentro del diseño aprobado, sin nueva capacidad ni subagentes.
 
 **Evidencia:** tipos web, lint y build web correctos. Navegador con 3 SC y 3 postulantes ficticios en base aislada: columnas coincidentes a 1280 px (desviación menor a 0,01 px), apertura del informe mediante Enter, estados completos a 950 px y sin desbordamiento en móvil de 375 y 320 px. Botones de 36×36 px en escritorio y 44×44 px en móvil. Servidor principal actualizado y disponible; no se modificaron sus registros.
+
+## Entrega 2 — Workflow 20: consolidación y verificación integrada
+
+**Entrada humana:** Luis dio conformidad a los ajustes de columnas y autorizó continuar con la integración en entrega 2, la verificación completa y la documentación. Se trabaja únicamente en su fork; entrega 1 permanece documental.
+
+**Trabajo con IA:** Codex desktop, CLI OpenSpec y navegador integrado. Se incorporó la rama de revisión por avance directo a entrega 2 local, se ejecutaron las cinco suites y se recorrió el producto en una base separada con cuentas ficticias. Se reconciliaron README, datos de versiones, API implementada, estrategia de pruebas y backlog con la evidencia; se sincronizan las especificaciones de los cambios completos y se conserva la pregunta abierta sobre duración de sesión. No se convocaron nuevos subagentes para esta integración rutinaria.
+
+**Evidencia:** 64/64 pruebas (persistencia 14, auth 13, screenings 24, candidate 7, attempt 6), smoke y checks correctos. Navegador: editor/recarga, banco, publicación, invitación v1, cambios para futuras invitaciones v2, correo sin código, save/reload/salir/OTP/retomar, envío y recibo, informe con umbral original, decisión distinta del cálculo, cierre, invitación previa válida y conflicto entre pestañas con recuperación explícita. [Registro detallado](docs/entrega-2-verificacion-2026-10-04.md). Se publica mediante PR hacia entrega 2 del fork y se verifica CI sin atribuir a pruebas locales un resultado remoto.
+
+**Límites:** sin datos reales, mensajes externos, despliegue público ni nueva generación IA. El recorrido de interfaz es manual. La entrega formal por formulario no se realiza en este workflow.

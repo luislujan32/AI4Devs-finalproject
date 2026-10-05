@@ -14,6 +14,8 @@
 ## 3. Verificación y cierre
 
 - [x] 3.1 Probar HTTP/MongoDB/Mailpit real local: ownership, duplicado, código correcto/incorrecto/vencido/usado, reenvío, límites, concurrencia, sesiones y expiración.
-- [ ] 3.2 Comprobar navegador ficticio de recruiter → enlace → Mailpit → candidato, incluida recarga y móvil; pasar checks y regresiones.
-- [ ] 3.3 Actualizar README, docs y prompts con rutas, parámetros, evidencia y límites; validar/archivar OpenSpec.
+- [x] 3.2 Comprobar navegador ficticio de recruiter → enlace → Mailpit → candidato, incluida recarga y móvil; pasar checks y regresiones.
+- [x] 3.3 Actualizar README, docs y prompts con rutas, parámetros, evidencia y límites; validar/archivar OpenSpec.
 - [x] 3.4 Publicar solo en el fork, dejando entrega 2 y el repositorio académico sin cambios no aprobados.
+
+Evidencia consolidada: [verificación del 04/10](../../../../docs/entrega-2-verificacion-2026-10-04.md). Integración local en entrega 2; código publicado en el fork. El PR/CI remoto se registra por separado al completarse.

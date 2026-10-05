@@ -3,6 +3,7 @@
 ## Purpose
 Definir la lectura segura del cuestionario propio, el borrador de respuestas versionado y el envío único que genera una evaluación determinista sin revelar reglas internas al postulante.
 ## Requirements
+
 ### Requirement: Candidate questionnaire projection
 El sistema SHALL servir a la sesión candidata solo el screening publicado y las respuestas de su invitación, sin puntajes, pesos, umbral, criterios internos o excluyentes.
 
@@ -35,3 +36,10 @@ El sistema SHALL validar respuestas requeridas y calcular P-01 a P-08 sin IA; SH
 #### Scenario: Required question missing
 - **WHEN** falta una respuesta requerida al enviar
 - **THEN** se rechaza el envío sin cerrar el intento ni generar informe
+
+### Requirement: Existing invitation after screening closure
+Un intento invitado antes del cierre SHALL poder leerse, guardarse y enviarse hasta el vencimiento de su invitación, sin extenderla por el cierre.
+
+#### Scenario: Continue after closure
+- **WHEN** el screening se cierra mientras una invitación previa sigue vigente
+- **THEN** el candidato conserva su intento y puede enviar respuestas; el recruiter recibe el informe
