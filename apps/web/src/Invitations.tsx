@@ -7,7 +7,7 @@ type Invitation = { id: string; publicId: string; candidateEmail: string; candid
   status: 'invited' | 'in_progress' | 'submitted'; expiresAt: string; submittedAt: string | null;
   result: { outcome: 'meets' | 'not_meets' | 'needs_review'; score: number | null; threshold: number } | null;
   review: { decision: 'continue' | 'do_not_continue' | 'clarify'; reviewedAt: string } | null };
-const statusText = { invited: 'Por responder', in_progress: 'En curso', submitted: 'Respuestas recibidas' };
+const statusText = { invited: 'Por responder', in_progress: 'En curso', submitted: 'Recibidas' };
 const resultText = { meets: 'Cumple', not_meets: 'No cumple', needs_review: 'Pendiente' };
 const decisionText = { continue: 'Continuar', do_not_continue: 'No continuar', clarify: 'Aclaración pendiente' };
 const date = (value: string) => new Date(value).toLocaleString('es-AR', { dateStyle: 'medium', timeStyle: 'short' });
@@ -127,7 +127,8 @@ export function Invitations({ screeningId, activeVersion, closed, session, onExp
         <div className="candidate-cell" data-label="Decisión humana"><span className="cell-label">Decisión humana</span>{item.review ? <span className={`assessment-value review-${item.review.decision}`}>{decisionText[item.review.decision]}</span>
           : item.status === 'submitted' ? <span className="assessment-value review-pending">Sin decisión</span> : <span className="muted">—</span>}</div>
         <div className="candidate-cell candidate-date" data-label={item.status === 'submitted' ? 'Respondió' : 'Vence'}><span className="cell-label">{item.status === 'submitted' ? 'Respondió' : 'Vence'}</span>{item.status === 'submitted' && item.submittedAt ? date(item.submittedAt) : date(item.expiresAt)}</div>
-        <div className="candidate-row-action">{item.status === 'submitted' ? <button className="text-action" type="button" onClick={() => openReport(item.id)}>Ver informe<span className="sr-only"> de {item.candidateName || item.candidateEmail}</span></button>
+        <div className="candidate-row-action">{item.status === 'submitted' ? <button className="icon-action" type="button" aria-label={`Ver informe de ${item.candidateName || item.candidateEmail}`}
+          title="Ver informe" onClick={() => openReport(item.id)}><svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></button>
           : new Date(item.expiresAt) > new Date() && <button className="icon-action" type="button" aria-label={`Copiar enlace de ${item.candidateName || item.candidateEmail}`}
             title="Copiar enlace" onClick={() => void copy(item)}><svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg></button>}</div>
         {copied === item.publicId && <p className="copy-confirmation" role="status">Enlace copiado</p>}
