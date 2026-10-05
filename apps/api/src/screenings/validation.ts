@@ -32,7 +32,7 @@ function parseQuestion(value: unknown): DraftQuestion {
   if (!Array.isArray(options) || options.length > 8) invalid();
   const parsed: DraftQuestion = { id: id(q.id), type: q.type as DraftQuestion['type'], required: flag(q.required), scored: flag(q.scored),
     options: options.map((entry) => { const option = object(entry, ['id', 'label', 'score']); return {
-      id: id(option.id), label: string(option.label, 300, false), ...(option.score === undefined ? {} : { score: integer(option.score, 0, 100) }),
+      id: id(option.id), label: string(option.label, 300), ...(option.score === undefined ? {} : { score: integer(option.score, 0, 100) }),
     }; }) };
   unique(parsed.options.map((option) => option.id));
   if (q.criterion !== undefined) parsed.criterion = string(q.criterion, 120);
@@ -87,5 +87,11 @@ export function publicationIssues(draft: DraftInput): string[] {
       }
     }
   });
+  const scored = draft.questions.filter((q) => q.scored && q.weight && q.options.length && q.options.every((o) => o.score !== undefined));
+  if (scored.length && scored.length === draft.questions.filter((q) => q.scored).length && Number.isInteger(draft.threshold)) {
+    const totalWeight = scored.reduce((total, q) => total + q.weight!, 0);
+    const maximum = scored.reduce((total, q) => total + Math.max(...q.options.map((o) => o.score!)) * q.weight!, 0) / totalWeight;
+    if (maximum < draft.threshold!) issues.push(`El umbral de ${draft.threshold} no se puede alcanzar: el máximo posible con estos valores es ${Number(maximum.toFixed(1))}. Ajustá el umbral o los valores de las respuestas.`);
+  }
   return issues;
 }

@@ -31,11 +31,14 @@ Una pregunta excluyente no puntuable desconocida puede dejar el resultado pendie
 
 ### P-04 — Publicación
 
-La publicación congela preguntas, opciones, pesos, umbral y excluyentes. No se edita el publicado. Una copia crea otro borrador con nuevos identificadores y sin invitaciones. Un candidato iniciado o enviado siempre conserva la configuración que recibió.
+La publicación congela cada versión de preguntas, opciones, pesos, umbral y excluyentes. **Decisión de Luis, 04/10/2026:** se puede preparar otro borrador dentro del mismo SC; publicarlo cambia la versión activa solo para nuevas invitaciones. Toda invitación existente conserva su versión, aunque todavía no haya sido abierta. El SC mantiene una sola lista de postulantes e historial de configuraciones. Una copia es otra acción: crea un SC independiente con nuevos identificadores y sin invitaciones. [Contrato y evidencia de versiones](screening-versions.md).
+El recruiter puede cerrar un publicado para impedir nuevas invitaciones sin borrar respuestas ni informes. Las invitaciones previas pueden terminarse hasta su vencimiento; el cerrado conserva configuración de solo lectura y resultados dentro de la retención. También puede copiarse como borrador nuevo.
+Si hay un borrador de cambios, primero se publica o descarta; el cierre no lo elimina silenciosamente.
 
 ### P-05 — Revisión
 
 Resultado calculado y decisión humana son campos distintos. Se permite continuar pese a un resultado negativo o pendiente, con justificación obligatoria. La revisión vigente conserva autor, fecha y motivo; al editarla se reemplaza esa revisión, no el informe. El historial de revisiones queda fuera del MVP.
+En esta versión solo se puede registrar **continuar** o **no continuar**. Es una decisión interna: no cambia una etapa externa ni envía mensajes al postulante. La opción anterior «Solicitar aclaración» solo guardaba una etiqueta, por lo que se retiró de nuevas revisiones; sus registros históricos siguen legibles y se pueden reemplazar. Una solicitud real requerirá un flujo de comunicación y respuesta separado.
 
 ### P-06 — Banco inicial
 

@@ -12,6 +12,11 @@ import mongoose from 'mongoose';
 import { domainModels } from '../apps/api/dist/persistence/models.js';
 import { provisionDemo, demoEmails } from '../apps/api/dist/auth/provision.js';
 import { loadCatalog, catalogAreas } from '../apps/api/dist/screenings/catalog.js';
+import { evaluate } from '../apps/api/dist/candidate/evaluation.js';
+import { AttemptService } from '../apps/api/dist/candidate/attempt.service.js';
+import { PersistenceRepository } from '../apps/api/dist/persistence/persistence.repository.js';
+import { ScreeningsService } from '../apps/api/dist/screenings/screenings.service.js';
+import { CandidateService } from '../apps/api/dist/candidate/candidate.service.js';
 
 const database = `screeningroom_demo_test_${randomUUID().replaceAll('-', '')}`;
 const passwords = [randomBytes(24).toString('base64url'), randomBytes(24).toString('base64url')];
@@ -50,7 +55,7 @@ before(async () => {
     const response = await fetch(`${origin}/api/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json', Origin: origin,
       Cookie: csrf.headers.getSetCookie()[0].split(';')[0], 'X-CSRF-Token': token }, body: JSON.stringify({ email: demoEmails[n], password: passwords[n] }) });
     const data = await result(response, 200);
-    accounts.push({ ...data, cookie: response.headers.getSetCookie().find((value) => value.startsWith('sr_session=')).split(';')[0] });
+    accounts.push({ ...data, cookie: response.headers.getSetCookie().find((value) => value.startsWith('sr_recruiter_session=')).split(';')[0] });
   }
   temporary = await mkdtemp(join(tmpdir(), 'screeningroom-catalog-test-'));
 });
@@ -66,6 +71,19 @@ test('crear y guardar borrador incompleto conserva identidad/metadata al releer'
   assert.equal(updated.revision, 1); assert.equal(updated.questions[0].scored, false); assert.equal('threshold' in updated, false);
   const reloaded = await result(await request(`/screenings/${draft.id}`), 200); assert.deepEqual(reloaded, updated);
   assert.equal((await publish(draft.id, 1)).status, 422); assert.equal((await models.Screening.findById(draft.id)).status, 'draft');
+});
+test('eliminar borrador requiere propiedad y revisión actual; un publicado se conserva', async () => {
+  const draft = await create();
+  const path = `/screenings/${draft.id}`;
+  assert.equal((await request(path, accounts[1], 'DELETE', { expectedRevision: 0 })).status, 404);
+  assert.equal((await request(path, accounts[0], 'DELETE', { expectedRevision: 1 })).status, 409);
+  assert.equal((await request(path, accounts[0], 'DELETE', { expectedRevision: 0 }, { 'X-CSRF-Token': '' })).status, 403);
+  assert.equal((await request(path, accounts[0], 'DELETE', { expectedRevision: 0 })).status, 204);
+  assert.equal((await request(path)).status, 404);
+  const published = await create(valid());
+  await result(await publish(published.id), 200);
+  assert.equal((await request(`/screenings/${published.id}`, accounts[0], 'DELETE', { expectedRevision: 1 })).status, 409);
+  assert.ok(await models.Screening.findById(published.id));
 });
 test('input no se coacciona y campos de propietario/estado/revisión no se pueden falsificar', async () => {
   const draft = await create();
@@ -147,6 +165,69 @@ test('publicar requiere confirmación y retorna exactamente el recibo OpenAPI', 
   assert.equal((await request(`/screenings/${draft.id}/questions/from-bank`, accounts[0], 'POST', { expectedRevision: 1, bankQuestionId: new mongoose.Types.ObjectId().toString() })).status, 409);
   assert.deepEqual(await result(await request(`/screenings/${draft.id}`), 200), before);
 });
+test('cerrar un publicado impide nuevas invitaciones y conserva configuración, invitaciones y resultados', async () => {
+  const draft = await create(valid());
+  assert.equal((await request(`/screenings/${draft.id}/close`, accounts[0], 'POST', { expectedRevision: 0, confirmClosure: true })).status, 409);
+  await result(await publish(draft.id), 200);
+  const invitation = await models.Invitation.create({ ownerId: accounts[0].user.id, screeningId: draft.id,
+    candidateEmail: `closed-${randomUUID()}@example.test`, publicId: randomUUID(), status: 'submitted',
+    expiresAt: new Date(Date.now() - 1000), purgeAt: new Date(Date.now() + 90 * 86400000),
+    submittedAt: new Date(), report: evaluate(valid().questions, [{ questionId: 'experience', kind: 'option', optionId: 'yes' }], 70) });
+  const path = `/screenings/${draft.id}/close`;
+  assert.equal((await request(path, accounts[1], 'POST', { expectedRevision: 1, confirmClosure: true })).status, 404);
+  assert.equal((await request(path, accounts[0], 'POST', { expectedRevision: 1 })).status, 422);
+  assert.equal((await request(path, accounts[0], 'POST', { expectedRevision: 1, confirmClosure: true }, { Origin: 'https://foreign.example' })).status, 403);
+  assert.equal((await request(path, accounts[0], 'POST', { expectedRevision: 0, confirmClosure: true })).status, 409);
+  const close = await result(await request(path, accounts[0], 'POST', { expectedRevision: 1, confirmClosure: true }), 200);
+  assert.equal(close.status, 'closed'); assert.equal(close.revision, 2); assert.ok(Date.parse(close.closedAt));
+  assert.equal((await request(path, accounts[0], 'POST', { expectedRevision: 2, confirmClosure: true })).status, 409);
+  assert.equal((await save(draft.id, valid(), 2)).status, 409);
+  assert.equal((await request(`/screenings/${draft.id}`, accounts[0], 'DELETE', { expectedRevision: 2 })).status, 409);
+  assert.equal((await request(`/screenings/${draft.id}/invitations`, accounts[0], 'POST', { candidateEmail: `new-${randomUUID()}@example.test` })).status, 404);
+  const listed = await result(await request(`/screenings/${draft.id}/invitations`), 200);
+  assert.ok(listed.invitations.some((item) => item.id === invitation.id));
+  const report = await result(await request(`/invitations/${invitation.id}/report`), 200);
+  assert.equal(report.report.outcome, 'meets'); assert.equal(report.review, null);
+  assert.equal(report.candidateEmail, invitation.candidateEmail); assert.equal(report.candidateName, null);
+  assert.equal((await request(`/invitations/${invitation.id}/report`, accounts[1])).status, 404);
+  const copy = await result(await request(`/screenings/${draft.id}/copy`, accounts[0], 'POST', {}), 201);
+  assert.equal(copy.status, 'draft'); assert.equal(await models.Invitation.countDocuments({ screeningId: copy.id }), 0);
+});
+test('la revisión humana exige motivo para continuar contra el resultado y protege la última revisión', async () => {
+  const draft = await create(valid()); await result(await publish(draft.id), 200);
+  const invitation = await models.Invitation.create({ ownerId: accounts[0].user.id, screeningId: draft.id,
+    candidateEmail: `review-${randomUUID()}@example.test`, publicId: randomUUID(), status: 'submitted',
+    expiresAt: new Date(Date.now() - 1000), purgeAt: new Date(Date.now() + 90 * 86400000),
+    submittedAt: new Date(), report: evaluate(valid().questions, [{ questionId: 'experience', kind: 'option', optionId: 'no' }], 70) });
+  const path = `/invitations/${invitation.id}/review`;
+  const input = { expectedRevision: 0, decision: 'continue', reason: 'Revisión manual del caso ficticio' };
+  assert.equal((await request(path, accounts[1], 'PUT', input)).status, 404);
+  assert.equal((await request(path, accounts[0], 'PUT', { ...input, reason: ' ' })).status, 422);
+  assert.equal((await request(path, accounts[0], 'PUT', { ...input, decision: 'invalid' })).status, 422);
+  assert.equal((await request(path, accounts[0], 'PUT', input, { 'X-CSRF-Token': '' })).status, 403);
+  const competing = await Promise.all([request(path, accounts[0], 'PUT', input), request(path, accounts[0], 'PUT', input)]);
+  assert.deepEqual(competing.map((response) => response.status).sort(), [200, 409]);
+  const first = await result(await request(`/invitations/${invitation.id}/report`), 200);
+  assert.equal(first.review.decision, 'continue'); assert.equal(first.review.revision, 1);
+  assert.equal(first.report.outcome, 'not_meets');
+  const withDecision = await result(await request(`/screenings/${draft.id}/invitations`), 200);
+  const listedReview = withDecision.invitations.find((item) => item.id === invitation.id);
+  assert.deepEqual(listedReview.result, { outcome: 'not_meets', score: 0, threshold: 70 });
+  assert.ok(Date.parse(listedReview.submittedAt));
+  assert.equal(listedReview.review.decision, 'continue'); assert.ok(Date.parse(listedReview.review.reviewedAt));
+  assert.equal((await request(path, accounts[0], 'PUT', { expectedRevision: 1, decision: 'clarify', reason: '' })).status, 422);
+  const second = await result(await request(path, accounts[0], 'PUT', { expectedRevision: 1, decision: 'do_not_continue', reason: '' }), 200);
+  assert.equal(second.review.revision, 2); assert.equal(second.review.decision, 'do_not_continue');
+  const afterReview = await result(await request(`/invitations/${invitation.id}/report`), 200);
+  assert.equal(afterReview.report.outcome, 'not_meets'); assert.equal(afterReview.review.revision, 2);
+  const pending = await models.Invitation.create({ ownerId: accounts[0].user.id, screeningId: draft.id,
+    candidateEmail: `pending-${randomUUID()}@example.test`, publicId: randomUUID(),
+    expiresAt: new Date(Date.now() + 86400000), purgeAt: new Date(Date.now() + 90 * 86400000) });
+  assert.equal((await request(`/invitations/${pending.id}/report`)).status, 409);
+  assert.equal((await request(`/invitations/${pending.id}/review`, accounts[0], 'PUT', input)).status, 409);
+  await models.Invitation.updateOne({ _id: invitation.id }, { $set: { purgeAt: new Date(Date.now() - 1000) } });
+  assert.equal((await request(`/invitations/${invitation.id}/report`)).status, 404);
+});
 test('dos guardados simultáneos: un ganador, 409 y contenido conservado', async () => {
   const draft = await create(); const responses = await Promise.all([save(draft.id, { ...valid(), title: 'Ganador A' }), save(draft.id, { ...valid(), title: 'Ganador B' })]);
   assert.deepEqual(responses.map((r) => r.status).sort(), [200, 409]); const winner = await responses.find((r) => r.status === 200).json();
@@ -166,6 +247,7 @@ test('copia de publicado remapea ids/referencias y no copia invitaciones', async
   await models.Invitation.create({ ownerId: accounts[0].user.id, screeningId: draft.id, candidateEmail: 'candidate@example.test', publicId: randomUUID(), expiresAt: new Date('2099-01-01'), purgeAt: new Date('2099-02-01') });
   const copied = await result(await request(`/screenings/${draft.id}/copy`, accounts[0], 'POST', {}), 201);
   assert.notEqual(copied.id, source.id); assert.equal(copied.status, 'draft'); assert.equal(copied.revision, 0); assert.equal('publishedAt' in copied, false);
+  assert.equal(copied.basedOnScreeningId, source.id);
   assert.equal(await models.Invitation.countDocuments({ screeningId: copied.id }), 0);
   for (let n = 0; n < copied.questions.length; n++) { assert.notEqual(copied.questions[n].id, source.questions[n].id); assert.equal(copied.questions[n].text, source.questions[n].text); }
   assert.ok(copied.questions[0].options.every((o) => !source.questions[0].options.some((prior) => prior.id === o.id)));
@@ -205,12 +287,177 @@ test('copia de banco no aprueba reglas y conserva texto/opciones/orientación in
   assert.equal((await request(`/screenings/${draft.id}/questions/from-bank`, accounts[0], 'POST', { expectedRevision: 1, bankQuestionId: new mongoose.Types.ObjectId().toString() })).status, 409);
 });
 
+test('no duplica preguntas del banco y rechaza umbrales inalcanzables', async () => {
+  const entry = (await result(await request('/question-bank'), 200)).questions.find((question) => question.active !== false);
+  const draft = await create();
+  const first = await result(await request(`/screenings/${draft.id}/questions/from-bank`, accounts[0], 'POST',
+    { expectedRevision: 0, bankQuestionId: entry.id }), 200);
+  assert.equal((await request(`/screenings/${draft.id}/questions/from-bank`, accounts[0], 'POST',
+    { expectedRevision: first.revision, bankQuestionId: entry.id })).status, 409);
+  const impossible = valid(); impossible.threshold = 90;
+  impossible.questions[0].options[0].score = 80;
+  const limited = await create(impossible);
+  const denied = await publish(limited.id);
+  assert.equal(denied.status, 422);
+  assert.match(JSON.stringify(await denied.json()), /máximo posible/);
+});
+
 test('copias simultáneas del banco y límite veinte preguntas no pierden cambios', async () => {
   const entries = (await result(await request('/question-bank'), 200)).questions;
   const draft = await create({ questions: Array.from({ length: 19 }, (_, n) => ({ id: `q${n}`, type: 'text', required: false, scored: false, options: [] })) });
   const responses = await Promise.all(entries.slice(0, 2).map((entry) => request(`/screenings/${draft.id}/questions/from-bank`, accounts[0], 'POST', { expectedRevision: 0, bankQuestionId: entry.id })));
   assert.deepEqual(responses.map((r) => r.status).sort(), [200, 409]);
   const stored = await result(await request(`/screenings/${draft.id}`), 200); assert.equal(stored.questions.length, 20); assert.equal(stored.revision, 1);
-  assert.equal((await request(`/screenings/${draft.id}/questions/from-bank`, accounts[0], 'POST', { expectedRevision: 1, bankQuestionId: entries[0].id })).status, 422);
+  const unused = entries.find((entry) => !stored.questions.some((question) => question.bankQuestionId === entry.id));
+  assert.ok(unused);
+  assert.equal((await request(`/screenings/${draft.id}/questions/from-bank`, accounts[0], 'POST', { expectedRevision: 1, bankQuestionId: unused.id })).status, 422);
   assert.equal((await models.Screening.findById(draft.id)).questions.length, 20);
+});
+
+test('lista de 101 screenings permite filtrar y recorrer todas las páginas propias', async () => {
+  await models.Screening.insertMany(Array.from({ length: 101 }, (_, n) => ({ ownerId: accounts[0].user.id,
+    title: `Paginado ${String(n).padStart(3, '0')}`, area: 'Tecnología', status: 'draft' })));
+  const pages = await Promise.all([1, 2, 3].map(async (page) => result(await request(`/screenings?search=Paginado&page=${page}&pageSize=50`), 200)));
+  assert.deepEqual(pages.map((item) => item.screenings.length), [50, 50, 1]);
+  assert.ok(pages.every((item) => item.total === 101));
+  assert.equal(new Set(pages.flatMap((item) => item.screenings.map((entry) => entry.id))).size, 101);
+  const filtered = await result(await request('/screenings?search=Paginado&status=closed'), 200);
+  assert.equal(filtered.total, 0);
+  const other = await result(await request('/screenings?search=Paginado', accounts[1]), 200);
+  assert.equal(other.total, 0);
+  assert.equal((await request('/screenings?pageSize=100')).status, 422);
+  const literal = await result(await request('/screenings?search=.'), 200);
+  assert.equal(literal.total, 0);
+});
+
+test('editar publicado conserva v1 legacy, fija v2 futura y agrupa el SC con historial íntegro', async () => {
+  const draft = await create(valid()); await result(await publish(draft.id), 200);
+  const repository = new PersistenceRepository(connection); const attempts = new AttemptService(connection);
+  const invite = (name) => repository.createInvitation(accounts[0].user.id, draft.id, { candidateEmail: `${name}-${randomUUID()}@example.test`,
+    expiresAt: new Date(Date.now() + 86400000), purgeAt: new Date(Date.now() + 90 * 86400000), emailTokenHash: 'test-only' });
+  const legacy = await invite('legacy'); assert.equal(legacy.configurationId, undefined);
+  const context = { invitationId: legacy.id };
+  await attempts.save(context, { expectedRevision: 0, answers: [{ questionId: 'experience', kind: 'option', optionId: 'yes' }] });
+  const before = await attempts.read(context);
+  const edit = await result(await request(`/screenings/${draft.id}/edit`, accounts[0], 'POST', { expectedRevision: 1 }), 201);
+  assert.equal(edit.editingPublished, true); assert.equal(edit.configurationVersion, 2);
+  assert.deepEqual(await attempts.read(context), before);
+  const during = await invite('during'); assert.equal(during.configurationVersion, 1); assert.ok(during.configurationId);
+  const replacement = { ...valid(), title: 'Título v2', threshold: 85,
+    questions: valid().questions.map((q) => q.id === 'experience' ? { ...q, id: 'new-experience', text: '¿Usaste otra herramienta?' } : q) };
+  const saved = await result(await request(`/screenings/${draft.id}/edit`, accounts[0], 'PUT', { ...replacement, expectedRevision: edit.revision }), 200);
+  const currentWhileEditing = await result(await request(`/screenings/${draft.id}`), 200);
+  assert.equal(currentWhileEditing.title, valid().title); assert.equal(currentWhileEditing.hasEditingDraft, true);
+  assert.equal((await request(`/screenings/${draft.id}/close`, accounts[0], 'POST', { expectedRevision: saved.revision, confirmClosure: true })).status, 409);
+  const published = await result(await request(`/screenings/${draft.id}/edit/publish`, accounts[0], 'POST', { expectedRevision: saved.revision, confirmConfiguration: true }), 200);
+  assert.equal(published.configurationVersion, 2); assert.equal(published.title, replacement.title);
+  assert.equal(published.questions[0].id, 'new-experience'); assert.equal(published.threshold, 85);
+  assert.equal(published.hasEditingDraft, false); assert.deepEqual(published.versions.map((v) => v.versionNumber), [1, 2]);
+  const future = await invite('future'); assert.equal(future.configurationVersion, 2); assert.ok(future.configurationId);
+  assert.deepEqual(await attempts.read(context), before);
+  const futureRead = await attempts.read({ invitationId: future.id }); assert.equal(futureRead.title, 'Título v2'); assert.equal(futureRead.questions[0].id, 'new-experience');
+  await attempts.submit(context, { expectedRevision: 1 });
+  const report = await result(await request(`/invitations/${legacy.id}/report`), 200);
+  assert.equal(report.configurationVersion, 1); assert.equal(report.report.threshold, 70); assert.equal(report.report.criteria[0].questionId, 'experience');
+  const history = await result(await request(`/screenings/${draft.id}?version=1`), 200);
+  assert.equal(history.title, valid().title); assert.equal(history.threshold, 70); assert.equal(history.questions[0].id, 'experience');
+  assert.equal((await request(`/screenings/${draft.id}?version=1`, accounts[1])).status, 404);
+  assert.equal((await request(`/screenings/${draft.id}?version=99`)).status, 404);
+  const listing = await result(await request(`/screenings?search=Título%20v2`), 200);
+  assert.equal(listing.total, 1); assert.equal(listing.screenings[0].invited, 3);
+  const copy = await result(await request(`/screenings/${draft.id}/copy`, accounts[0], 'POST', {}), 201);
+  assert.equal(copy.threshold, 85); assert.equal(copy.questions[0].text, replacement.questions[0].text); assert.notEqual(copy.questions[0].id, 'new-experience');
+  const edit3 = await result(await request(`/screenings/${draft.id}/edit`, accounts[0], 'POST', { expectedRevision: published.revision }), 201);
+  const discarded = await result(await request(`/screenings/${draft.id}/edit`, accounts[0], 'DELETE', { expectedRevision: edit3.revision }), 200);
+  assert.equal(discarded.configurationVersion, 2); assert.equal(discarded.hasEditingDraft, false);
+  assert.equal((await request(`/screenings/${draft.id}/edit`, accounts[0], 'PUT', { ...replacement, expectedRevision: edit3.revision })).status, 409);
+  const nextEdit = await result(await request(`/screenings/${draft.id}/edit`, accounts[0], 'POST', { expectedRevision: discarded.revision }), 201);
+  const saved3 = await result(await request(`/screenings/${draft.id}/edit`, accounts[0], 'PUT', { ...replacement, title: 'Título v3', threshold: 95, expectedRevision: nextEdit.revision }), 200);
+  const version3 = await result(await request(`/screenings/${draft.id}/edit/publish`, accounts[0], 'POST', { expectedRevision: saved3.revision, confirmConfiguration: true }), 200);
+  assert.equal(version3.configurationVersion, 3); assert.deepEqual(await attempts.read({ invitationId: future.id }), futureRead);
+  const closed = await result(await request(`/screenings/${draft.id}/close`, accounts[0], 'POST', { expectedRevision: version3.revision, confirmClosure: true }), 200);
+  assert.equal(closed.status, 'closed'); assert.deepEqual(await attempts.read({ invitationId: future.id }), futureRead);
+});
+
+test('carrera de invitación con edición/publicación/cierre selecciona configuración completa o limpia el intento propio', async () => {
+  const service = new ScreeningsService(connection); const repository = new PersistenceRepository(connection); const owner = accounts[0].user.id;
+  for (const transition of ['begin', 'publish', 'close']) {
+    const draft = await create(valid()); await result(await publish(draft.id), 200);
+    const edit = transition === 'publish' ? await service.beginEdit(owner, draft.id, { expectedRevision: 1 }) : null;
+    const original = models.Invitation.create; let first = true;
+    try {
+      models.Invitation.create = async (...args) => {
+        const row = await original.apply(models.Invitation, args);
+        if (first) { first = false;
+          if (transition === 'begin') await service.beginEdit(owner, draft.id, { expectedRevision: 1 });
+          else if (transition === 'publish') await service.publishEditing(owner, draft.id, { expectedRevision: edit.revision, confirmConfiguration: true });
+          else await service.close(owner, draft.id, { expectedRevision: 1, confirmClosure: true });
+        }
+        return row;
+      };
+      const invitation = await repository.createInvitation(owner, draft.id, { candidateEmail: `race-${randomUUID()}@example.test`,
+        expiresAt: new Date(Date.now() + 86400000), purgeAt: new Date(Date.now() + 90 * 86400000), emailTokenHash: 'test-only' });
+      if (transition === 'close') { assert.equal(invitation, null); assert.equal(await models.Invitation.countDocuments({ screeningId: draft.id }), 0); }
+      else { const root = await models.Screening.findById(draft.id); assert.equal(invitation.configurationId.toString(), root.activeConfigurationId.toString());
+        assert.equal(invitation.configurationVersion, transition === 'publish' ? 2 : 1); assert.equal(await models.Invitation.countDocuments({ screeningId: draft.id }), 1); }
+    } finally { models.Invitation.create = original; }
+  }
+});
+
+test('dos aperturas/publicaciones de versión usan un borrador y un ganador, con referencias oficiales válidas', async () => {
+  const draft = await create(valid()); await result(await publish(draft.id), 200);
+  const edits = await Promise.all([1, 2].map(async () => result(await request(`/screenings/${draft.id}/edit`, accounts[0], 'POST', { expectedRevision: 1 }), 201)));
+  assert.equal(edits[0].revision, edits[1].revision);
+  let root = await models.Screening.findById(draft.id);
+  assert.equal(root.configurationIds.length, 1); assert.equal(await models.ScreeningConfiguration.countDocuments({ screeningId: draft.id }), 1);
+  const publications = await Promise.all([1, 2].map(() => request(`/screenings/${draft.id}/edit/publish`, accounts[0], 'POST', { expectedRevision: edits[0].revision, confirmConfiguration: true })));
+  assert.deepEqual(publications.map((r) => r.status).sort(), [200, 409]);
+  root = await models.Screening.findById(draft.id); assert.equal(root.configurationVersion, 2); assert.equal(root.configurationIds.length, 2);
+  assert.equal(await models.ScreeningConfiguration.countDocuments({ _id: { $in: root.configurationIds } }), 2);
+  assert.equal(await models.ScreeningConfiguration.countDocuments({ screeningId: draft.id }), 2);
+  assert.equal((await request(`/screenings/${draft.id}/edit`, accounts[1])).status, 404);
+});
+
+test('fallo de publicación antes/después de CAS deja activa válida y reintento coherente', async () => {
+  const service = new ScreeningsService(connection); const owner = accounts[0].user.id;
+  const draft = await create(valid()); await result(await publish(draft.id), 200);
+  const edit = await service.beginEdit(owner, draft.id, { expectedRevision: 1 });
+  const original = models.Screening.findOneAndUpdate;
+  try {
+    models.Screening.findOneAndUpdate = () => { throw new Error('Fallo ficticio antes de CAS'); };
+    await assert.rejects(service.publishEditing(owner, draft.id, { expectedRevision: edit.revision, confirmConfiguration: true }), /Fallo ficticio/);
+  } finally { models.Screening.findOneAndUpdate = original; }
+  let root = await models.Screening.findById(draft.id); assert.equal(root.configurationVersion, 1); assert.ok(root.editingDraft);
+  try {
+    models.Screening.findOneAndUpdate = async (...args) => { await original.apply(models.Screening, args); throw new Error('Respuesta ficticia perdida'); };
+    await assert.rejects(service.publishEditing(owner, draft.id, { expectedRevision: edit.revision, confirmConfiguration: true }), /Respuesta ficticia/);
+  } finally { models.Screening.findOneAndUpdate = original; }
+  root = await models.Screening.findById(draft.id); assert.equal(root.configurationVersion, 2); assert.equal(root.editingDraft, undefined);
+  assert.ok(await models.ScreeningConfiguration.findById(root.activeConfigurationId));
+  const detail = await service.detail(owner, draft.id); assert.deepEqual(detail.versions.map((v) => v.versionNumber), [1, 2]);
+  await assert.rejects(service.publishEditing(owner, draft.id, { expectedRevision: edit.revision, confirmConfiguration: true }), /borrador cambió/);
+});
+
+test('fallos antes del correo limpian la invitación propia y permiten reintentar el mismo correo', async () => {
+  const draft = await create(valid()); await result(await publish(draft.id), 200);
+  const owner = accounts[0].user.id; const repository = new PersistenceRepository(connection);
+  const input = { candidateEmail: `retry-${randomUUID()}@example.test`, expiresAt: new Date(Date.now() + 86400000),
+    purgeAt: new Date(Date.now() + 90 * 86400000), emailTokenHash: 'test-only' };
+  const original = models.Screening.exists;
+  try {
+    models.Screening.exists = () => { throw new Error('Fallo ficticio de recheck'); };
+    await assert.rejects(repository.createInvitation(owner, draft.id, input), /Fallo ficticio/);
+  } finally { models.Screening.exists = original; }
+  assert.equal(await models.Invitation.countDocuments({ screeningId: draft.id }), 0);
+  const retry = await repository.createInvitation(owner, draft.id, input); assert.ok(retry);
+  await models.Invitation.deleteOne({ _id: retry._id });
+  await new ScreeningsService(connection).beginEdit(owner, draft.id, { expectedRevision: 1 });
+  const service = new CandidateService(connection, { digest: () => 'test-only' }, repository);
+  const find = models.ScreeningConfiguration.findOne;
+  try {
+    models.ScreeningConfiguration.findOne = () => { throw new Error('Fallo ficticio de configuración'); };
+    await assert.rejects(service.create(owner, draft.id, { candidateEmail: input.candidateEmail }, origin), /Fallo ficticio/);
+  } finally { models.ScreeningConfiguration.findOne = find; }
+  assert.equal(await models.Invitation.countDocuments({ screeningId: draft.id }), 0);
+  assert.ok(await repository.createInvitation(owner, draft.id, input));
 });

@@ -1,10 +1,10 @@
 # Screeningroom — Proyecto final AI4Devs
 
-Desarrollo en el fork; **feature/entrega-2-LL** es la rama de integración prevista. [Guía local](docs/desarrollo.md) · [Aplicación de los aprendizajes del máster](docs/harness.md). La entrega 1 conserva su documentación en feature/entrega-1-LL.
+Desarrollo en el fork; **feature/entrega-2-LL** es la rama de integración. [Guía local](docs/desarrollo.md) · [Aplicación de los aprendizajes del máster](docs/harness.md). La entrega 1 conserva su documentación en feature/entrega-1-LL.
 
-**Entrega 2 en desarrollo · Luis Lujan (LL) · Actualización: 28 de septiembre de 2026.**
+**Entrega 2 en desarrollo · Luis Lujan (LL) · Actualización: 4 de octubre de 2026.**
 
-La entrega 1 definió el MVP y su diseño. La rama `feature/entrega-2-LL` integra T-00 (frontend, API y MongoDB conectados), T-01 (persistencia), T-02 (acceso del recruiter con cuentas ficticias), T-03 (editor, banco inicial aprobado por Luis, publicación y copia) y la primera [mejora UX-01 del editor](docs/ux-screening-editor-research.md), aprobada por Luis. El flujo principal de candidatos todavía está pendiente; su formulario deberá seguir [UX-02](docs/backlog.md#ux-02--formulario-del-postulante). Las reglas de producto de este documento describen el comportamiento previsto. [Persistencia y sus límites](docs/datos.md) · [Acceso implementado y demo](docs/acceso.md) · [Editor, publicación y límites](docs/screenings.md).
+La entrega 1 definió el MVP y su diseño. `feature/entrega-2-LL` integra invitaciones, formulario, evaluación, informes, revisión humana, cierre, [el rediseño recruiter](docs/recruiter-workspace-foundations.md) y [edición con versiones para nuevas invitaciones](docs/screening-versions.md). La [verificación integrada](docs/entrega-2-verificacion-2026-10-04.md) registra 64 pruebas automatizadas y el recorrido web/API/BD con cuentas ficticias, incluyendo versiones, reanudación, conflicto y cierre. Quedan T-04/T-09 y la preparación del despliegue y de la evidencia final. [Persistencia y sus límites](docs/datos.md) · [Acceso recruiter y demo](docs/acceso.md) · [Editor y banco](docs/screenings.md).
 
 ## Índice
 
@@ -74,12 +74,12 @@ Las reglas de evaluación, publicación, banco y revisión humana se especifican
 
 1. El recruiter inicia sesión con correo y contraseña. En el MVP las cuentas se aprovisionan mediante un comando administrativo; no se desarrolla registro público, roles complejos ni recuperación de contraseña por interfaz.
 2. Crea el screening, elige área y agrega preguntas propias, del banco o sugeridas por IA. Confirma puntuación, pesos, excluyentes, obligatoriedad y umbral.
-3. Publica una configuración válida. El cuestionario publicado queda inmutable; puede copiarlo a un borrador nuevo.
+3. Publica una configuración válida. Cada versión publicada queda inmutable. Editar el mismo SC prepara una nueva versión para futuras invitaciones; las ya emitidas conservan sus preguntas y reglas. Puede cerrar el SC para detener nuevas invitaciones o crear otro SC independiente basado en la configuración activa.
 4. Registra el correo del candidato y obtiene un enlace individual para compartir. El nombre es opcional. Una invitación contiene un único intento; no hay importación masiva ni reintentos de evaluación en el MVP.
-5. Al abrir el enlace, el candidato solicita un código enviado al correo registrado. El enlace por sí solo no permite leer el cuestionario ni respuestas. El código comprueba acceso al buzón, no identidad civil ni titularidad exclusiva.
+5. Al abrir el enlace del correo por primera vez, el candidato accede mediante un token de un uso. El enlace que copia el recruiter requiere un código enviado al correo registrado. El identificador público por sí solo no permite leer el cuestionario ni respuestas. El código comprueba acceso al buzón, no identidad civil ni titularidad exclusiva.
 6. El candidato lee el aviso de uso de datos, responde y guarda su avance. Puede salir y retomar mediante un nuevo acceso autorizado.
 7. Revisa las respuestas y realiza el envío final. Una respuesta desfavorable nunca interrumpe el recorrido. Tras el envío no puede modificar respuestas; ve confirmación, no el informe interno.
-8. El sistema conserva el envío y genera el informe. El recruiter lo revisa y registra continuar, no continuar o solicitar aclaración. Esta última opción registra una intención; no abre otro intento ni envía mensajes automáticamente.
+8. El sistema conserva el envío y genera el informe. El recruiter lo revisa y registra continuar o no continuar; al continuar pese a un resultado negativo o pendiente debe explicar el motivo. La decisión se ve en lista e informe sin alterar el cálculo ni enviar mensajes. Los antiguos registros de aclaración se conservan legibles, pero no se admiten nuevas aclaraciones sin un flujo real de comunicación.
 
 **Parámetros iniciales de acceso:** invitación vigente durante 7 días; código aleatorio de 6 dígitos, de un solo uso, válido 10 minutos; máximo 5 verificaciones fallidas por desafío, reenvío a partir de 60 segundos y máximo 5 envíos por invitación por hora, además de límite por IP. Reenviar invalida el código anterior, sin reiniciar el límite horario. Son decisiones configurables del producto.
 
@@ -92,9 +92,9 @@ Estos wireframes representan tres pantallas principales. Son bocetos de estructu
 | Pantalla | Contenido y acciones |
 | --- | --- |
 | Acceso del recruiter | Correo, contraseña, iniciar sesión, errores sin revelar si una cuenta existe |
-| Listado | Screenings propios, estado borrador/publicado, crear y abrir |
+| Listado | Screenings propios, estados borrador/publicado/cerrado, conteos, búsqueda, filtros y paginación |
 | Editor | Puesto, área, descripción, preguntas, reglas, banco, sugerencias, vista previa y publicar |
-| Invitaciones | Correo, nombre opcional, enlace, vigencia y estado del intento; eliminación individual con confirmación |
+| Postulantes | Invitación por correo, nombre opcional, recepción, criterios y decisión en columnas independientes, filtros, paginación e informe; borrado individual pendiente de T-09 |
 | Acceso del candidato | Solicitar código, verificarlo y avisos de vencimiento/reenvío |
 | Cuestionario | Una pregunta por paso, anterior/siguiente, progreso, guardar y salir, resumen editable antes de enviar |
 | Informe | Resultado, puntuación o cálculo pendiente, evidencia, excluyentes, faltantes y revisión humana |
@@ -103,7 +103,7 @@ Los formularios tendrán etiquetas, navegación por teclado, foco visible y mens
 
 ### 1.4. Instrucciones de instalación
 
-La base del proyecto se ejecuta con Node.js 24.21.0, npm 11 y Docker/Compose. [Instalación, variables, comandos y alcance actual](docs/desarrollo.md). MongoDB y Mailpit se preparan como servicios locales; la interfaz consulta disponibilidad real mediante NestJS. Todavía no existen cuentas, screenings ni semillas de dominio.
+La base del proyecto se ejecuta con Node.js 24.21.0, npm 11 y Docker/Compose. [Instalación, variables, comandos y alcance actual](docs/desarrollo.md). MongoDB y Mailpit se preparan como servicios locales; la interfaz consulta disponibilidad real mediante NestJS. El comando de demo aprovisiona cuentas y screenings ficticios; el banco inicial revisado tiene quince preguntas. No se cargan datos reales.
 
 Los documentos pueden leerse directamente en GitHub; los diagramas usan Mermaid y las tres operaciones de producto representativas siguen previstas en OpenAPI 3.0.3. La comprobación de disponibilidad es infraestructura y se documenta aparte.
 
@@ -113,7 +113,7 @@ Los documentos pueden leerse directamente en GitHub; los diagramas usan Mermaid 
 
 **Patrón:** monolito modular con frontend separado en el código y un único servicio de despliegue. Centraliza autenticación y evaluación, reduce infraestructura y facilita las pruebas del flujo. Como contrapartida, los módulos comparten ciclo de despliegue y no escalan independientemente.
 
-Un backend modular y una interfaz web. En despliegue, NestJS sirve la API y los archivos compilados del frontend bajo el mismo origen. MongoDB almacena dominio y sesiones. SMTP solo entrega los códigos; el proveedor de IA solo propone preguntas.
+Un backend modular y una interfaz web. En despliegue, NestJS sirve la API y los archivos compilados del frontend bajo el mismo origen. MongoDB almacena dominio y sesiones. El correo entrega invitaciones y códigos; la integración del proveedor de IA para proponer preguntas sigue pendiente.
 
 ```mermaid
 flowchart TD
@@ -127,7 +127,7 @@ flowchart TD
 
 **Consistencia de reglas y respuestas:**
 
-Un screening publicado no cambia. Sus preguntas tienen identificadores estables y las respuestas referencian esos identificadores. El intento guarda respuestas, informe y revisión en un documento de invitación.
+Cada configuración publicada es inmutable; el SC mantiene una activa y como máximo un borrador de cambios. Una invitación fija su configuración al crearse y conserva esa versión al responder y evaluarse. Sus preguntas tienen identificadores estables y las respuestas los referencian. El intento guarda respuestas, informe y revisión en un documento de invitación. [Contrato de versiones y compatibilidad legacy](docs/screening-versions.md).
 
 Cada guardado compara `answerRevision`; una edición concurrente devuelve conflicto y obliga a recargar antes de sobrescribir. El envío final lee esa revisión, valida las respuestas, calcula el informe y guarda estado, fecha e informe en una única actualización condicionada por revisión, estado y vigencia. Dos envíos simultáneos no crean dos informes. Reintentar un envío ya completado devuelve la misma confirmación sin recalcular.
 
@@ -138,7 +138,7 @@ Esta elección aprovecha la atomicidad de escritura de un documento de MongoDB; 
 | Módulo | Responsabilidad |
 | --- | --- |
 | Auth | Acceso del recruiter, códigos del candidato, sesiones y autorización |
-| Screenings | Borradores, banco, validación, publicación y copia |
+| Screenings | Borradores, banco, validación, publicación de versiones, historial, copia independiente y cierre |
 | Suggestions | Contexto de vacante, llamada de IA y validación de propuestas |
 | Invitations | Correo, enlace, vigencia, respuestas y envío final |
 | Evaluation | Función determinista de evaluación, sin llamadas externas |
@@ -168,9 +168,9 @@ PostgreSQL también sería válido. Se elige MongoDB porque la configuración y 
 | `docs/backlog.md` | Incluido | Historias adicionales, tickets y dependencias |
 | `docs/openapi.yaml` | Incluido | Tres operaciones representativas |
 | `docs/wireframes.svg` | Incluido | Bocetos de interfaz |
-| `apps/web` | Base T-00 incorporada durante entrega 2 | React y comprobación de conexión; flujo de producto pendiente |
-| `apps/api` | T-00 y cambio T-01 | NestJS/Express, readiness, cinco modelos, índices y operaciones de persistencia; endpoints de producto pendientes |
-| `.github/workflows` | Pipeline configurado durante T-00/T-01 | Tipos, lint, build, OpenSpec y pruebas de infraestructura/persistencia con MongoDB |
+| `apps/web` | Integrado en entrega 2 | Acceso del recruiter, editor, invitaciones, formulario del postulante, informe y revisión humana |
+| `apps/api` | Integrado en entrega 2 | NestJS/Express, MongoDB, autenticación, screenings, invitaciones, evaluación, informes y revisión humana |
+| `.github/workflows` | Configurado y ejecutado; [evidencia integrada](docs/entrega-2-verificacion-2026-10-04.md) | Tipos, lint, build, OpenSpec, cinco suites de pruebas y smoke con MongoDB/Mailpit |
 
 El monorepo contiene frontend y backend como npm workspaces. Cada regla se mantiene en su documento de referencia. [Comandos y workflow OpenSpec](docs/desarrollo.md).
 
@@ -197,22 +197,22 @@ flowchart TD
 3. Configurar desde el entorno las conexiones de MongoDB, SMTP e IA, las claves de sesión/códigos y la URL pública. Ningún secreto se guarda en Git.
 4. Preparar la base de datos y sus índices mediante una tarea explícita. Crear la cuenta del recruiter y cargar solo el banco revisado; los datos ficticios de demostración se cargan por separado.
 5. Publicar el servicio detrás de HTTPS, restringir el acceso de red a MongoDB y comprobar el inicio de sesión y la entrega de códigos.
-6. Ejecutar una prueba de humo con un screening ficticio completo. Ante un fallo de aplicación, recuperar la versión desplegada anterior; cualquier cambio posterior del modelo de datos requerirá su estrategia específica.
+6. Ejecutar el flujo completo con un screening ficticio. Tras publicar configuraciones versionadas, un binario previo al soporte de versiones no es compatible con las nuevas invitaciones: corregir hacia adelante o restaurar una versión compatible, siguiendo [los límites de compatibilidad](docs/screening-versions.md). No realizar un rollback de datos improvisado.
 
-Para desarrollo se prevén MongoDB y un buzón SMTP local como Mailpit. El correo de prueba no omite la validación del candidato: el código se obtiene del buzón de pruebas. La evaluación no depende del proveedor de IA y la creación manual sigue disponible si ese proveedor falla.
+Para desarrollo se usan MongoDB y Mailpit local; T-05 envía la invitación inicial y, después de abrir el enlace, los códigos a su API HTTP de pruebas. El correo de prueba incluye un enlace de acceso de un uso; el enlace compartible sigue requiriendo el código del buzón de pruebas. La evaluación no depende del proveedor de IA y la creación manual sigue disponible si ese proveedor falla.
 
 Hosting, proveedor SMTP y modelo de IA se concretarán al implementar según acceso disponible. Esta decisión pendiente no cambia los componentes ni el flujo definido. El MVP usa un único proceso de aplicación; no requiere microservicios, colas ni Redis.
 
 ### 2.5. Seguridad
 
-Prácticas previstas para la implementación:
+Controles implementados de acceso, sesiones, CSRF, validación, conservación y límites; T-09 debe completar aviso/contacto y borrado operativo. HTTPS, proveedor real y operación de producción se verificarán al desplegar. La integración de IA sigue pendiente:
 
 - **Autorización:** cada recruiter accede solo a sus screenings e invitaciones. Cada sesión de candidato accede a una invitación concreta; no acepta un identificador arbitrario para cambiar de candidato. Objetos ajenos se responden como no encontrados.
 - **Sesiones:** cookies `HttpOnly`, `Secure` en HTTPS y `SameSite=Lax`; identificador renovado al autenticar. Sesiones persistidas en MongoDB, cierre de sesión y expiración comprobada por servidor. Las mutaciones requieren token CSRF y validación de origen. NestJS advierte que el almacén en memoria por defecto no es adecuado para producción. [Referencia](https://docs.nestjs.com/techniques/session).
 - **Credenciales:** contraseñas con Argon2id; códigos generados criptográficamente, almacenados como HMAC con clave del servidor y vinculados al desafío/invitación; secretos fuera del repositorio. Los límites contra fuerza bruta se guardan por invitación y se complementan por IP. Consumo y verificación del código son atómicos. [Almacenamiento de contraseñas](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html), [principios para códigos y tokens](https://cheatsheetseries.owasp.org/cheatsheets/Forgot_Password_Cheat_Sheet.html).
 - **Minimización:** correo, nombre opcional y respuestas pertinentes. No se piden documentos de identidad, foto, fecha de nacimiento ni datos sensibles por defecto. Banco inicial sin criterios de características personales ajenas al puesto. La revisión humana debe verificar la pertinencia de preguntas propias o sugeridas.
 - **Transparencia:** aviso antes de responder con propósito, responsable/contacto configurado, acceso del recruiter y plazo de conservación. Identificar afirmaciones como declaraciones del candidato; no presentar niveles o competencias como certificados.
-- **Conservación:** invitaciones, respuestas, informe y revisión se eliminan a los 90 días desde su creación, configurables antes del uso. El recruiter puede eliminarlos antes. Consultas y autorización niegan acceso tras el plazo aunque la limpieza física esté pendiente. El borrado de una invitación invalida su acceso y permite limpiar sus sesiones. No se incluye backup de datos personales en la demo; cualquier despliegue con backups deberá definir también su eliminación.
+- **Conservación:** invitaciones, respuestas, informe y revisión se eliminan a los 90 días desde la invitación en la demo. Consultas y autorización niegan acceso tras el plazo aunque la limpieza física esté pendiente. El borrado anticipado de invitaciones y limpieza de sesiones relacionadas sigue pendiente en T-09. No se incluye backup de datos personales en la demo; cualquier despliegue con backups deberá definir también su eliminación.
 - **IA limitada:** solo descripción del puesto, área y preguntas pertinentes del banco. No se envían identidades, respuestas ni informes de candidatos. La salida es una propuesta validada, sin herramientas para publicar o modificar datos. La descripción se trata como entrada no confiable. No se garantiza filtrado semántico perfecto: el recruiter revisa antes de publicar.
 - **Operación:** HTTPS, validación de entradas y límites de tamaño; logs de errores sin respuestas, contraseñas, códigos ni cuerpos de solicitudes. Fixtures y demostración con datos ficticios.
 
@@ -220,17 +220,17 @@ Estas son decisiones de diseño y buenas prácticas; no una declaración de cert
 
 ### 2.6. Tests
 
-La estrategia siguiente corresponde a las funcionalidades del producto todavía pendientes. En T-00 se ejecutan tipos, lint, build y comprobaciones de infraestructura; su evidencia y límites se documentan en [desarrollo local](docs/desarrollo.md). No equivalen a la suite ni al E2E del flujo principal requerido para la final.
+La suite actual usa `node:test` con pruebas puras y HTTP real sobre MongoDB/Mailpit aislados. La [verificación integrada](docs/entrega-2-verificacion-2026-10-04.md) separa las 64 pruebas automatizadas, el smoke y el recorrido manual en navegador. El recorrido manual no sustituye una suite E2E automatizada para la final.
 
 | Nivel | Evidencia esperada para la entrega final |
 | --- | --- |
-| Unitario, Jest | Fórmula, precedencia, faltantes, redondeo y validación de configuración |
-| Integración, Jest + Supertest + MongoDB de pruebas | Ownership, OTP, expiración, guardado concurrente, envío único y borrado |
-| Frontend, Vitest + Testing Library | Edición de reglas, errores de guardado y navegación/revisión accesible |
-| E2E, Playwright | Crear/publicar → invitar → obtener código del buzón de pruebas → responder/retomar/enviar → informe → revisión humana |
+| Unitario, node:test, implementado | Fórmula, precedencia, faltantes, redondeo y validación de configuración |
+| Integración, node:test + HTTP + MongoDB/Mailpit, implementado | Ownership, OTP/enlace de correo, versiones, expiración, conflictos, envío único, informes y decisiones; borrado anticipado pendiente |
+| Interfaz, navegador manual, disponible | Editor, persistencia, versión recibida, acceso, recuperación, revisión/envío, informe, decisión y móvil; automatización de riesgos de interacción pendiente |
+| E2E automatizado, pendiente T-10 | Crear/publicar → invitar → correo/código → responder/retomar/enviar → informe → revisión humana → cierre |
 | Calidad de IA | Casos de vacantes revisados por el autor: relevancia, fidelidad a requisitos, ausencia de preguntas improcedentes y recuperación ante fallos |
 
-CI mínimo configurado para T-00: instalación reproducible, tipos, lint, build, OpenSpec y comprobación de infraestructura con MongoDB. Se ampliará con las pruebas de producto al implementar cada cambio. El E2E previsto usará datos ficticios y un proveedor IA simulado; la revisión semántica del generador se realizará por separado con el proveedor real. No se impone un porcentaje de cobertura ajeno a los requisitos académicos.
+CI configura instalación reproducible, tipos, lint, build, OpenSpec, cinco suites de producto y smoke con MongoDB/Mailpit. No contiene todavía la automatización de navegador ni el despliegue. El E2E previsto usará datos ficticios y un proveedor IA simulado; la revisión semántica del generador se realizará por separado con el proveedor real. No se impone un porcentaje de cobertura ajeno a los requisitos académicos.
 
 ## 3. Modelo de datos
 
@@ -239,15 +239,17 @@ CI mínimo configurado para T-00: instalación reproducible, tipos, lint, build,
 ```mermaid
 erDiagram
   USER ||--o{ SCREENING : owns
-  SCREENING ||--o{ QUESTION : embeds
+  SCREENING ||--o{ SCREENING_CONFIGURATION : versions
+  SCREENING_CONFIGURATION ||--o{ QUESTION : embeds
   SCREENING ||--o{ INVITATION : receives
+  SCREENING_CONFIGURATION ||--o{ INVITATION : pinned_to
   INVITATION ||--o{ ANSWER : embeds
   INVITATION ||--o| REPORT : embeds
   INVITATION ||--o| REVIEW : embeds
   BANK_QUESTION |o--o{ QUESTION : copied_from
 ```
 
-`QUESTION`, `ANSWER`, `REPORT` y `REVIEW` son objetos embebidos, no colecciones independientes. El origen del banco es opcional y solo informativo. Sesiones y desafíos no aparecen en el diagrama de dominio.
+`QUESTION`, `ANSWER`, `REPORT` y `REVIEW` son objetos embebidos, no colecciones independientes. El origen del banco es opcional y solo informativo. La configuración inicial legacy puede seguir embebida en el SC hasta materializar su historial; el borrador de cambios es un objeto del SC. Sesiones y desafíos no aparecen en el diagrama de dominio.
 
 ### 3.2. Colecciones y atributos
 
@@ -256,9 +258,10 @@ Todos los documentos de dominio tienen `_id: ObjectId`, `createdAt: Date` y `upd
 | Colección | Atributos principales y restricciones |
 | --- | --- |
 | `users` | `email: string` normalizado, único; `passwordHash: string`; `displayName: string`; `active: boolean`. Solo recruiter; sin roles múltiples |
-| `screenings` | `ownerId: ObjectId` requerido; `title: string` 1–120; `area: string`; `description: string` hasta 6000; `status: draft/published`; `revision: integer >= 0`; `threshold: integer 0–100`; `questions: Question[]` máximo 20; `publishedAt: Date?`. Campos incompletos permitidos en borrador; publicación exige configuración válida |
+| `screenings` | `ownerId: ObjectId` requerido; `title: string` 1–120; `area: string`; `description: string` hasta 6000; `status: draft/published/closed`; `revision: integer >= 0`; `threshold: integer 0–100`; `questions: Question[]` máximo 20; `publishedAt: Date?`, `closedAt: Date?`. Campos incompletos permitidos en borrador; publicación exige configuración válida. Versiones: `activeConfigurationId`, `initialConfigurationId`, `configurationVersion`, `configurationIds` y `editingDraft?`; el resolver separa la configuración inicial legacy de la activa |
+| `screening_configurations` | `screeningId`, `ownerId`; `versionNumber`; título, área, descripción, umbral y preguntas publicados; `publishedAt`. Documentos inmutables; solo las referencias oficiales del SC forman su historial |
 | `question_bank` | `area: string`; `criterion: string`; `text: string`; `type: boolean/single_choice/text`; `options: {id,label}[]`; `guidance: string`; `active: boolean`. Sin pesos ni condiciones excluyentes heredados automáticamente |
-| `invitations` | `screeningId`, `ownerId: ObjectId`; `publicId: string` aleatorio opaco único; `candidateEmail: string` normalizado; `candidateName: string?`; `status: invited/in_progress/submitted`; `expiresAt`, `purgeAt: Date`; `answerRevision: integer >= 0`; `answers: Answer[]`; `submittedAt: Date?`; `report: Report?`; `review: Review?`; `auth: objeto` con desafío, HMAC, expiración, fallos y límite horario |
+| `invitations` | `screeningId`, `ownerId: ObjectId`; `configurationId?`, `configurationVersion?` (sin referencia resuelve v1 legacy); `publicId: string` aleatorio opaco único; `candidateEmail: string` normalizado; `candidateName: string?`; `status: invited/in_progress/submitted`; `expiresAt`, `purgeAt: Date`; `answerRevision: integer >= 0`; `answers: Answer[]`; `submittedAt: Date?`; `report: Report?`; `review: Review?`; `auth: objeto` con desafío, HMAC, expiración, fallos y límite horario; `emailAccess?` con resumen autenticado de token, vigencia y consumo |
 | `sessions` | Sesión del store: identificador opaco, principal recruiter/candidato, `userId` o `invitationId`, token CSRF y expiración. No guarda contraseñas, respuestas ni códigos |
 
 | Objeto | Atributos y reglas |
@@ -267,9 +270,9 @@ Todos los documentos de dominio tienen `_id: ObjectId`, `createdAt: Date` y `upd
 | `Answer` | `questionId: string`; `kind: option/text/unknown`; `optionId: string?`; `text: string?` hasta 2000. Una sola respuesta por pregunta; la forma y la opción deben corresponder al tipo de pregunta |
 | `Report` | `algorithmVersion: "v1"`; `outcome: meets/not_meets/needs_review`; `reason: knockout/score_below_threshold/incomplete/criteria_met`; `score: number?`; `threshold: number`; `incomplete: boolean`; `criteria: CriterionResult[]`; `generatedAt: Date`. Null score significa cálculo incompleto, nunca cero implícito |
 | `CriterionResult` | `questionId`, criterio, pregunta y `evidence: {status: known/unknown/missing, source: candidate_declaration, answerText: string/null}`, conforme a OpenAPI; `optionScore`, `weight`, `weightedPoints` nullable; `exclusionStatus: met/not_met/unknown/not_applicable` |
-| `Review` | `decision: continue/do_not_continue/clarify`; `reason: string` hasta 2000; `reviewerId: ObjectId`; `reviewedAt: Date`; `revision: integer >= 1`. El MVP conserva la revisión vigente; no promete historial de revisiones anteriores |
+| `Review` | Nuevas decisiones `continue/do_not_continue`; `clarify` solo se conserva en registros anteriores. `reason: string` hasta 2000; `reviewerId: ObjectId`; `reviewedAt: Date`; `revision: integer >= 1`. El MVP conserva la revisión vigente; no promete historial de revisiones anteriores |
 
-**Índices:** email único en usuarios; `{ownerId, createdAt}` en screenings e invitaciones; publicId único; `{screeningId, candidateEmail}` único para evitar doble invitación al mismo screening; `{area, active}` en banco; TTL sobre `purgeAt` en invitaciones y sobre la expiración del store de sesiones. El servidor no depende de que el TTL se ejecute inmediatamente.
+**Índices:** email único en usuarios; índices de propietario/estado y orden con desempate estable para las listas paginadas; configuración por SC/propietario; publicId único; `{screeningId, candidateEmail}` único para evitar doble invitación al mismo screening; `{area, active}` en banco; TTL sobre `purgeAt` en invitaciones y sobre la expiración del store de sesiones. El servidor no depende de que el TTL se ejecute inmediatamente.
 
 **Integridad:** el servicio comprueba propiedad y existencia de referencias, ids de preguntas/opciones sin duplicados, una respuesta por pregunta y reglas compatibles con su tipo. No hay borrado de screenings publicados en el MVP. Las copias se crean con nuevos ids; el origen del banco no sustituye el contenido copiado. La revisión usa su propia revisión de concurrencia y nunca sobrescribe el informe.
 
@@ -283,7 +286,7 @@ Se adjunta [OpenAPI](docs/openapi.yaml) con tres operaciones, conforme al máxim
 | `POST /api/candidate/attempt/submit` | Candidato autenticado | Envía las respuestas ya guardadas de su invitación; persiste una sola evaluación; devuelve confirmación |
 | `GET /api/invitations/{invitationId}/report` | Recruiter propietario | Devuelve resultado, desglose de evidencia y revisión humana vigente |
 
-Operaciones adicionales previstas: login/logout; crear/editar/listar/copiar screening; consultar banco; obtener sugerencias; crear/listar/eliminar invitación; solicitar/verificar código; leer/guardar respuestas; registrar revisión. Se detallarán antes de implementar cada ticket, sin añadirlas como endpoints representativos a la entrega.
+Operaciones adicionales: login/logout, crear/editar/listar/copiar screening, consultar banco, crear/listar invitación y solicitar/verificar código ya están detalladas en sus guías de implementación. Leer/guardar/enviar respuestas, informes, revisión, cierre, edición versionada, historial y filtros/paginación ya están implementados y documentados en sus guías. Obtener sugerencias y eliminar invitaciones siguen pendientes. OpenAPI conserva las tres operaciones representativas de la entrega.
 
 Errores comunes: `401` sesión ausente/expirada; `403` protección CSRF; `404` recurso inexistente o ajeno; `409` conflicto de estado/revisión; `410` invitación vencida; `422` datos inválidos; `429` límite de solicitudes. Las respuestas de error no incluyen datos de otras personas. Los endpoints del candidato nunca retornan scoring, opciones excluyentes ni informe interno.
 
@@ -299,14 +302,14 @@ Tres historias representativas. [HU-02, HU-05 y backlog completo](docs/backlog.m
 - **Dada** una pregunta copiada, **cuando** la edito, **entonces** no cambia el banco ni otro screening, y debo confirmar sus reglas para este puesto.
 - **Dado** un borrador, **cuando** intento publicarlo, **entonces** se validan pesos, puntuaciones, umbral, excluyentes y obligatoriedad según P-01/P-02/P-08.
 - **Dada** una configuración incompleta, **cuando** publico, **entonces** se identifican los campos inválidos y se conserva el borrador.
-- **Dado** un screening publicado, **cuando** necesito cambiarlo, **entonces** puedo copiarlo a otro borrador y las invitaciones anteriores mantienen sus reglas.
+- **Dado** un screening publicado, **cuando** edito y publico cambios en el mismo SC, **entonces** solo las invitaciones futuras reciben la nueva configuración; las anteriores mantienen sus reglas y comparten la lista del SC. Crear otro SC basado en este sigue siendo una copia independiente.
 - **Dado** un recruiter distinto del propietario, **cuando** intenta leer o modificar el screening, **entonces** no obtiene acceso.
 
 ### HU-03 — Completar y retomar
 
 **Como** candidato, **quiero** responder desde mi invitación, revisar y retomar mi avance, **para** completar el screening sin perder las respuestas guardadas.
 
-- **Dado** un enlace individual, **cuando** valido un código vigente, **entonces** accedo solo a mi intento sin crear una cuenta.
+- **Dado** el enlace del correo, **cuando** lo abro por primera vez con token vigente, **entonces** accedo sin código adicional. **Dado** el enlace compartible o un token consumido sin sesión, **cuando** valido el código, **entonces** accedo solo a mi intento sin crear una cuenta.
 - **Dado** un código usado, vencido o con intentos agotados, **cuando** lo presento, **entonces** no se crea una sesión.
 - **Dadas** respuestas guardadas, **cuando** retomo con acceso válido, **entonces** recupero esas respuestas.
 - **Dada** una respuesta desfavorable, **cuando** avanzo, **entonces** puedo completar el resto del cuestionario.
@@ -358,4 +361,4 @@ Tres tickets representativos: datos, backend y frontend. [Backlog y criterio de 
 
 ## 7. Pull requests
 
-La entrega 1 se presentó mediante `feature/entrega-1-LL` y el [PR académico #340](https://github.com/LIDR-academy/AI4Devs-finalproject/pull/340). La implementación avanza en `feature/entrega-2-LL`. Los PRs de desarrollo se incorporarán aquí con enlaces reales, objetivo, cambios y validación; no se contabilizan propuestas como PRs existentes.
+La entrega 1 se presentó mediante `feature/entrega-1-LL` y el [PR académico #340](https://github.com/LIDR-academy/AI4Devs-finalproject/pull/340). La implementación avanza en `feature/entrega-2-LL`. [PR de integración #2 del fork](https://github.com/luislujan32/AI4Devs-finalproject/pull/2): flujo principal, espacio recruiter, versiones para futuras invitaciones y documentación consolidada. [Validación y pendientes](docs/entrega-2-verificacion-2026-10-04.md).

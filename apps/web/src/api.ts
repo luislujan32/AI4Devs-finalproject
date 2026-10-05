@@ -9,6 +9,7 @@ export async function api<T>(path: string, session: Session, method = 'GET', bod
     const response = await fetch(`/api${path}`, { method, cache: 'no-store', signal: controller.signal,
       headers: { ...(body === undefined ? {} : { 'Content-Type': 'application/json' }), ...(method === 'GET' ? {} : { 'X-CSRF-Token': session.csrfToken }) },
       ...(body === undefined ? {} : { body: JSON.stringify(body) }) });
+    if (response.status === 204) return undefined as T;
     const data = await response.json().catch(() => null);
     if (!response.ok) throw new ApiError(typeof data?.message === 'string' ? data.message : 'No pudimos completar la solicitud.', response.status,
       Array.isArray(data?.issues) ? data.issues.filter((item: unknown) => typeof item === 'string') : []);

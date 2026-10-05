@@ -14,6 +14,10 @@ Proyecto individual AI4Devs. Stack aprobado: React/Vite/TypeScript, NestJS/Expre
 - docs/acceso.md: sesiones, cuentas ficticias, rutas implementadas y límites de T-02.
 - docs/screenings.md: autoría, publicación, CAS y banco inicial revisado de T-03.
 - docs/ux-screening-editor-research.md: diagnóstico, fuentes y primera mejora implementada del editor del recruiter.
+- docs/experiencia-producto.md: protocolo de revisión de producto, UX y viabilidad antes de cambios de flujo.
+- docs/ux-workspace-audit-2026-10-04.md: investigación C1–C6 del espacio de trabajo recruiter; propuestas, límites y aceptación.
+- docs/candidatos-acceso.md: invitaciones, correo local, sesión y límites de T-05.
+- docs/candidatos-formulario.md: respuestas, evaluación, envío y UX del postulante de T-07/T-06.
 
 ## Repositorio y ramas
 
@@ -29,9 +33,11 @@ Distinguir contrato aprobado, comportamiento existente verificado, propuesta y p
 
 La instrucción del usuario para avanzar autoriza el trabajo acordado. Preservar cambios ajenos y evitar mutaciones destructivas. No agregar requisitos académicos, herramientas o abstracciones que no aporten al cambio. Buscar equivalentes antes de crear helpers; en este proyecto nuevo no exigir precedentes inexistentes.
 
+Para cambios de flujo, aplicar [el criterio de experiencia del producto](docs/experiencia-producto.md): definir efecto real y estados visibles antes del código, recorrer acción → confirmación → lista → reapertura → edición/cancelación con datos ficticios, y comprobar móvil/accesibilidad. En cambios de varias pantallas, contrastar por separado producto y UX; sumar revisión técnica cuando cambien versiones, datos o consultas a escala. El agente principal concilia hallazgos y entrega un contrato verificable antes de implementar. Resolver autónomamente decisiones pequeñas de UX/UI; consultar a Luis solo elecciones estratégicas de alcance o comunicación externa.
+
 ## Reglas del producto
 
-Preservar P-01 a P-08. Scoring determinista; texto libre sin puntuación ni exclusión por IA; desconocidos no equivalen a cero. Configuración publicada inmutable. Resultado y revisión humana independientes. Envío único con concurrencia controlada.
+Preservar P-01 a P-08. Scoring determinista; texto libre sin puntuación ni exclusión por IA; desconocidos no equivalen a cero. Cada versión publicada es inmutable; editar el mismo SC prepara otra configuración activa solo para futuras invitaciones (docs/screening-versions.md). Toda invitación existente conserva la versión inicial o fijada, nunca se resuelve con la activa por defecto. Resultado y revisión humana independientes. Envío único con concurrencia controlada.
 
 La IA solo propone preguntas, con revisión del recruiter. No enviar respuestas ni identidades de candidatos. Autorización por ownership; una sesión de candidato pertenece a una sola invitación. Datos ficticios en pruebas. No guardar secretos ni datos personales en código, logs, prompts o navegador.
 
@@ -41,6 +47,6 @@ El formulario del candidato debe aplicar los criterios de UX ya adoptados para e
 
 Ejecutar comprobaciones aplicables; documentar sus resultados y límites reales. No presentar un scaffold como flujo principal completo ni intención como implementación. Actualizar README/prompts.md cuando cambie el estado o el workflow.
 
-Comandos de trabajo: npm run check, npm run test:persistence, npm run test:auth, npm run test:screenings, npm run smoke, npm run spec:validate. La comprobación de infraestructura o persistencia no sustituye el E2E del producto.
+Comandos de trabajo: npm run check, npm run test:persistence, npm run test:auth, npm run test:screenings, npm run test:candidate, npm run test:attempt, npm run smoke, npm run spec:validate. La comprobación de infraestructura o persistencia no sustituye el E2E del producto.
 
 Los checkpoints aportados se reconciliaron como conocimiento de referencia en docs/harness.md. No trasladar contratos empresariales al proyecto académico ni convertir recomendaciones pedagógicas en nuevos requisitos. La autorización actual del usuario para avanzar prevalece sobre gates históricos de otros proyectos.

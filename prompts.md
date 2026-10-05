@@ -1,6 +1,6 @@
 # Registro de uso de IA — Screeningroom
 
-**Autor:** Luis Lujan (LL). **Etapas:** entrega 1 documental y comienzo de entrega 2. **Actualización:** 27 de septiembre de 2026.
+**Autor:** Luis Lujan (LL). **Etapas:** entrega 1 documental y desarrollo de entrega 2. **Actualización:** 4 de octubre de 2026.
 
 Este registro documenta cómo se utilizó la IA y qué decisiones tomó el autor. Los workflows son resúmenes del trabajo real; solo los fragmentos expresamente marcados como literales reproducen instrucciones de la conversación. No se inventan prompts de implementación ni resultados de pruebas de una aplicación aún no desarrollada.
 
@@ -229,3 +229,125 @@ Por cada fase se añadirán las herramientas y modelos identificables, hasta tre
 **Trabajo con IA:** se integraron por avance directo T-01/T-02/T-03 y UX-01 en `feature/entrega-2-LL` del fork. Se añadió UX-02 como criterio explícito de aceptación de T-06: progreso y navegación claros, controles y ayudas accesibles, guardado confirmado, recuperación ante error, revisión final y móvil. No se afirma implementación del cuestionario ni validación con postulantes.
 
 **Elección del modelo:** Luis indicó que usa GPT-6 Sol Extra High. Se contrastó con la guía oficial de selección de OpenAI: es adecuado para análisis y verificación profundos de este desarrollo; tareas pequeñas pueden requerir menos esfuerzo. Esta orientación no implica que el modelo usado en workflows anteriores haya sido el mismo.
+
+## Entrega 2 — Workflow 9: invitaciones y acceso candidato T-05
+
+**Entrada humana:** Luis aprobó avanzar con el postulante y pidió aplicar el estilo UX/UI renovado a su formulario. Indicó usar cuentas ficticias ahora y reales solo en pruebas posteriores. Las publicaciones se limitan a su fork.
+
+**Trabajo con IA:** cambio OpenSpec `candidate-invitations` con propuesta, diseño, escenarios y tareas. La implementación suma invitaciones solo de screenings publicados propios, correo `example.test`, enlace individual, código aleatorio de seis dígitos y un uso, controles de reenvío/fallos/IP, sesión candidata ligada a una invitación, separación de recruiter y candidato, interfaz de invitaciones y acceso con etiquetas/errores/foco. No se simuló el cuestionario como si ya estuviera operativo: T-07/T-06 siguen para respuestas, evaluación y formulario.
+
+**Ajuste técnico durante la prueba:** el puerto SMTP local aceptaba conexión pero no respondía al saludo en el entorno de prueba. Se cambió el adaptador ficticio a la API HTTP local de Mailpit, restringida a loopback y correos `example.test`; se actualizó diseño y documentación. No se habilitó envío externo ni se agregó una dependencia nueva.
+
+**Evidencia:** pruebas HTTP/MongoDB/Mailpit aisladas de ownership, duplicado, CSRF, código correcto/incorrecto/usado, cinco fallos, reenvío y límite horario, concurrencia y revocación por retención. En navegador se creó invitación ficticia desde publicado, se abrió enlace, se leyó código de Mailpit y se confirmó acceso/sesión. Se comprobó una recarga con sesión vigente. El control de viewport integrado no aplicó 375 px; la revisión visual móvil se deja para T-06. No se afirma envío a correo real, identidad civil, CI remoto ni E2E principal.
+
+**Herramientas y límites:** Codex desktop, OpenSpec, Node/TypeScript, MongoDB/Mailpit locales, navegador integrado y Git. Los códigos de prueba solo circularon dentro del equipo y no se imprimieron en documentación. Sin subagentes. Se sigue la decisión humana de usar únicamente el fork para commits/PRs de desarrollo.
+
+## Entrega 2 — Workflow 10: respuestas, evaluación y formulario T-07/T-06
+
+**Entrada humana:** Luis pidió continuar con el postulante y aplicar al formulario las técnicas UX/UI del editor aprobado. Se trabajó sobre la rama dependiente de T-05, con cuentas e invitaciones ficticias, sin modificar el repositorio académico.
+
+**Trabajo con IA:** cambios OpenSpec `candidate-attempt` y `candidate-form-ux` delimitan API/cálculo y presentación. El backend proyecta solo preguntas visibles, valida respuestas por tipo, guarda con revisión optimista y calcula un informe determinista P-01 a P-08 al enviar. La UI usa una pregunta por paso, progreso, respuestas desconocidas separadas de omisiones, guardado confirmado, edición preservada ante error, revisión editable, confirmación de envío y recibo sin informe interno.
+
+**Ajustes de criterio:** la orientación copiada del banco es para el recruiter y se excluyó de la proyección candidata. La comparación del umbral usa sumas ponderadas antes de redondear; un excluyente incumplido prevalece sin ocultar faltantes. Las contribuciones conocidas permanecen cuando el puntaje global es nulo. El envío repetido conserva el primer recibo y no recalcula.
+
+**Evidencia:** dos pruebas puras y cuatro de HTTP/MongoDB/Mailpit pasaron, incluidas formas inválidas, ownership de sesión, CSRF, reanudación, CAS de guardado, vencimiento, obligatoriedad, doble envío y no exposición de reglas. El navegador integrado recorrió una invitación ficticia, dos preguntas, navegación con edición local, guardado, recarga, desconocido, revisión, envío y recibo persistido. `npm run check` y todas las regresiones locales pasaron; el [CI de la rama candidata](https://github.com/luislujan32/AI4Devs-finalproject/actions/runs/36584509325) terminó correctamente. La revisión visual a 375 px y permisos de control de pantalla del Mac seguían pendientes; no se afirma evaluación de usabilidad con candidatos reales.
+
+**Límites:** T-08 todavía debe exponer informe y revisión humana al recruiter. El aviso de datos de la demo refleja 90 días de retención y no sustituye una política de privacidad para datos reales. El cálculo apoya decisiones humanas; no se usa IA para evaluar ni se toman decisiones de contratación automáticas. Herramientas: Codex desktop, OpenSpec, TypeScript/NestJS/React, MongoDB/Mailpit locales y navegador integrado; sin subagentes.
+
+## Entrega 2 — Workflow 11: revisión del recorrido completo con observaciones de Luis
+
+**Entrada humana:** Luis probó la interfaz y aportó ocho capturas. Pidió eliminar copias, separar las invitaciones de la configuración, mejorar etiquetas, ayudas y diseño móvil, enviar la invitación por correo, simplificar el envío final, aclarar la sesión y ubicar las respuestas del recruiter.
+
+**Trabajo con IA:** contrastar las capturas con código y pruebas; investigar patrones oficiales de agrupación de tareas, revisión, confirmación y ayudas; registrar decisiones y pendientes en [la revisión UX](docs/ux-feedback-2026-10-03.md) y OpenSpec `screening-workflow-ux`. Implementar áreas Configuración/Postulantes, eliminación segura de borradores, invitación HTML/texto a Mailpit, cookies independientes para recruiter/candidato, guardado seguido del envío, selector de preguntas móvil y textos más claros.
+
+**Correcciones y límites:** se identificó que ambos principales usaban una cookie `sr_session`: verificar a un candidato en el mismo navegador podía desplazar al recruiter y aparentar un vencimiento prematuro. El informe ya se guarda en MongoDB pero su vista y revisión humana siguen en T-08. Mailpit entrega solo dentro de la demo con `example.test`; no se afirma correo real. La duración futura de la sesión y archivado de publicados requieren decisión humana. No se usaron subagentes ni datos reales.
+
+**Evidencia local:** `npm run check` y pruebas de screenings, auth, candidate y attempt pasaron con MongoDB/Mailpit locales. Se comprobó por navegador el acceso público del candidato a un ancho efectivo de 375 px sin desbordamiento horizontal; la revisión del editor autenticado a ese ancho y el recorrido completo posterior a estos cambios siguen pendientes. No se atribuye un modelo exacto al trabajo sin evidencia verificable.
+
+## Entrega 2 — Workflow 12: segunda revisión y prioridades
+
+**Entrada humana:** Luis validó la mejora general mediante seis capturas y propuso estados más visibles, revisar el texto del correo, evitar código al abrir desde el email, mejorar el recibo y reconsiderar la copia del enlace tras recibir respuestas. Solicitó conocer el estado real del proyecto y los próximos pasos.
+
+**Análisis con IA:** contrastar cada observación con la rama implementada y el backlog; investigar documentación primaria sobre etiquetas de estado, confirmaciones y tokens de enlace. Se documentó la diferencia entre el enlace actual (idéntico en email y botón copiar) y la propuesta de dos credenciales con acceso diferente. Se priorizó T-08 porque el informe ya se persiste pero aún no es visible para el recruiter. No se equiparó un correo más un código al mismo buzón con dos factores independientes.
+
+**Resultado y límite:** se actualizaron [la revisión UX](docs/ux-feedback-2026-10-03.md) y [el backlog](docs/backlog.md) como propuestas, sin cambiar el acceso ni presentar funcionalidades futuras como terminadas. Se mantienen datos ficticios; no se usaron subagentes ni datos reales. El modelo exacto del turno no se verificó en la interfaz.
+
+## Entrega 2 — Workflow 13: informes, revisión humana y cierre T-08
+
+**Entrada humana:** Luis aprobó avanzar con la vista de resultados y revisión del recruiter, y añadió que un SC publicado debe poder cerrarse conservando acceso a los resultados de postulantes.
+
+**Trabajo con IA:** cambio OpenSpec `recruiter-results-and-closure`; lectura del informe solo para el propietario y dentro de retención, aunque haya vencido el enlace; revisión humana versionada y separada del cálculo con motivo obligatorio al continuar frente a resultado negativo o pendiente. La interfaz muestra respuestas y criterios, distingue los estados de postulantes y reemplaza la copia de enlace por consulta cuando ya hay envío. El cierre confirmado congela configuración y nuevas invitaciones, mantiene intentos previos hasta su vencimiento y permite consultar informes o copiar el SC como nuevo borrador.
+
+**Ajuste humano incorporado:** la regla de cierre se explicita antes de confirmar: no revoca las invitaciones enviadas y no borra resultados. No se decidió implantar correo real, acceso sin código desde el email, borrado temprano ni una decisión de contratación automática.
+
+**Evidencia local:** `npm run check`, 17 pruebas de screenings, seis de intento, cinco de invitaciones, trece de acceso, catorce de persistencia y smoke pasaron con MongoDB/Mailpit locales; se verificaron propiedad, CSRF, informes tras vencer el enlace, revisión concurrente, cierre y continuidad de la invitación existente. En navegador con base ficticia aislada se abrió el informe, se guardó una revisión humana, se cerró el SC y se recargó conservando postulantes/resultados; a 375 px no se observó desbordamiento horizontal. La rama aún requiere integración en `feature/entrega-2-LL` y CI integrado. Se usaron Codex desktop, OpenSpec, Node/TypeScript, React/NestJS y datos ficticios; sin subagentes. No se atribuye un modelo exacto sin verificarlo.
+
+## Entrega 2 — Workflow 14: correcciones de la revisión de Luis
+
+**Entrada humana:** Luis señaló el error de informe/cierre, la confusión entre «Ocultar respuestas» y «Cerrar informe», la edición bloqueada de publicados, la copia, el guardado desigual, duplicados del banco, publicación sin preguntas, umbral inalcanzable y código redundante al abrir desde el correo. Confirmó que el banco debe ofrecer guía sin valores automáticos.
+
+**Trabajo con IA:** cambio OpenSpec `review-feedback-ux`. Se encontró que la demo mantenía una API anterior sin rutas T-08 y se reinició con el build actualizado. El editor pasó a guardado automático serializado para todos los campos con revisión optimista y reintento; el informe ocupa una vista propia. La UI explica la inmutabilidad del publicado y crea una nueva versión vinculada al original. El servidor evita repetir una pregunta del banco y rechaza umbrales superiores al máximo ponderado posible. El enlace de correo usa una credencial de un uso; el enlace compartido mantiene código.
+
+**Criterios humanos y límites:** se conservaron las preguntas y reglas de personas ya invitadas; no se asignan puntajes de forma automática a preguntas del banco. La entrega de correo sigue siendo solo local y ficticia. El token del correo prueba acceso al mensaje, no identidad civil ni un segundo factor independiente.
+
+**Evidencia:** `npm run check` pasó con Node del runtime local; `npm run test:screenings` pasó 18 casos y `npm run test:candidate` seis casos con bases de prueba aisladas y Mailpit. Las pruebas iniciales dentro del sandbox no pudieron conectar a servicios locales; se repitieron con acceso local autorizado. En navegador y base ficticia separada se verificaron autoguardado de título tras recarga, bloqueo de publicación vacía e imposible, publicación válida, apertura directa desde el correo sin código, envío del cuestionario, informe separado, cierre con resultados conservados y nueva versión vinculada al original. El control de viewport integrado no cambió el ancho efectivo a 375 px; esa inspección y CI de la rama de integración siguen pendientes. No se usaron subagentes ni datos reales.
+
+## Entrega 2 — Workflow 15: auditoría de producto y UX de resultados
+
+**Entrada humana:** Luis mostró que el informe era visualmente plano, poco claro por pregunta, la confirmación «Revisión humana guardada» no explicaba nada, la decisión desaparecía en Postulantes y el formulario reaparecía al volver. Preguntó qué hacía «Solicitar aclaración» y pidió que las decisiones pequeñas no dependan de revisar cada pantalla.
+
+**Trabajo con IA:** dos subagentes independientes auditaron el contrato de producto y la UX, sin editar código; se contrastaron sus propuestas con P-01 a P-08, el modelo persistido y fuentes primarias de GOV.UK, W3C, Atlassian y Greenhouse. Coincidieron en separar respuesta, resultado y decisión, presentar causas del resultado sin inventar un umbral por pregunta, y cerrar el formulario tras guardar. Se documentaron estas reglas en `docs/ux-resultados-revision.md` y OpenSpec `recruiter-review-ux` antes de ampliar el flujo.
+
+**Decisión de producto:** «Solicitar aclaración» solo persistía un enum; no contactaba al postulante. Se retiró de nuevas revisiones y se conserva la lectura explicada de registros previos. La revisión vigente continúa siendo interna; una solicitud real se diseñará aparte. La lista obtiene un resumen mínimo sin respuestas ni motivo. El informe muestra factores relevantes, valor por respuesta, peso, decisión, motivo y fecha; tras guardar queda en lectura con acción explícita para cambiar.
+
+**Evidencia y límites:** `npm run check` pasó y la prueba de screenings cubrió proyección del resumen, rechazo de nuevas aclaraciones y reemplazo de decisión. En una base ficticia aislada, el navegador mostró los tres ejes en Postulantes, una decisión distinta del resultado, registro/confirmación, regreso, recarga, edición y cancelación; a 375 px efectivos no hubo desbordamiento horizontal. No se alteró la fórmula ni el informe enviado. El listado actual limita 100 invitaciones y necesitará paginación antes de escalar. Se usaron solo cuentas ficticias; no se atribuye un modelo exacto a los subagentes sin evidencia verificable.
+
+## Entrega 2 — Workflow 16: auditoría del espacio recruiter y mejora del harness
+
+**Entrada humana:** Luis aportó seis capturas C1–C6. Señaló falta de estructura y jerarquía en dashboard, detalle, postulantes, informe, invitaciones y correo; propuso evaluar Kanban y editar SC publicados. Pidió optimizar los revisores de producto y UX para reducir las decisiones pequeñas que llegan a su revisión. Aclaró que una edición debería afectar **solo futuras invitaciones**.
+
+**Trabajo con IA:** dos subagentes de solo lectura revisaron por separado producto y UX/UI; un tercero, convocado para esta tarea, verificó consecuencias de versionado y de listas de más de 100 registros. El agente principal contrastó sus hallazgos con código y P-04, abrió fuentes primarias de Carbon, GOV.UK, W3C y Greenhouse, y consolidó propuestas y criterios de aceptación en [la auditoría C1–C6](docs/ux-workspace-audit-2026-10-04.md). Se afinó el encargo de los revisores en [el criterio de experiencia](docs/experiencia-producto.md) y se corrigió contexto desactualizado de OpenSpec. Los agentes no editaron código ni datos.
+
+**Correcciones y decisiones:** un Kanban no representa los tres ejes actuales ni etapas de contratación reales; se propone lista filtrable y un informe de detalle. La edición directa de un publicado alteraría intentos que leen el SC actual; el objetivo es versionar y dirigir nuevas invitaciones a una versión activa, preservando las emitidas. Los conteos y filtros necesitan API paginada: las listas actuales terminan en 100 y `items.length` no es un total. No se añaden agentes permanentes por ceremonia; la revisión técnica se pide cuando cambian invariantes o escala.
+
+**Evidencia y límites:** investigación de código y fuentes oficiales, sin cambios de interfaz ni pruebas observadas con recruiters. El informe es una propuesta; no afirma que paginación, versiones activas o nuevo diseño estén implementados. Los nombres exactos de los modelos de estos subagentes no se comprobaron, por lo que no se atribuyen.
+
+## Entrega 2 — Workflow 17: primer bloque del rediseño recruiter
+
+**Entrada humana:** Luis autorizó comenzar los cambios de la auditoría C1–C6 y confirmó que la futura edición de un publicado afectará solo invitaciones futuras.
+
+**Trabajo con IA:** se usaron Codex desktop y el harness OpenSpec para especificar `recruiter-workspace-foundations` antes de implementar. Se corrigieron las listas truncadas mediante filtros, paginación y totales del servidor; se añadió estructura de aplicación, dashboard y cola de postulantes alineada. Se separaron estado y acciones de SC, se hizo recuperable la sección y el informe por URL, se mejoró el feedback de invitación y se igualó el correo HTML/texto con vencimiento absoluto. Se contrastó cada salida con la auditoría y con el comportamiento real: la copia sigue siendo un SC independiente, por lo que la interfaz ya no la promete como una versión activa.
+
+**Criterio humano y corrección:** la decisión estratégica de Luis sobre futuras invitaciones se conserva como contrato del próximo cambio. No se modificó la configuración publicada ni la pertenencia de invitaciones existentes. El Kanban se descartó por ahora porque el producto no tiene etapas de contratación; el listado permite filtrar las tres dimensiones independientes.
+
+**Evidencia:** `npm run check` con Node 24; `test:screenings` 19/19, `test:candidate` 7/7 y `test:attempt` 6/6 en bases de prueba y Mailpit local. Las pruebas nuevas cubren 101 SC y 101 postulantes, totales, filtro, búsqueda y ownership. En navegador, una base aislada con 4 SC y 25 postulantes permitió verificar dashboard, Por revisar, informe, Atrás, invitación y la vista efectiva a 375 px sin desbordamiento; el foco por teclado alcanzó la confirmación. La investigación con recruiters representativos y el versionado activo siguen pendientes. No se usaron subagentes nuevos en esta implementación; se aplicaron los hallazgos de los tres revisores de la auditoría previa.
+
+## Entrega 2 — Workflow 18: editar para futuras invitaciones con versiones estables
+
+**Entrada humana:** Luis pidió continuar los cambios y había definido que la edición afecte solo futuras invitaciones. Se preservaron banco sin valores automáticos y cuentas ficticias.
+
+**Trabajo con IA:** Codex y OpenSpec `screening-configuration-versions`; se retomaron los tres subagentes previos, en solo lectura, para contrastar producto, UX y concurrencia antes de implementar. Coincidieron en un SC con lista única, configuración activa, borrador de cambios y versión fijada por invitación. La revisión técnica comparó snapshots repetidos en cada invitación con documentos de configuración inmutables: se eligieron documentos y puntero CAS para conservar todo historial. Detectó riesgo de borrar una versión si el CAS ganó pero se perdió la respuesta; el código limpia solo un perdedor confirmado y las pruebas simulan ambos fallos.
+
+**Decisiones y correcciones:** editar y copiar tienen efectos diferentes; el cierre bloquea mientras haya borrador para no borrarlo silenciosamente. Las invitaciones legacy resuelven v1 y las nuevas fijan la activa; no se mueven existentes ni se recalculan informes. El editor autoguarda por ruta separada y compara umbral, contenido, valores, pesos y excluyentes antes de publicar. Dashboard agrega toda la familia; lista/informe identifican la versión. No se atribuye un modelo exacto a los subagentes sin comprobación.
+
+**Corrección de la revisión final:** el revisor técnico detectó que un fallo entre crear la invitación y preparar el correo podía dejar un registro intacto sin enviar y bloquear el reintento con ese correo. Se amplió la limpieza condicionada a invitaciones intactas tanto en la revalidación como en la preparación del mensaje; la prueba inyecta ambos fallos y comprueba el reintento.
+
+**Evidencia:** checks de tipos, lint, build y OpenSpec; integración local `test:screenings` 24/24, `test:persistence` 14/14, `test:candidate` 7/7 y `test:attempt` 6/6. Incluye continuidad v1→v2 y v2→v3, doble apertura/publicación, fallos antes/después del CAS y carreras de invitación con edición/publicación/cierre. Navegador con base ficticia separada: autoguardado de título/umbral, revisión, publicación en el mismo SC, invitación v2 y consulta del informe/configuración v1. A 375 y 320 px efectivos no hubo desbordamiento en las vistas comprobadas. Sin datos reales ni correos externos; queda validación con recruiters y clientes de correo. El servidor local de prueba del usuario se reinició con el build actualizado. La implementación no equivale todavía a integración en entrega 2 ni despliegue.
+
+## Entrega 2 — Workflow 19: alineación y acciones compactas C1/C2
+
+**Entrada humana:** Luis aportó capturas de columnas corridas, etiquetas recortadas y pidió que informe y copia compartan tamaño de botón con distintos iconos.
+
+**Trabajo con IA:** se identificaron el ancho automático distinto de la columna de acciones y la colisión de estilos entre el panel y la etiqueta «Sin decisión». Se fijaron anchos iguales de encabezado/fila, centrado de datos y cajas de estado completas; «Respuestas recibidas» pasó a «Recibidas». El informe usa un icono de documento con nombre accesible por postulante, título y el mismo tamaño que copia. Ajuste reversible dentro del diseño aprobado, sin nueva capacidad ni subagentes.
+
+**Evidencia:** tipos web, lint y build web correctos. Navegador con 3 SC y 3 postulantes ficticios en base aislada: columnas coincidentes a 1280 px (desviación menor a 0,01 px), apertura del informe mediante Enter, estados completos a 950 px y sin desbordamiento en móvil de 375 y 320 px. Botones de 36×36 px en escritorio y 44×44 px en móvil. Servidor principal actualizado y disponible; no se modificaron sus registros.
+
+## Entrega 2 — Workflow 20: consolidación y verificación integrada
+
+**Entrada humana:** Luis dio conformidad a los ajustes de columnas y autorizó continuar con la integración en entrega 2, la verificación completa y la documentación. Se trabaja únicamente en su fork; entrega 1 permanece documental.
+
+**Trabajo con IA:** Codex desktop, CLI OpenSpec y navegador integrado. Se incorporó la rama de revisión por avance directo a entrega 2 local, se ejecutaron las cinco suites y se recorrió el producto en una base separada con cuentas ficticias. Se reconciliaron README, datos de versiones, API implementada, estrategia de pruebas y backlog con la evidencia; se sincronizan las especificaciones de los cambios completos y se conserva la pregunta abierta sobre duración de sesión. No se convocaron nuevos subagentes para esta integración rutinaria.
+
+**Evidencia:** 64/64 pruebas (persistencia 14, auth 13, screenings 24, candidate 7, attempt 6), smoke y checks correctos. Navegador: editor/recarga, banco, publicación, invitación v1, cambios para futuras invitaciones v2, correo sin código, save/reload/salir/OTP/retomar, envío y recibo, informe con umbral original, decisión distinta del cálculo, cierre, invitación previa válida y conflicto entre pestañas con recuperación explícita. [Registro detallado](docs/entrega-2-verificacion-2026-10-04.md). Se publica mediante PR hacia entrega 2 del fork y se verifica CI sin atribuir a pruebas locales un resultado remoto.
+
+**Límites:** sin datos reales, mensajes externos, despliegue público ni nueva generación IA. El recorrido de interfaz es manual. La entrega formal por formulario no se realiza en este workflow.

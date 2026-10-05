@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState, type FormEvent } from 'react';
 
 import type { Session } from './api';
 import { Workspace } from './Workspace';
+import { CandidateAccess } from './CandidateAccess';
+const readInvitation = () => new URLSearchParams(window.location.hash.slice(1)).get('invite') || '';
 const sessionData = (value: unknown): value is Session => {
   if (!value || typeof value !== 'object' || !('user' in value) || !value.user || typeof value.user !== 'object') return false;
   return 'displayName' in value.user && typeof value.user.displayName === 'string'
@@ -9,19 +11,25 @@ const sessionData = (value: unknown): value is Session => {
 };
 
 export function App() {
+  const [invitation, setInvitation] = useState(readInvitation);
   const [session, setSession] = useState<Session | null>(null);
   const [initializing, setInitializing] = useState(true);
   const [csrf, setCsrf] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [sessionExpired, setSessionExpired] = useState(false);
   const [busy, setBusy] = useState(false);
   const [attempt, setAttempt] = useState(0);
   const [editingDirty, setEditingDirty] = useState(false);
   const [confirmLogout, setConfirmLogout] = useState(false);
-  const expired = useCallback(() => { setSession(null); setCsrf(''); setEditingDirty(false); setConfirmLogout(false); setAttempt((n) => n + 1); setError('Tu sesión venció. Volvé a entrar.'); }, []);
+  const expired = useCallback(() => { setSession(null); setCsrf(''); setEditingDirty(false); setConfirmLogout(false); setSessionExpired(true); setAttempt((n) => n + 1); setError('Tu sesión terminó. Iniciá sesión de nuevo.'); }, []);
+
+  useEffect(() => { const change = () => setInvitation(readInvitation()); window.addEventListener('hashchange', change);
+    return () => window.removeEventListener('hashchange', change); }, []);
 
   useEffect(() => {
+    if (invitation) return;
     const controller = new AbortController();
     let active = true;
     setInitializing(true);
@@ -30,7 +38,7 @@ export function App() {
         if (response.ok) {
           const data: unknown = await response.json();
           if (!sessionData(data)) throw new Error();
-          if (active) { setSession(data); setError(''); }
+          if (active) { setSession(data); setError(''); setSessionExpired(false); }
         } else if (response.status === 401) {
           const bootstrap = await fetch('/api/auth/csrf', { signal: controller.signal, cache: 'no-store' });
           if (!bootstrap.ok) throw new Error();
@@ -39,10 +47,10 @@ export function App() {
           if (active) setCsrf(data.csrfToken);
         } else throw new Error();
       })
-      .catch(() => { if (active) setError('No pudimos conectar. Volvé a intentar.'); })
+      .catch(() => { if (active) { setSessionExpired(false); setError('No pudimos conectar. Volvé a intentar.'); } })
       .finally(() => { if (active) setInitializing(false); });
     return () => { active = false; controller.abort(); };
-  }, [attempt]);
+  }, [attempt, invitation]);
 
   async function login(event: FormEvent) {
     event.preventDefault(); setBusy(true); setError('');
@@ -58,7 +66,7 @@ export function App() {
       }
       const data: unknown = await response.json().catch(() => { throw new Error('No pudimos confirmar la sesión.'); });
       if (!sessionData(data)) throw new Error('No pudimos confirmar la sesión.');
-      setCsrf(''); setSession(data);
+      setCsrf(''); setSession(data); setSessionExpired(false);
     } catch (reason) { setError(reason instanceof Error ? reason.message : 'No pudimos conectar.'); }
     finally { setBusy(false); }
   }
@@ -73,10 +81,14 @@ export function App() {
     } catch { setError('No pudimos cerrar la sesión. Volvé a intentar.'); }
     finally { setBusy(false); }
   }
+  if (invitation) return <CandidateAccess key={invitation} publicId={invitation} />;
   return (
     <main className="shell">
-      <header><a className="brand" href="/" aria-label="Screeningroom, inicio"><span className="brand-mark">S</span>screeningroom</a>
-        {session ? <button className="logout" disabled={busy} onClick={() => void logout()}>Cerrar sesión</button> : <span className="badge">En desarrollo</span>}</header>
+      <header className="app-header"><a className="brand" href="/" aria-label="Screeningroom, inicio"><span className="brand-mark">S</span>screeningroom</a>
+        {session ? <><nav className="global-nav" aria-label="Navegación principal"><a href="/">Screenings</a></nav>
+          <details className="user-menu"><summary>{session.user.displayName}<span aria-hidden="true"> ▾</span></summary>
+            <div><span className="user-email">{session.user.email}</span><button className="logout" disabled={busy} onClick={() => void logout()}>Cerrar sesión</button></div></details></>
+          : <span className="badge">En desarrollo</span>}</header>
       {initializing ? <p className="loading" role="status">Comprobando acceso…</p> : session ? (
         <Workspace session={session} onExpired={expired} onDirtyChange={setEditingDirty} />
       ) : (
@@ -88,7 +100,7 @@ export function App() {
               <button type="submit" disabled={busy || !csrf}>{busy ? 'Entrando…' : 'Iniciar sesión'}</button></form></section></div>
       )}
       {confirmLogout && <div className="notice" role="alertdialog" aria-label="Salir con cambios sin guardar"><p>Tenés cambios sin guardar. ¿Querés cerrar sesión y descartarlos?</p><div className="actions"><button disabled={busy} onClick={() => void logout(true)}>Descartar cambios y cerrar sesión</button><button className="secondary" disabled={busy} onClick={() => setConfirmLogout(false)}>Seguir editando</button></div></div>}
-      {error && <div className="notice" role="alert"><p>{error}</p><button className="secondary" disabled={busy || initializing} onClick={() => { setError(''); setAttempt((n) => n + 1); }}>Reintentar</button></div>}
+      {error && <div className="notice" role="alert"><p>{error}</p>{!sessionExpired && <button className="secondary" disabled={busy || initializing} onClick={() => { setError(''); setAttempt((n) => n + 1); }}>Reintentar</button>}</div>}
       <footer>Screeningroom · Proyecto final AI4Devs · Luis Lujan</footer>
     </main>
   );
