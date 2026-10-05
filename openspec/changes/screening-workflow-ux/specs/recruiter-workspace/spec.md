@@ -1,7 +1,7 @@
 ## MODIFIED Requirements
 
 ### Requirement: Login and workspace interface
-La UI SHALL permitir entrar/salir y cargar screenings propios, mostrar estados de carga, error, vacío y sesión vencida. En un screening publicado SHALL separar Configuración de Postulantes, y mostrar invitaciones y estados solo en Postulantes. La sesión del recruiter SHALL seguir vigente al abrir una sesión candidata en el mismo navegador.
+La UI SHALL permitir entrar/salir y cargar screenings propios, mostrar estados de carga, error, vacío y sesión vencida. En un screening publicado SHALL separar Preguntas y reglas de Postulantes, y mostrar invitaciones y estados solo en Postulantes. La sesión del recruiter SHALL seguir vigente al abrir una sesión candidata en el mismo navegador.
 
 #### Scenario: Published workspace
 - **WHEN** el recruiter abre un screening publicado

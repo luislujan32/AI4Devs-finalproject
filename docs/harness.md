@@ -58,3 +58,9 @@ Un cambio terminado se valida y archiva mediante la CLI con sincronización de s
 ## Ajuste del harness tras la auditoría recruiter — 04/10/2026
 
 La [revisión C1–C6](ux-workspace-audit-2026-10-04.md) mostró que el cuello de botella no era agregar otra herramienta sino concretar decisiones de experiencia antes del código. [El protocolo de producto y UX](experiencia-producto.md#protocolo-de-revisión-por-roles--04102026) define encargos independientes, evidencia exigida y síntesis del agente principal. Un tercer revisor técnico se usa cuando la propuesta cambia invariantes o escala; no se instala como agente permanente hasta que el patrón se repita. Esta sección registra el estado actual y no reescribe la tabla histórica del 27/09.
+
+## Consolidación del 04/10/2026
+
+La [verificación integrada de entrega 2](entrega-2-verificacion-2026-10-04.md) actualiza el estado de las secciones históricas anteriores: 64 pruebas automatizadas, smoke y recorrido manual de web/API/BD con cuentas ficticias. Incluye título/reglas persistidos, banco sin duplicados, v1/v2, acceso por correo sin código, reanudación por OTP, conflicto entre pestañas, envío, decisión humana independiente y continuidad después del cierre. El navegador manual no se presenta como suite E2E automatizada ni despliegue.
+
+Las especificaciones vivas se sincronizan con los cambios implementados. La ampliación de duración de sesión queda abierta; no se modifica por asumir que la corrección de cookies ya implica una preferencia definida. T-04, el resto de T-09 y la automatización/despliegue de T-10 siguen pendientes.

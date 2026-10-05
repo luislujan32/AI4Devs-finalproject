@@ -50,7 +50,7 @@ Próximo paso: observar con recruiters la navegación Puesto/Preguntas/Revisión
 
 ## UX-02 — Formulario del postulante
 
-Luis aprobó la primera mejora del editor y pidió aplicar las mismas técnicas de UX/UI al recorrido del postulante (T-06). Esta es una condición de aceptación de ese ticket, no una afirmación de que el formulario ya exista. El diseño debe adaptar los patrones a quien responde: pasos cortos y progreso entendible, texto y opciones legibles, navegación atrás/adelante sin perder respuestas, controles compactos pero cómodos al tacto, etiquetas y foco visibles, ayudas que se abren con toque/teclado y explicaciones esenciales siempre presentes. Debe distinguir «sin responder» de «No puedo confirmarlo», mostrar estado de guardado confirmado por el servidor, conservar lo escrito ante fallo/conflicto, permitir revisión final y explicar que el envío cierra la edición. En móvil se comprobarán 375 px y teclado; en ningún paso se revelarán pesos, puntajes ni reglas excluyentes. Se verificará con cuentas e invitaciones ficticias antes de usar datos reales.
+Luis aprobó la primera mejora del editor y pidió aplicar las mismas técnicas de UX/UI al recorrido del postulante (T-06). El formulario está implementado y su [verificación integrada](entrega-2-verificacion-2026-10-04.md) cubre guardado, acceso, reanudación, revisión, conflicto y envío. Esta sección conserva el criterio de aceptación para futuras modificaciones. El diseño debe adaptar los patrones a quien responde: pasos cortos y progreso entendible, texto y opciones legibles, navegación atrás/adelante sin perder respuestas, controles compactos pero cómodos al tacto, etiquetas y foco visibles, ayudas que se abren con toque/teclado y explicaciones esenciales siempre presentes. Debe distinguir «sin responder» de «No puedo confirmarlo», mostrar estado de guardado confirmado por el servidor, conservar lo escrito ante fallo/conflicto, permitir revisión final y explicar que el envío cierra la edición. En móvil se comprobarán 375 px y teclado; en ningún paso se revelarán pesos, puntajes ni reglas excluyentes. Se verificará con cuentas e invitaciones ficticias antes de usar datos reales.
 
 ## Ideas posteriores propuestas por Luis (28/09/2026)
 
@@ -62,14 +62,26 @@ Luis aprobó la primera mejora del editor y pidió aplicar las mismas técnicas 
 
 **Hitos académicos:** entrega 1, 24/09, documentación; entrega 2, 22/10, flujo principal operativo con web/API/BD; final, 12/11, funcionalidades, tests, evidencia y registro de IA.
 
-## Próximo tramo priorizado — revisión del 03/10/2026
+## Plan de la revisión del 03/10/2026 — registro histórico
 
 1. **T-08 implementado en `feature/recruiter-results-T08-LL`:** el recruiter consulta respuestas/informe, registra revisión humana y puede cerrar un SC publicado sin perder resultados. El cierre impide nuevas invitaciones; las existentes conservan su plazo. [Contrato y evidencia local](resultados-recruiter.md).
 2. **Integrar y probar entrega 2:** incorporar de forma ordenada las ramas dependientes T-05, T-06/T-07, UX posterior y T-08 en `feature/entrega-2-LL` del fork; ejecutar el recorrido recruiter → correo → candidato → informe → revisión → cierre con datos ficticios, más móvil de 375 px y fallos recuperables. Verificar CI sobre la rama integrada antes del formulario académico.
 
-La nueva [definición de producto y UX para resultados y revisión](ux-resultados-revision.md) cierra la brecha de interacción que dejó P-05: estados independientes, explicación del cálculo y lectura/edición de la decisión. Antes de ampliar el MVP a muchos postulantes se necesita paginar el listado; un flujo real de aclaración, historial completo y movimientos de etapa requieren tickets propios.
+La nueva [definición de producto y UX para resultados y revisión](ux-resultados-revision.md) cierra la brecha de interacción que dejó P-05: estados independientes, explicación del cálculo y lectura/edición de la decisión. La necesidad de paginación identificada aquí se implementó el 04/10 con totales y pruebas de 101 registros; un flujo real de aclaración, historial completo y movimientos de etapa requieren tickets propios.
 El [criterio transversal de experiencia](experiencia-producto.md) queda como pauta para las próximas capacidades, para que el diseño de estados, confirmaciones, retorno y errores no dependa de una revisión minuciosa de Luis después de cada cambio.
 3. **T-04 y T-09:** completar sugerencias de preguntas con revisión humana; después cerrar avisos, retención y borrado operativo antes de usar datos reales. El cierre de SC ya está implementado; el borrado anticipado de invitaciones y datos sigue pendiente.
 4. **T-10 para entrega final:** pruebas E2E, despliegue, correo real solo cuando estén definidos proveedor/seguridad/privacidad, `prompts.md` y evidencia de funcionamiento.
 
-La [segunda revisión UX](ux-feedback-2026-10-03.md#segunda-prueba-de-luis-mejoras-aplicadas-y-propuestas-pendientes) originó el acceso directo de un uso desde el correo, el informe como vista propia, el guardado automático y reglas más claras de publicación en `feature/review-feedback-LL`. Siguen pendientes los ajustes finos del texto del correo y del recibo, y la verificación móvil a 375 px del editor autenticado y del recorrido completo integrado. La lista y el informe del recruiter sí se comprobaron a ese ancho en la [revisión posterior](ux-resultados-revision.md). La duración de sesión más larga requiere una decisión tras probar de nuevo la corrección de cookies independientes.
+La [segunda revisión UX](ux-feedback-2026-10-03.md#segunda-prueba-de-luis-mejoras-aplicadas-y-propuestas-pendientes) originó el acceso directo de un uso desde el correo, el informe como vista propia, el guardado automático y reglas más claras de publicación en `feature/review-feedback-LL`. Los ajustes finos del correo/recibo se mantienen como evolución; la verificación móvil y del recorrido integrado se completó el 04/10, según la evidencia enlazada abajo. La lista y el informe del recruiter sí se comprobaron a ese ancho en la [revisión posterior](ux-resultados-revision.md). La duración de sesión más larga requiere una decisión tras probar de nuevo la corrección de cookies independientes.
+
+## Estado y siguiente bloque — 04/10/2026
+
+| Bloque | Estado actual | Pendiente relevante |
+| --- | --- | --- |
+| T-00/T-01/T-02/T-03 | Implementados e integrados | Validación con recruiters representativos |
+| T-05/T-06/T-07/T-08 | Flujo principal implementado y verificado con datos ficticios | Automatizar el recorrido de navegador en T-10 |
+| T-04 | Pendiente | Propuestas de IA, revisión explícita, validación, fallo recuperable y evaluación de calidad |
+| T-09 | Parcial | Responsable/contacto en aviso, borrado anticipado y limpieza relacionada, revisión operativa antes de datos reales |
+| T-10 | Parcial | E2E automatizado, despliegue, correo externo configurado y evidencia reproducible final |
+
+Próximo trabajo: concretar el contrato de T-04 y la integración del proveedor. Mantener banco y creación manual disponibles ante error; no enviar candidatos a la IA. Después cerrar T-09 y preparar T-10. La entrega académica requiere su rama y formulario, una acción distinta de los PRs de desarrollo del fork. [Verificación y comparación de entregas](entrega-2-verificacion-2026-10-04.md).
