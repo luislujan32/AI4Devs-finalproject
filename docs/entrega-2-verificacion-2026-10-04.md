@@ -4,7 +4,7 @@
 
 ## Alcance y rama
 
-Se integra el desarrollo de `feature/review-feedback-LL` en `feature/entrega-2-LL` del fork `luislujan32/AI4Devs-finalproject`. Código verificado: `6fc10fa`, que incluye el bloque de espacio recruiter/versiones `19ab360` y los ajustes de alineación. Entrega 1 conserva su rama documental. [PR #2 de integración](https://github.com/luislujan32/AI4Devs-finalproject/pull/2), con base `feature/entrega-2-LL` y head `feature/review-feedback-LL`. El [CI del código 6fc10fa](https://github.com/luislujan32/AI4Devs-finalproject/actions/runs/37256082953) terminó correctamente. El estado del PR y los checks posteriores de documentación se consultan en ese PR; no se trabaja sobre el repositorio de la academia.
+Se integra el desarrollo de `feature/review-feedback-LL` en `feature/entrega-2-LL` del fork `luislujan32/AI4Devs-finalproject`. Código verificado: `6fc10fa`, que incluye el bloque de espacio recruiter/versiones `19ab360` y los ajustes de alineación. Entrega 1 conserva su rama documental. [PR #2 de integración](https://github.com/luislujan32/AI4Devs-finalproject/pull/2), con base `feature/entrega-2-LL` y head `feature/review-feedback-LL`. El [CI del código 6fc10fa](https://github.com/luislujan32/AI4Devs-finalproject/actions/runs/37256082953) terminó correctamente. El PR se fusionó con checks correctos en `7c7edf3`; el [CI de entrega 2 integrada](https://github.com/luislujan32/AI4Devs-finalproject/actions/runs/37256635258) también terminó correctamente. No se trabaja sobre el repositorio de la academia.
 
 ## Comprobaciones automatizadas
 
@@ -58,5 +58,7 @@ Se sincronizaron ocho cambios con las especificaciones vivas y se archivaron sie
 ## Evidencia visual ficticia
 
 ![Informe accesible después del cierre, criterio incumplido y decisión humana visible](evidencias/entrega-2-informe-cerrado.jpg)
+
+El recibo se verificó visualmente a 375 y 320 px, con ancho de documento igual a su scrollWidth. La captura móvil de página completa del navegador produjo un reflujo artificial durante su generación, aunque la pantalla real era correcta; se reemplazó por la captura de viewport de 375 × 812, inspeccionada antes de guardar. No hubo cambio de CSS por ese artefacto.
 
 ![Recibo persistido del candidato en móvil](evidencias/entrega-2-recibo-mobile.jpg)
