@@ -18,3 +18,9 @@ La acción de copia dice **«Crear SC basado en este»** porque genera un SC ind
 
 La versión activa y el historial se incorporaron en [el segundo bloque](screening-versions.md). T-04/T-09, integración de entrega 2, CI y despliegue conservan su planificación. La nueva lista usa paginación por página; altas concurrentes pueden desplazar filas entre páginas, aunque el orden tiene desempate determinista.
 La representación del correo se comprobó por contenido HTML/texto y Mailpit; falta observarla en clientes de correo y a 320 px con personas usuarias.
+
+## Ajuste de columnas y acciones — revisión C1/C2
+
+Luis detectó desalineación entre encabezados y filas y estados recortados. La columna de acciones ahora tiene ancho fijo compartido por encabezado y filas; estados, cifras y fechas quedan centrados bajo sus encabezados, con los nombres a la izquierda. Las etiquetas son cajas completas y «Sin decisión» no hereda el tamaño del panel de revisión. En Respuesta se usa «Recibidas». Consultar informe usa un botón de documento con nombre accesible y título; comparte tamaño con copiar enlace: 36 px en escritorio y 44 px en móvil.
+
+Verificación con 3 SC y 3 postulantes ficticios en base aislada: separación de centros de columna inferior a 0,01 px a 1280 px; informe abierto con Enter; estados sin recorte a 950 px; vistas móviles a 375 y 320 px sin desbordamiento del documento ni de las filas. Tipos web, lint y build web pasaron. No cambió la API ni las reglas del producto.
