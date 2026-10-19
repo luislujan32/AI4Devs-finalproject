@@ -1,5 +1,6 @@
 # Invitaciones y acceso del postulante — T-05
 
+[Índice de API vigente](api.md) · [Cierre y verificación del 19/10](entrega-2-cierre-2026-10-19.md). Las evidencias fechadas conservan el estado histórico de cada ticket.
 [README](../readme.md) · [Reglas de producto](producto.md) · [UX-02](backlog.md#ux-02--formulario-del-postulante).
 
 T-05 permite crear invitaciones individuales para un screening publicado propio y verificar el correo ficticio del postulante. El acceso ya funciona con MongoDB y Mailpit locales. El desarrollo posterior añadió [cuestionario, guardado, revisión y envío](candidatos-formulario.md); el enlace compartido por el recruiter no autoriza por sí solo, mientras que el correo contiene una credencial de un uso.

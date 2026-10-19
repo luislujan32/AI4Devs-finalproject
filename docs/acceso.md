@@ -39,7 +39,7 @@ La colección técnica auth_limits incrementa contadores atómicamente: hasta 50
 
 ## Rutas implementadas
 
-Todas llevan prefijo /api; estas rutas complementan los tres ejemplos del OpenAPI documental.
+Todas llevan prefijo /api. El [índice de API](api.md) reúne las 33 operaciones actuales y complementa los tres ejemplos del OpenAPI documental.
 
 | Método y ruta | Comportamiento |
 | --- | --- |
@@ -47,7 +47,7 @@ Todas llevan prefijo /api; estas rutas complementan los tres ejemplos del OpenAP
 | POST /auth/login | Body email/password; origen y X-CSRF-Token; usuario mínimo, CSRF y expiresAt |
 | GET /auth/session | Recupera contexto de recruiter válido, sin cookie/hash como JSON |
 | POST /auth/logout | Guard, origen y CSRF; revoca sesión; 401 si ya no es válida |
-| GET /screenings | Hasta cien entradas propias, más recientes primero; metadatos |
+| GET /screenings | Lista propia paginada (20 por defecto, máximo 50 por página), búsqueda, estado, total y resúmenes; orden por creación/ID descendente |
 | GET /screenings/:id | Documento propio; id inválido, inexistente o ajeno devuelven el mismo 404 |
 
 Credencial inexistente/inactiva/incorrecta devuelve el mismo 401. Sesión ausente, falsificada, vencida, revocada o de candidato devuelve 401; CSRF/origen inválido devuelve 403; límite agotado, 429. El propietario se obtiene de la sesión, nunca de un ownerId del cliente.
@@ -58,10 +58,12 @@ Credencial inexistente/inactiva/incorrecta devuelve el mismo 401. Sesión ausent
 
 Producción exige NODE_ENV=production, PUBLIC_ORIGIN con origen HTTPS exacto, SESSION_SECRET protegido y MongoDB configurado para ese entorno. El servidor actual escucha en loopback. Esta etapa local no constituye una configuración de despliegue público.
 
-## Evidencia y límites
+## Evidencia histórica de T-02 y límites
 
 El fallo de conexión se comprobó deteniendo temporalmente la API propia: mostró el mensaje en español y se restauró el servicio y el acceso con reintento.
 
 El 27/09 pasaron tipos/lint/build/OpenSpec, trece pruebas HTTP/MongoDB de acceso, catorce de persistencia y smoke. La demo se ejecutó dos veces sin cambiar credenciales. Navegador real: rechazo de password incorrecto, cuentas A/B con listados propios, recarga conservando sesión, logout y formulario limpio, Tab entre campos y Enter para enviar; inspección de login/listado móvil a 375 × 812 sin desbordamiento horizontal.
 
-Las pruebas aisladas acreditan expiración previa a TTL, revocación/rotación, inactivación, principal candidato, reinicio de API y límites por IP/correo. Cookie Secure/configuración HTTPS se comprobó por construcción, sin servidor TLS real. No se afirma una auditoría completa de seguridad/accesibilidad, ejecución remota de CI, paginación, OTP, publicación de screenings ni E2E del producto. T-01/T-02 están pendientes de integración por PR hacia entrega 2.
+Las pruebas aisladas de T-02 acreditan expiración previa a TTL, revocación/rotación, inactivación, principal candidato, reinicio de API y límites por IP/correo. Cookie Secure/configuración HTTPS se comprobó por construcción, sin servidor TLS real ni auditoría completa de seguridad/accesibilidad.
+
+**Estado vigente, 19/10/2026:** acceso, paginación, invitaciones, publicación, respuestas e informes están integrados en `feature/entrega-2-LL`. Las secciones anteriores conservan evidencia histórica del ticket, no una lista de funciones aún pendientes. [Cierre de entrega 2](entrega-2-cierre-2026-10-19.md) · [Paginación](recruiter-workspace-foundations.md).

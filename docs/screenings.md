@@ -18,7 +18,7 @@ La navegación usa un fragmento #screening=id, con sección e informe recuperabl
 
 ## Rutas y frontera de escritura
 
-Todas llevan /api y guard de recruiter T-02. Mutaciones requieren Origin permitido y X-CSRF-Token de sesión. Id ajeno/inexistente/inválido → mismo 404; estado publicado o revisión desactualizada → 409; input/configuración/confirmación inválida → 422.
+Todas llevan /api y guard de recruiter T-02. Mutaciones requieren Origin permitido y X-CSRF-Token de sesión. Id ajeno/inexistente/inválido → mismo 404; escritura directa sobre configuración publicada o revisión desactualizada → 409; input/configuración/confirmación inválida → 422. Editar para futuras invitaciones usa las rutas separadas de [versiones](screening-versions.md). El [índice de API](api.md) reúne todas las operaciones y parámetros actuales.
 
 | Ruta | Input y resultado |
 | --- | --- |
@@ -56,4 +56,4 @@ Preflight compara contenido de todos los ids antes de insertar. El loader insert
 
 Navegador real con MongoDB: crear, guardar incompleto, rechazo de publicación, configurar valores/pesos/excluyentes y texto libre, recargar, publicar, lectura protegida y editar copia sin cambiar original. Dos pestañas: 409 con edición local conservada, cancelar descarte y recargar con confirmación. Inspección móvil 375 × 812 sin desbordamiento horizontal y Tab entre título/área. Copia/edición/recarga del banco comprobadas primero en otro entorno aislado con un fixture, confirmando original intacto y limpiando solo ese entorno. Tras la aprobación de Luis, el loader se ejecutó dos veces sobre la demo sin colisión; el navegador mostró las quince entradas y el filtro de Tecnología mostró sus cinco preguntas.
 
-CI incorpora test:screenings; ejecución remota no verificada. La prueba de navegador no se presenta como suite automatizada E2E del producto. T-01/T-02/T-03 están en ramas de trabajo pendientes de integración hacia entrega 2 del fork. Sin despliegue público ni modificaciones al repositorio académico.
+Ese bloque conserva la evidencia del 27–28/09. **Estado vigente, 19/10/2026:** T-01/T-02/T-03 y el flujo posterior están integrados en entrega 2 del fork; CI y regresiones están registrados en [el cierre de entrega 2](entrega-2-cierre-2026-10-19.md). La revisión manual de navegador no se presenta como E2E automatizado. Sin despliegue público ni modificaciones al repositorio académico.
