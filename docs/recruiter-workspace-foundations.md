@@ -16,7 +16,7 @@ La acción de copia dice **«Crear SC basado en este»** porque genera un SC ind
 
 `npm run check` pasó con Node 24; `test:screenings` 19/19, `test:candidate` 7/7 y `test:attempt` 6/6 con bases aisladas, MongoDB y Mailpit locales. Las pruebas agregadas recorren 101 SC y 101 postulantes, totales, filtros, búsqueda literal y aislamiento entre cuentas. En navegador, con base ficticia separada de 4 SC y 25 postulantes, se comprobó dashboard, filtro Por revisar, informe, Atrás, invitación y reflujo a 375 px sin desbordamiento del documento. El foco por teclado llegó a la confirmación de invitación. No es una prueba de usabilidad con recruiters representativos ni un despliegue.
 
-La versión activa y el historial se incorporaron en [el segundo bloque](screening-versions.md). T-04/T-09, integración de entrega 2, CI y despliegue conservan su planificación. La nueva lista usa paginación por página; altas concurrentes pueden desplazar filas entre páginas, aunque el orden tiene desempate determinista.
+La versión activa y el historial se incorporaron en [el segundo bloque](screening-versions.md). La integración y CI de entrega 2 se completaron después; [cierre vigente](entrega-2-cierre-2026-10-19.md). T-04, el resto de T-09 y el despliegue siguen pendientes. La nueva lista usa paginación por página; altas concurrentes pueden desplazar filas entre páginas, aunque el orden tiene desempate determinista.
 La representación del correo se comprobó por contenido HTML/texto y Mailpit; falta observarla en clientes de correo y a 320 px con personas usuarias.
 
 ## Ajuste de columnas y acciones — revisión C1/C2

@@ -1,8 +1,11 @@
 # Desarrollo local de Screeningroom
 
+[Índice de API vigente](api.md) · [Cierre y verificación del 19/10](entrega-2-cierre-2026-10-19.md). Las evidencias fechadas conservan el estado histórico de cada ticket.
 [Volver al README](../readme.md).
 
 ## Alcance actual
+
+El [cierre de entrega 2 del 19/10](entrega-2-cierre-2026-10-19.md) es la referencia de estado y comprobaciones actuales. Las secciones de evidencia por ticket conservan sus fechas originales.
 
 T-00 prepara la base del proyecto: React/Vite, NestJS/Express, MongoDB/Mongoose y npm workspaces. GET /api/health/ready comprueba disponibilidad real de la API y MongoDB. No implementa todavía el recorrido de screenings y no equivale a la entrega 2 completa.
 

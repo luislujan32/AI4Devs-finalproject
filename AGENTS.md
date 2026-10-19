@@ -7,6 +7,8 @@ Proyecto individual AI4Devs. Stack aprobado: React/Vite/TypeScript, NestJS/Expre
 - docs/producto.md: reglas funcionales previstas P-01 a P-08.
 - docs/backlog.md: historias, tickets y dependencias.
 - docs/openapi.yaml: tres operaciones representativas; no es la API completa.
+- docs/api.md: índice vigente de las 33 operaciones implementadas, sesiones, filtros, revisiones y errores; contrastar con controladores al actualizar.
+- docs/entrega-2-cierre-2026-10-19.md: cierre documental y última verificación local de entrega 2.
 - openspec/changes/: cambios propuestos y su evidencia; openspec/specs/: comportamiento incorporado al cerrar cambios.
 - prompts.md: registro del uso real de IA.
 - docs/harness.md: aplicación selectiva de los checkpoints del máster y evidencia por ticket.

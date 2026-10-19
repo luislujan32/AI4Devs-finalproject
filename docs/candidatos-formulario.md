@@ -1,5 +1,6 @@
 # Respuestas y formulario del postulante — T-07 y T-06
 
+[Índice de API vigente](api.md) · [Cierre y verificación del 19/10](entrega-2-cierre-2026-10-19.md). Las evidencias fechadas conservan el estado histórico de cada ticket.
 [README](../readme.md) · [Contrato P-01 a P-08](producto.md) · [Acceso T-05](candidatos-acceso.md) · [UX-02](backlog.md#ux-02--formulario-del-postulante).
 
 La rama `feature/candidate-attempt-T07-LL` conecta cuestionario, guardado y envío al intento autenticado. Usa solo invitaciones/correos ficticios. El candidato ve preguntas y sus respuestas, nunca puntajes, pesos, umbral, criterios de evaluación, exclusiones ni informe. La rama posterior `feature/recruiter-results-T08-LL` permite [consultar el informe y registrar una revisión humana](resultados-recruiter.md).

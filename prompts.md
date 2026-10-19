@@ -1,12 +1,12 @@
 # Registro de uso de IA — Screeningroom
 
-**Autor:** Luis Lujan (LL). **Etapas:** entrega 1 documental y desarrollo de entrega 2. **Actualización:** 4 de octubre de 2026.
+**Autor:** Luis Lujan (LL). **Etapas:** entrega 1 documental y desarrollo de entrega 2. **Actualización:** 19 de octubre de 2026.
 
 Este registro documenta cómo se utilizó la IA y qué decisiones tomó el autor. Los workflows son resúmenes del trabajo real; solo los fragmentos expresamente marcados como literales reproducen instrucciones de la conversación. No se inventan prompts de implementación ni resultados de pruebas de una aplicación aún no desarrollada.
 
 Los apartados 1–7 conservan el registro histórico de la entrega 1. El trabajo local posterior se registra en los workflows de entrega 2 al final del documento. Cada workflow describe el estado de ese momento; los posteriores registran sus resoluciones.
 
-## Herramientas y alcance
+## Herramientas y alcance de la entrega 1 — registro histórico
 
 | Herramienta o recurso | Uso efectivo en la etapa documental |
 | --- | --- |
@@ -19,6 +19,21 @@ Los apartados 1–7 conservan el registro histórico de la entrega 1. El trabajo
 **Modelos:** la identificación exacta de los modelos empleados en las conversaciones no quedó registrada de forma verificable; no se atribuyen nombres por inferencia. En las siguientes fases se anotará el modelo visible cuando esté disponible.
 
 **Skills y agentes:** se utilizó la habilidad de gestión de archivos de Work para conservar borradores y anexos. No se utilizaron subagentes, comandos personalizados ni un harness propio instalado en este repositorio. Codex está previsto como apoyo para la implementación; no se afirma haber ejecutado el proyecto en la máquina del autor.
+
+## Estado actual y modelos por fase — 19/10/2026
+
+La tabla anterior y los apartados 1–7 conservan la etapa documental. El desarrollo posterior sí utilizó Codex, AGENTS.md, OpenSpec, pruebas, CI y revisores por rol; los workflows de entrega 2 lo documentan. Las afirmaciones históricas sobre herramientas aún previstas no describen el estado actual.
+
+| Fase | Herramientas y evidencia real | Identificación verificable del modelo |
+| --- | --- | --- |
+| Análisis | ChatGPT/Work, decisiones humanas, reglas P-01–P-08 y workflows documentales | No registrada de forma verificable para toda la fase |
+| Diseño | ChatGPT/Work y posteriormente Codex; arquitectura, OpenSpec, revisiones de producto/UX/viabilidad | Sin identificación exacta de cada conversación o subagente |
+| Implementación | Codex desktop, AGENTS.md y OpenSpec; workflows y commits de entrega 2 | Luis declaró usar «GPT-6 Sol Extra High» antes del trabajo del postulante (workflow 8). Es una selección declarada; no acredita que todos los turnos usaran ese modelo |
+| Pruebas | Codex, node:test, HTTP/MongoDB/Mailpit, smoke y navegador integrado | No se verificó el selector exacto por ejecución; evidencia técnica en los workflows |
+| CI y preparación de operación | Codex ayudó a configurar GitHub Actions y smoke; ejecuciones remotas enlazadas | No registrado por turno; despliegue público todavía pendiente |
+| Mantenimiento | Codex, revisiones humanas, documentación viva y correcciones de UX | Identificación exacta no verificada por turno |
+
+«Extra High» se conserva como esfuerzo declarado por Luis, sin convertirlo en nombre de modelo de API. No se reconstruyen selecciones históricas por inferencia ni se atribuye el modelo del chat principal a los subagentes. En futuras sesiones se registrará modelo/esfuerzo cuando exista evidencia visible. El proveedor y modelo de las sugerencias dentro del producto son una decisión distinta y siguen pendientes de T-04.
 
 ## 1. Descripción general del producto
 
@@ -353,3 +368,13 @@ Por cada fase se añadirán las herramientas y modelos identificables, hasta tre
 **Límites:** sin datos reales, mensajes externos, despliegue público ni nueva generación IA. El recorrido de interfaz es manual. La entrega formal por formulario no se realiza en este workflow.
 
 **Cierre de workflow 20:** PR #2 fusionado hacia entrega 2 y CI de la rama integrada correcto. Al inspeccionar el archivo de evidencia se detectó que la captura móvil de página completa alteraba el reflujo; se contrastó con pantalla y dimensiones DOM a 375/320 px, se reemplazó por captura de viewport correcta y no se cambió CSS para acomodar un artefacto del capturador.
+
+## Entrega 2 — Workflow 21: cierre tras el feedback de entrega 1
+
+**Entrada humana:** Luis aportó el feedback de LIDR fechado 14/10 y pidió contrastarlo con el producto. Después autorizó corregir documentación y repetir pruebas antes de publicar la preparación de entrega 2 en su fork.
+
+**Trabajo con IA:** Codex contrastó PDF, reglas, código y evidencia. Se añadieron el índice de las 33 operaciones actuales y el cierre de entrega; se corrigieron el texto de versiones/copia, la paginación, los campos del informe y el esquema de errores de OpenAPI. Se mantuvieron sus tres operaciones representativas y se completó el contexto del agente con el índice. El resumen de modelos preserva la selección declarada por Luis y señala identificaciones históricas no verificadas; no atribuye modelos a subagentes por inferencia. El modelo exacto del turno no se obtuvo del selector de la aplicación.
+
+**Verificación:** tipos/lint/build/OpenSpec, 64 pruebas automatizadas y smoke con MongoDB/Mailpit locales y bases aisladas. Se contrastaron 33 rutas de controladores con el índice, sintaxis/referencias YAML y los esquemas con respuestas HTTP reales de publicación, informe y errores 401/422. Navegador: crear/configurar/recargar/publicar, invitación, acceso desde correo sin OTP, guardar/salir/retomar con OTP, envío por teclado y recibo tras recarga, informe, decisión divergente con motivo, regreso/reapertura y cierre. Captura móvil del recibo a 375 × 812 efectivos sin desbordamiento; se usó captura de viewport para evitar el artefacto de la captura de página completa detectado anteriormente. [Evidencia y límites](docs/entrega-2-cierre-2026-10-19.md).
+
+**Límites y publicación:** no se modificó el código del producto, no se enviaron correos externos ni se usaron datos reales. La automatización de navegador para CI sigue pendiente. No se completó el formulario académico ni se publicó en el repositorio original. [PR de cierre #3 del fork](https://github.com/luislujan32/AI4Devs-finalproject/pull/3), con base entrega 2. Sus checks registran CI por separado de las pruebas locales. No se convocaron nuevos subagentes.

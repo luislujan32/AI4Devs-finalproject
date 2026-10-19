@@ -2,9 +2,11 @@
 
 Desarrollo en el fork; **feature/entrega-2-LL** es la rama de integración. [Guía local](docs/desarrollo.md) · [Aplicación de los aprendizajes del máster](docs/harness.md). La entrega 1 conserva su documentación en feature/entrega-1-LL.
 
-**Entrega 2 en desarrollo · Luis Lujan (LL) · Actualización: 4 de octubre de 2026.**
+**Entrega 2: cierre y verificación · Luis Lujan (LL) · Actualización: 19 de octubre de 2026.**
 
-La entrega 1 definió el MVP y su diseño. `feature/entrega-2-LL` integra invitaciones, formulario, evaluación, informes, revisión humana, cierre, [el rediseño recruiter](docs/recruiter-workspace-foundations.md) y [edición con versiones para nuevas invitaciones](docs/screening-versions.md). La [verificación integrada](docs/entrega-2-verificacion-2026-10-04.md) registra 64 pruebas automatizadas y el recorrido web/API/BD con cuentas ficticias, incluyendo versiones, reanudación, conflicto y cierre. Quedan T-04/T-09 y la preparación del despliegue y de la evidencia final. [Persistencia y sus límites](docs/datos.md) · [Acceso recruiter y demo](docs/acceso.md) · [Editor y banco](docs/screenings.md).
+[Estado de la entrega 2, comprobaciones y pendientes](docs/entrega-2-cierre-2026-10-19.md) · [Índice de las 33 operaciones de API](docs/api.md).
+
+La entrega 1 definió el MVP y su diseño. `feature/entrega-2-LL` integra invitaciones, formulario, evaluación, informes, revisión humana, cierre, [el rediseño recruiter](docs/recruiter-workspace-foundations.md) y [edición con versiones para nuevas invitaciones](docs/screening-versions.md). La [verificación integrada del 04/10](docs/entrega-2-verificacion-2026-10-04.md) registra el recorrido web/API/BD con cuentas ficticias, incluyendo versiones, reanudación, conflicto y cierre. El [cierre del 19/10](docs/entrega-2-cierre-2026-10-19.md) actualiza documentación y evidencia de las 64 pruebas automatizadas. Quedan T-04/T-09 y la preparación del despliegue y de la evidencia final. [Persistencia y sus límites](docs/datos.md) · [Acceso recruiter y demo](docs/acceso.md) · [Editor y banco](docs/screenings.md).
 
 ## Índice
 
@@ -105,7 +107,7 @@ Los formularios tendrán etiquetas, navegación por teclado, foco visible y mens
 
 La base del proyecto se ejecuta con Node.js 24.21.0, npm 11 y Docker/Compose. [Instalación, variables, comandos y alcance actual](docs/desarrollo.md). MongoDB y Mailpit se preparan como servicios locales; la interfaz consulta disponibilidad real mediante NestJS. El comando de demo aprovisiona cuentas y screenings ficticios; el banco inicial revisado tiene quince preguntas. No se cargan datos reales.
 
-Los documentos pueden leerse directamente en GitHub; los diagramas usan Mermaid y las tres operaciones de producto representativas siguen previstas en OpenAPI 3.0.3. La comprobación de disponibilidad es infraestructura y se documenta aparte.
+Los documentos pueden leerse directamente en GitHub; los diagramas usan Mermaid y las tres operaciones de producto representativas están descritas en OpenAPI 3.0.3 y el [índice de API](docs/api.md) reúne las rutas adicionales implementadas. La comprobación de disponibilidad es infraestructura y se documenta aparte.
 
 ## 2. Arquitectura del sistema
 
@@ -201,7 +203,7 @@ flowchart TD
 
 Para desarrollo se usan MongoDB y Mailpit local; T-05 envía la invitación inicial y, después de abrir el enlace, los códigos a su API HTTP de pruebas. El correo de prueba incluye un enlace de acceso de un uso; el enlace compartible sigue requiriendo el código del buzón de pruebas. La evaluación no depende del proveedor de IA y la creación manual sigue disponible si ese proveedor falla.
 
-Hosting, proveedor SMTP y modelo de IA se concretarán al implementar según acceso disponible. Esta decisión pendiente no cambia los componentes ni el flujo definido. El MVP usa un único proceso de aplicación; no requiere microservicios, colas ni Redis.
+El proveedor de correo de desarrollo ya es Mailpit local. Hosting, transporte de correo externo y proveedor/modelo de IA de T-04 siguen pendientes para la final. Esta decisión pendiente no cambia los componentes ni el flujo definido. El MVP usa un único proceso de aplicación; no requiere microservicios, colas ni Redis.
 
 ### 2.5. Seguridad
 
@@ -286,9 +288,9 @@ Se adjunta [OpenAPI](docs/openapi.yaml) con tres operaciones, conforme al máxim
 | `POST /api/candidate/attempt/submit` | Candidato autenticado | Envía las respuestas ya guardadas de su invitación; persiste una sola evaluación; devuelve confirmación |
 | `GET /api/invitations/{invitationId}/report` | Recruiter propietario | Devuelve resultado, desglose de evidencia y revisión humana vigente |
 
-Operaciones adicionales: login/logout, crear/editar/listar/copiar screening, consultar banco, crear/listar invitación y solicitar/verificar código ya están detalladas en sus guías de implementación. Leer/guardar/enviar respuestas, informes, revisión, cierre, edición versionada, historial y filtros/paginación ya están implementados y documentados en sus guías. Obtener sugerencias y eliminar invitaciones siguen pendientes. OpenAPI conserva las tres operaciones representativas de la entrega.
+El [índice de API implementada](docs/api.md) reúne las 33 operaciones, sesiones, entradas, filtros, revisiones y errores, con enlaces a sus guías. Incluye login/logout, autoría, banco, invitaciones y acceso del candidato. Leer/guardar/enviar respuestas, informes, revisión, cierre, edición versionada, historial y filtros/paginación ya están implementados y documentados en sus guías. Obtener sugerencias y eliminar invitaciones siguen pendientes. OpenAPI conserva las tres operaciones representativas de la entrega.
 
-Errores comunes: `401` sesión ausente/expirada; `403` protección CSRF; `404` recurso inexistente o ajeno; `409` conflicto de estado/revisión; `410` invitación vencida; `422` datos inválidos; `429` límite de solicitudes. Las respuestas de error no incluyen datos de otras personas. Los endpoints del candidato nunca retornan scoring, opciones excluyentes ni informe interno.
+Errores comunes: `401` sesión ausente/expirada; `403` protección CSRF; `404` recurso inexistente o ajeno; `409` conflicto de estado/revisión; `422` datos inválidos; `429` límite de solicitudes. Los errores de validación pueden incluir `issues: string[]`; no se promete un formato `{code, fields}`. Las respuestas de error no incluyen datos de otras personas. Los endpoints del candidato nunca retornan scoring, opciones excluyentes ni informe interno.
 
 ## 5. Historias de usuario
 
@@ -362,3 +364,5 @@ Tres tickets representativos: datos, backend y frontend. [Backlog y criterio de 
 ## 7. Pull requests
 
 La entrega 1 se presentó mediante `feature/entrega-1-LL` y el [PR académico #340](https://github.com/LIDR-academy/AI4Devs-finalproject/pull/340). La implementación avanza en `feature/entrega-2-LL`. [PR de integración #2 del fork](https://github.com/luislujan32/AI4Devs-finalproject/pull/2): flujo principal, espacio recruiter, versiones para futuras invitaciones y documentación consolidada. [Validación y pendientes](docs/entrega-2-verificacion-2026-10-04.md).
+
+[PR de cierre #3](https://github.com/luislujan32/AI4Devs-finalproject/pull/3): documentación/API reconciliadas y nueva verificación del 19/10. [Evidencia actual y pendientes de la final](docs/entrega-2-cierre-2026-10-19.md).
