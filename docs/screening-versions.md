@@ -1,5 +1,6 @@
 # Editar un screening para nuevas invitaciones
 
+[Índice de API vigente](api.md) · [Cierre y verificación del 19/10](entrega-2-cierre-2026-10-19.md). Las evidencias fechadas conservan el estado histórico de cada ticket.
 04/10/2026. Cambio OpenSpec `screening-configuration-versions`. Implementa la decisión de Luis: **solo futuras invitaciones** reciben cambios; un SC mantiene identidad y lista única.
 
 ## Comportamiento

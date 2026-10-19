@@ -85,3 +85,7 @@ La [segunda revisión UX](ux-feedback-2026-10-03.md#segunda-prueba-de-luis-mejor
 | T-10 | Parcial | E2E automatizado, despliegue, correo externo configurado y evidencia reproducible final |
 
 Próximo trabajo: concretar el contrato de T-04 y la integración del proveedor. Mantener banco y creación manual disponibles ante error; no enviar candidatos a la IA. Después cerrar T-09 y preparar T-10. La entrega académica requiere su rama y formulario, una acción distinta de los PRs de desarrollo del fork. [Verificación y comparación de entregas](entrega-2-verificacion-2026-10-04.md).
+
+## Preparación de entrega 2 — 19/10/2026
+
+El [cierre y las comprobaciones actuales](entrega-2-cierre-2026-10-19.md) actualizan el registro histórico: documentación/API reconciliadas, 64 pruebas repetidas, smoke y recorrido principal en navegador con datos ficticios. El núcleo está preparado para este hito; la entrega formal requiere completar el formulario con la URL solicitada. T-04, borrado anticipado y preparación de despliegue/E2E automatizado mantienen su alcance para la final, sin presentarlos como terminados.
