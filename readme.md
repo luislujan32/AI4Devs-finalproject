@@ -364,3 +364,5 @@ Tres tickets representativos: datos, backend y frontend. [Backlog y criterio de 
 ## 7. Pull requests
 
 La entrega 1 se presentó mediante `feature/entrega-1-LL` y el [PR académico #340](https://github.com/LIDR-academy/AI4Devs-finalproject/pull/340). La implementación avanza en `feature/entrega-2-LL`. [PR de integración #2 del fork](https://github.com/luislujan32/AI4Devs-finalproject/pull/2): flujo principal, espacio recruiter, versiones para futuras invitaciones y documentación consolidada. [Validación y pendientes](docs/entrega-2-verificacion-2026-10-04.md).
+
+[PR de cierre #3](https://github.com/luislujan32/AI4Devs-finalproject/pull/3): documentación/API reconciliadas y nueva verificación del 19/10. [Evidencia actual y pendientes de la final](docs/entrega-2-cierre-2026-10-19.md).
