@@ -64,4 +64,4 @@ Destino autorizado: fork `luislujan32/AI4Devs-finalproject`, rama `feature/entre
 
 [Rama de entrega 2](https://github.com/luislujan32/AI4Devs-finalproject/tree/feature/entrega-2-LL). Si el formulario solicita una URL de rama, usarla; si solicita un PR académico, confirmar ese requisito con Luis. El PR interno de cierre tiene como base entrega 2 del fork. La publicación del código no activa por sí sola el formulario de entrega.
 
-Los enlaces de PR/CI se añaden con resultados reales al completar la publicación; no se atribuye al resultado local una ejecución remota.
+[PR de cierre #3 del fork](https://github.com/luislujan32/AI4Devs-finalproject/pull/3), con base `feature/entrega-2-LL`. Los checks de GitHub de ese PR muestran la comprobación remota; las pruebas descritas arriba se ejecutaron localmente y no se confunden con CI.
