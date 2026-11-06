@@ -67,6 +67,20 @@ El contrato de indisponibilidad se comprueba también invocando el controlador r
 
 Las cinco suites prueban producto con bases aisladas; `smoke` verifica infraestructura. El navegador se verifica por separado: una suite HTTP no acredita apariencia ni E2E automatizado de interfaz. La configuración .github/workflows/check.yml reproduce las comprobaciones con MongoDB en CI. Un resultado local no acredita ejecución remota de CI.
 
+### Recorrido E2E en navegador
+
+Con la infraestructura local iniciada en los puertos predeterminados, ejecutar:
+
+```bash
+npm run build
+npm exec -- playwright install chromium --only-shell
+npm run test:e2e
+```
+
+Playwright inicia el build en un puerto libre, crea una base temporal y usa un recruiter y un postulante ficticios. El recorrido incluye publicación, invitación, apertura desde correo, guardado, reanudación con código, envío en vista móvil, informe, decisión humana y cierre. La prueba lee solo los mensajes de su destinatario aleatorio, elimina solo su base al terminar y deja intacta la demo de desarrollo. GitHub Actions instala Chromium y ejecuta el mismo recorrido.
+
+Para preparar la versión pública, consultar la [guía de la demo](demo-publica.md).
+
 test:persistence requiere la API compilada (incluida en check). Verifica los modelos y operaciones concretas en una BD de prueba aleatoria, incluidos índices, concurrencia y comando repetible de fixtures. La guía de [datos](datos.md) detalla límites y el comando de carga explícita en una BD separada.
 
 ## Trabajo con OpenSpec

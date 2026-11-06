@@ -6,6 +6,10 @@ Desarrollo en el fork; **feature/entrega-2-LL** es la rama de integración. [Gu�
 
 [Estado de la entrega 2, comprobaciones y pendientes](docs/entrega-2-cierre-2026-10-19.md) · [Índice de las 33 operaciones de API](docs/api.md).
 
+**Preparación de la entrega final · 6 de noviembre de 2026.** Se automatizó el recorrido principal en navegador y se preparó la imagen de la demo. La URL pública queda pendiente de configurar y verificar.
+
+**Cómo probar:** [Instalación y pruebas locales](docs/desarrollo.md#preparar-y-ejecutar) · [Generar credenciales ficticias](docs/acceso.md#preparar-una-demo-local) · [Recorrido de revisión y despliegue](docs/demo-publica.md).
+
 La entrega 1 definió el MVP y su diseño. `feature/entrega-2-LL` integra invitaciones, formulario, evaluación, informes, revisión humana, cierre, [el rediseño recruiter](docs/recruiter-workspace-foundations.md) y [edición con versiones para nuevas invitaciones](docs/screening-versions.md). La [verificación integrada del 04/10](docs/entrega-2-verificacion-2026-10-04.md) registra el recorrido web/API/BD con cuentas ficticias, incluyendo versiones, reanudación, conflicto y cierre. El [cierre del 19/10](docs/entrega-2-cierre-2026-10-19.md) actualiza documentación y evidencia de las 64 pruebas automatizadas. Quedan T-04/T-09 y la preparación del despliegue y de la evidencia final. [Persistencia y sus límites](docs/datos.md) · [Acceso recruiter y demo](docs/acceso.md) · [Editor y banco](docs/screenings.md).
 
 ## Índice
@@ -203,7 +207,7 @@ flowchart TD
 
 Para desarrollo se usan MongoDB y Mailpit local; T-05 envía la invitación inicial y, después de abrir el enlace, los códigos a su API HTTP de pruebas. El correo de prueba incluye un enlace de acceso de un uso; el enlace compartible sigue requiriendo el código del buzón de pruebas. La evaluación no depende del proveedor de IA y la creación manual sigue disponible si ese proveedor falla.
 
-El proveedor de correo de desarrollo ya es Mailpit local. Hosting, transporte de correo externo y proveedor/modelo de IA de T-04 siguen pendientes para la final. Esta decisión pendiente no cambia los componentes ni el flujo definido. El MVP usa un único proceso de aplicación; no requiere microservicios, colas ni Redis.
+Mailpit captura invitaciones y códigos en desarrollo. Para la revisión final se preparó un [buzón autenticado dentro de la demo en Render y Atlas](docs/demo-publica.md), con las mismas direcciones ficticias. Quedan pendientes la publicación, el transporte externo para uso real y la selección de proveedor/modelo de IA de T-04.
 
 ### 2.5. Seguridad
 
@@ -228,11 +232,11 @@ La suite actual usa `node:test` con pruebas puras y HTTP real sobre MongoDB/Mail
 | --- | --- |
 | Unitario, node:test, implementado | Fórmula, precedencia, faltantes, redondeo y validación de configuración |
 | Integración, node:test + HTTP + MongoDB/Mailpit, implementado | Ownership, OTP/enlace de correo, versiones, expiración, conflictos, envío único, informes y decisiones; borrado anticipado pendiente |
-| Interfaz, navegador manual, disponible | Editor, persistencia, versión recibida, acceso, recuperación, revisión/envío, informe, decisión y móvil; automatización de riesgos de interacción pendiente |
-| E2E automatizado, pendiente T-10 | Crear/publicar → invitar → correo/código → responder/retomar/enviar → informe → revisión humana → cierre |
+| Interfaz, navegador manual, disponible | Editor, persistencia, versión recibida, acceso, recuperación, revisión/envío, informe, decisión y móvil |
+| E2E automatizado, implementado | Crear/publicar → invitar → correo/código → responder/retomar/enviar → informe → revisión humana → cierre |
 | Calidad de IA | Casos de vacantes revisados por el autor: relevancia, fidelidad a requisitos, ausencia de preguntas improcedentes y recuperación ante fallos |
 
-CI configura instalación reproducible, tipos, lint, build, OpenSpec, cinco suites de producto y smoke con MongoDB/Mailpit. No contiene todavía la automatización de navegador ni el despliegue. El E2E previsto usará datos ficticios y un proveedor IA simulado; la revisión semántica del generador se realizará por separado con el proveedor real. No se impone un porcentaje de cobertura ajeno a los requisitos académicos.
+CI configura instalación reproducible, tipos, lint, build, OpenSpec, cinco suites de producto, smoke y el [recorrido E2E con Chromium](docs/desarrollo.md#recorrido-e2e-en-navegador). El E2E usa una base aislada, datos ficticios y correos de prueba. No se impone un porcentaje de cobertura ajeno a los requisitos académicos.
 
 ## 3. Modelo de datos
 

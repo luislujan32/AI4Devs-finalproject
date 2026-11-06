@@ -1,6 +1,6 @@
 # Registro de uso de IA — Screeningroom
 
-**Autor:** Luis Lujan (LL). **Etapas:** entrega 1 documental y desarrollo de entrega 2. **Actualización:** 19 de octubre de 2026.
+**Autor:** Luis Lujan (LL). **Etapas:** entrega 1 documental, desarrollo de entrega 2 y preparación de la final. **Actualización:** 6 de noviembre de 2026.
 
 Este registro documenta cómo se utilizó la IA y qué decisiones tomó el autor. Los workflows son resúmenes del trabajo real; solo los fragmentos expresamente marcados como literales reproducen instrucciones de la conversación. No se inventan prompts de implementación ni resultados de pruebas de una aplicación aún no desarrollada.
 
@@ -378,3 +378,13 @@ Por cada fase se añadirán las herramientas y modelos identificables, hasta tre
 **Verificación:** tipos/lint/build/OpenSpec, 64 pruebas automatizadas y smoke con MongoDB/Mailpit locales y bases aisladas. Se contrastaron 33 rutas de controladores con el índice, sintaxis/referencias YAML y los esquemas con respuestas HTTP reales de publicación, informe y errores 401/422. Navegador: crear/configurar/recargar/publicar, invitación, acceso desde correo sin OTP, guardar/salir/retomar con OTP, envío por teclado y recibo tras recarga, informe, decisión divergente con motivo, regreso/reapertura y cierre. Captura móvil del recibo a 375 × 812 efectivos sin desbordamiento; se usó captura de viewport para evitar el artefacto de la captura de página completa detectado anteriormente. [Evidencia y límites](docs/entrega-2-cierre-2026-10-19.md).
 
 **Límites y publicación:** no se modificó el código del producto, no se enviaron correos externos ni se usaron datos reales. La automatización de navegador para CI sigue pendiente. No se completó el formulario académico ni se publicó en el repositorio original. [PR de cierre #3 del fork](https://github.com/luislujan32/AI4Devs-finalproject/pull/3), con base entrega 2. Sus checks registran CI por separado de las pruebas locales. No se convocaron nuevos subagentes.
+
+## Entrega final — Workflow 22: E2E y demo sin servidor de pago
+
+**Entrada humana:** Luis autorizó avanzar con la automatización y preguntó cómo publicar la app y la base sin pagar infraestructura.
+
+**Trabajo con IA:** Codex contrastó la documentación oficial de Playwright, Render, MongoDB Atlas y Mailpit con el código existente. Se especificó con OpenSpec una demo ficticia con Render Free, Atlas Free y buzón autenticado. Se automatizó el recorrido de los dos roles con una API compilada, MongoDB aislado y correo de prueba; el navegador selecciona acciones y campos por su texto o nombre accesible. Se agregó a GitHub Actions.
+
+**Ajustes y evidencia:** una primera corrida llegó al informe y mostró que dos elementos contienen el mismo puntaje; se acotó la comprobación al resumen global. Pasaron el recorrido completo, las 64 pruebas existentes y el smoke. En un contenedor Linux amd64 limitado a 512 MiB y 0,5 CPU se comprobaron el arranque, la lectura protegida del correo, el enlace y código de acceso, y la persistencia tras reiniciar. [Guía y límites de la demo](docs/demo-publica.md).
+
+**Límites:** despliegue externo y evidencia pública pendientes. Solo se usaron datos ficticios y no se contrató infraestructura. El modelo exacto de este turno no se obtuvo del selector.

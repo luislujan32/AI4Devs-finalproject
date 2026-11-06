@@ -103,7 +103,7 @@ export function CandidateAccess({ publicId }: { publicId: string }) {
             <form className="candidate-code-form" onSubmit={(event) => void verify(event)}><label htmlFor="candidate-code">Código de seis dígitos</label>
               <input id="candidate-code" autoFocus autoComplete="one-time-code" inputMode="numeric" pattern="[0-9]{6}" maxLength={6} required
                 value={code} onChange={(event) => setCode(event.target.value.replace(/\D/g, '').slice(0, 6))} placeholder="000000" />
-              <p className="field-hint">Vence en diez minutos. Encontralo en Mailpit durante esta prueba.</p>
+              <p className="field-hint">Vence en diez minutos. Encontralo en el buzón de prueba.</p>
               <button type="submit" disabled={busy || code.length !== 6}>{busy ? 'Verificando…' : 'Continuar'}</button></form>
             <button className="text-action" disabled={busy || seconds > 0} onClick={() => void send()}>
               {seconds > 0 ? `Pedir otro código en ${seconds} s` : 'Pedir otro código'}</button></>}

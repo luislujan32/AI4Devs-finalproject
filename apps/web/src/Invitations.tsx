@@ -100,7 +100,7 @@ export function Invitations({ screeningId, activeVersion, closed, session, onExp
         <div className="field"><label htmlFor="candidate-name">Nombre <span className="optional">(opcional)</span></label><input id="candidate-name"
           maxLength={120} value={name} onChange={(event) => setName(event.target.value)} placeholder="Por ejemplo, Alex" /></div>
       </div>
-      <p className="field-hint">En esta versión de prueba se usan direcciones @example.test. Consultá el mensaje en Mailpit local.</p>
+      <p className="field-hint">En esta versión de prueba se usan direcciones @example.test. Consultá el mensaje en el buzón de prueba.</p>
       <button type="submit" disabled={busy}>{busy ? 'Enviando…' : 'Enviar invitación'}</button>
     </form>}
     {error && <p className="inline-error" role="alert">{error}</p>}
