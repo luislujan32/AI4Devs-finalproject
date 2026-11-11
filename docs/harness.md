@@ -77,4 +77,6 @@ El checklist final se contrastó con el código, CI, demo y documentos; no se co
 
 La evidencia actual distingue 71 pruebas unitarias/de integración, dos E2E con correo ficticio y recepción real de Brevo comprobada manualmente. Los E2E no acreditan entrega externa; el despliegue local no acredita la URL pública; un PR interno no acredita el envío de Typeform. T-04 sigue pendiente y T-09 parcial: completar el mínimo académico no autoriza a borrar esos compromisos del historial.
 
+**Decisión posterior de Luis, 11/11:** se aprueba explícitamente aplazar T-04 y mantenerlo en el backlog para después de esta entrega. La documentación y el contexto del agente registran esa decisión sin alterar HU-02/P-07 ni fingir una integración. El hito académico se prepara en `final-project-LL`; Luis confirmó que facilitará la contraseña por el canal privado. Typeform y la entrega efectiva del acceso siguen siendo acciones distintas de preparar la rama.
+
 El aprendizaje de producto/UX de entrega 2 se mantiene en el protocolo: concretar estados y efectos antes del código, revisar por roles cuando cambian varias pantallas y recorrer confirmación, lista, reapertura y edición. OpenSpec y los agentes ayudan a ejecutar ese criterio, pero no sustituyen definirlo ni observar el producto. La edición documental de este cierre no requiere otra capacidad OpenSpec ni nuevos agentes.

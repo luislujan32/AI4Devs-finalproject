@@ -106,7 +106,7 @@ T-05 se especifica en `openspec/specs/candidate-access` y documenta [invitacione
 
 El remoto origin debe ser el fork luislujan32/AI4Devs-finalproject. Trabajar sobre feature/entrega-2-LL o una rama de tarea creada desde ella. Antes de publicar comprobar remoto, rama y cambios; antes de un PR confirmar que la base es feature/entrega-2-LL en el fork.
 
-La preparación final se realiza en `feature/entrega-final-demo-LL`. La rama académica solicitada por las pautas finales es **`final-project-LL`**; debe fijar el estado final verificado y compartirse mediante Typeform. `finalproject-LL`, sin el primer guion, es el alias de la entrega 2 y se conserva. Un PR de desarrollo no sustituye el formulario final.
+La preparación final se conserva en `feature/entrega-final-demo-LL`. La rama académica **[`final-project-LL`](https://github.com/luislujan32/AI4Devs-finalproject/tree/final-project-LL)** reúne el estado preparado para revisión y se comparte mediante Typeform. `finalproject-LL`, sin el primer guion, es el alias de la entrega 2 y se conserva. Luis aprobó aplazar T-04 y facilitará el acceso de prueba por el canal privado de la entrega. Un PR de desarrollo no sustituye el formulario final.
 
 feature/entrega-1-LL conserva la documentación entregada. No fusionar su revert de T-00 hacia entrega 2: ese revert solo separó la documentación del desarrollo ya preservado. Borrar ramas temporales después de fusionarlas es normal; conservar las ramas estables de cada entrega. No publicar commits, PRs ni comentarios en el repositorio académico dentro del trabajo de desarrollo.
 

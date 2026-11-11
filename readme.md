@@ -1,12 +1,12 @@
 # Screeningroom — Proyecto final AI4Devs
 
-**Luis Lujan (LL) · Entrega final en preparación · Actualización: 11 de noviembre de 2026.**
+**Luis Lujan (LL) · Entrega final preparada, pendiente de envío · Actualización: 11 de noviembre de 2026.**
 
 [Abrir la demo](https://screeningroom-ll-demo.onrender.com) · **[Guía rápida del revisor](docs/revision-final.md)** · [Pruebas y evidencia](docs/entrega-final-verificacion-2026-11-11.md) · [Registro de IA](prompts.md).
 
 El flujo principal funciona de principio a fin: configurar/publicar → invitar por correo → responder/guardar/retomar/enviar → informe → decisión del recruiter → cierre con resultados conservados. La demo usa Render Free, MongoDB Atlas Free y correo Brevo, verificado con recepción real. Las direcciones ficticias `example.test` usan Mailpit. Hay **71 pruebas unitarias/de integración y dos E2E en Chromium**.
 
-**Pendientes de cierre:** resolver el alcance de las sugerencias de IA (T-04, sin implementar), concretar el acceso privado del revisor y consolidar la rama `final-project-LL` antes del Typeform. T-09 sigue parcial: borrado anticipado y gestión operativa de privacidad. Esta es una demo académica con nombres y respuestas ficticios; no se habilita su uso con postulantes reales.
+**Alcance final confirmado por Luis el 11/11:** se entregan las cuatro capacidades operativas; las sugerencias de preguntas con IA (T-04) se aplazan explícitamente y permanecen en el backlog. T-09 sigue parcial: borrado anticipado y gestión operativa de privacidad. Esta es una demo académica con nombres y respuestas ficticios. **Pendientes del envío:** Luis facilitará la contraseña de prueba por el canal privado de la entrega y enviará Typeform con la rama `final-project-LL`.
 
 [Instalación local](docs/desarrollo.md#preparar-y-ejecutar) · [Índice de las 33 operaciones de API](docs/api.md) · [Harness y aprendizajes del máster](docs/harness.md). Las entregas anteriores y sus resultados se conservan como [historial de entrega 2](docs/entrega-2-cierre-2026-10-19.md).
 
@@ -41,11 +41,11 @@ Aplicación web de screening de candidatos. El recruiter prepara preguntas y cri
 
 [Abrir Screeningroom](https://screeningroom-ll-demo.onrender.com) · [Buzón de pruebas](https://screeningroom-ll-demo.onrender.com/buzon/).
 
-Acceso a la aplicación: **`revisor@example.test`**. Luis conserva la contraseña de demo y debe facilitarla al revisor por un canal privado antes de enviar la entrega. No hay una contraseña publicada en este repositorio. El revisor puede invitar a su propio correo y completar el cuestionario con nombre y respuestas ficticios; para este recorrido no necesita acceder a Mailpit. El buzón opcional para `example.test` usa **`revisor`** y otra contraseña privada. [Pasos y resultados esperados](docs/revision-final.md). Render Free puede tardar alrededor de un minuto en despertar tras un período sin visitas.
+Acceso a la aplicación: **`revisor@example.test`**. Luis confirmó que facilitará la contraseña de demo al revisor por el canal privado de la entrega; no se publica en este repositorio. El revisor puede invitar a su propio correo y completar el cuestionario con nombre y respuestas ficticios; para este recorrido no necesita acceder a Mailpit. El buzón opcional para `example.test` usa **`revisor`** y otra contraseña privada. [Pasos y resultados esperados](docs/revision-final.md). Render Free puede tardar alrededor de un minuto en despertar tras un período sin visitas.
 
 ### 0.5. Repositorio
 
-[Repositorio público del proyecto](https://github.com/luislujan32/AI4Devs-finalproject). Preparación final en `feature/entrega-final-demo-LL`; integración en `feature/entrega-2-LL`. La rama académica final debe llamarse **`final-project-LL`** y se creará desde el estado final verificado. `finalproject-LL` es el alias anterior de entrega 2 y no debe confundirse con la final. La entrega 1 se conserva en `feature/entrega-1-LL` y su [PR académico #340](https://github.com/LIDR-academy/AI4Devs-finalproject/pull/340).
+[Rama de la entrega final: **`final-project-LL`**](https://github.com/luislujan32/AI4Devs-finalproject/tree/final-project-LL) en el [fork público propio](https://github.com/luislujan32/AI4Devs-finalproject). Contiene código, README, registro de IA y evidencia del estado preparado para revisión. La preparación se conserva en `feature/entrega-final-demo-LL` y la integración en `feature/entrega-2-LL`. `finalproject-LL` es el alias anterior de entrega 2 y se conserva. La entrega 1 está en `feature/entrega-1-LL` y su [PR académico #340](https://github.com/LIDR-academy/AI4Devs-finalproject/pull/340).
 
 Según las pautas finales, la entrega formal se realiza enviando el enlace directo de la rama mediante [Typeform](https://lidr.typeform.com/proyectoai4devs), con el correo del calendario de formación. No requiere un PR al repositorio del máster. El fork es público; si pasa a privado, debe concederse lectura a `LIDR-AI4Devs`.
 
@@ -67,12 +67,12 @@ El producto admite distintos tipos de puestos. Las preguntas propias permiten tr
 | Capacidad | Estado verificado |
 | --- | --- |
 | Preparar y publicar screenings con preguntas propias o del banco, pesos, excluyentes y umbral | Implementada |
-| Obtener propuestas de preguntas mediante IA y revisarlas antes de incorporarlas | T-04 pendiente; decisión de alcance para la final aún por cerrar |
+| Obtener propuestas de preguntas mediante IA y revisarlas antes de incorporarlas | T-04 aplazado para después de esta entrega, por decisión explícita de Luis el 11/11 |
 | Invitar, validar acceso por correo y responder, guardar, retomar y enviar | Implementada |
 | Consultar un informe por criterio, con evidencia y cálculo determinista | Implementada |
 | Registrar la decisión del recruiter, incluso distinta del resultado calculado | Implementada |
 
-Cuatro capacidades están operativas. La generación de preguntas no se presenta como terminada ni se elimina del compromiso original sin resolver explícitamente su alcance.
+Cuatro capacidades están operativas. Luis aprobó aplazar T-04 para cerrar esta entrega con el flujo estable; HU-02, P-07 y sus criterios se conservan como trabajo pendiente. Esta desviación respecto de la entrega 1 queda registrada en el [backlog](docs/backlog.md#decisión-de-alcance-final--11112026).
 
 Autenticación, control de acceso y conservación de datos sostienen estas capacidades; no son productos separados.
 

@@ -8,13 +8,21 @@
 | --- | --- | --- |
 | T-00/T-01/T-02/T-03 | Base, persistencia, acceso y configuración/publicación implementados | Validación con recruiters representativos |
 | T-05/T-06/T-07/T-08 | Invitación, respuestas, cálculo, informe, decisión y cierre implementados; correo real comprobado con Brevo | Evolución posterior del producto, sin presentarla como requisito de este checklist |
-| T-04 | Sin implementar; HU-02 y sus criterios se conservan | Decisión explícita: completarlo antes de entregar o aprobar su aplazamiento |
+| T-04 | Aplazado por Luis el 11/11; sin implementar | HU-02, P-07 y sus criterios se conservan para después de esta entrega |
 | T-09 | Controles de acceso, avisos académicos, conservación y límites implementados; ticket parcial | Borrado anticipado, limpieza relacionada y responsable/contacto operativo antes de postulantes reales |
-| T-10 | 71 pruebas, dos E2E, CI y despliegue público con evidencia | Cierre integral condicionado a resolver el alcance pendiente, facilitar acceso del revisor, consolidar `final-project-LL` y enviar Typeform |
+| T-10 | 71 pruebas, dos E2E, CI, despliegue público y documentación/evidencia de revisión preparados | Luis facilitará la contraseña por el canal privado y enviará Typeform con `final-project-LL` |
 
-La entrega 1 planteó cinco capacidades; cuatro están operativas. El checklist final admite 3–5 funcionalidades, pero esto no elimina por sí solo el compromiso de T-04 ni vuelve completo T-09. La decisión de alcance debe registrarse expresamente. [Guía del revisor](revision-final.md) · [Verificación final](entrega-final-verificacion-2026-11-11.md).
+La entrega 1 planteó cinco capacidades; cuatro están operativas. El checklist final admite 3–5 funcionalidades. El aplazamiento de T-04 fue aprobado expresamente, no deducido del mínimo académico; T-09 sigue parcial. [Guía del revisor](revision-final.md) · [Verificación final](entrega-final-verificacion-2026-11-11.md).
+
+## Decisión de alcance final — 11/11/2026
+
+Luis eligió **«Aplazar T-04 y documentarlo como pendiente»** al contrastar la entrega final con el compromiso de entrega 1. Se entrega el flujo estable de configuración/publicación, invitación/respuestas, informe determinista y decisión humana. Se conserva el diseño de sugerencias, HU-02, P-07 y sus criterios; no se marca T-04 terminado ni se implementa una simulación para presentarlo como disponible.
+
+La dependencia de T-10 respecto de T-04 en la planificación original se mantiene abajo como trazabilidad, pero no bloquea este hito tras la decisión aprobada. T-09 conserva su estado parcial y las limitaciones de demo académica; usar postulantes reales requiere completar la operación de privacidad y el borrado anticipado. Luis confirmó además que compartirá la contraseña de aplicación con el revisor por el canal privado de la entrega.
 
 ## HU-02 — Obtener sugerencias de IA
+
+**Estado:** aplazado para después de la entrega final, según la decisión anterior. Los criterios siguientes se conservan para su implementación.
 
 **Como** recruiter, **quiero** propuestas relacionadas con el puesto y el área, **para** reducir el trabajo de redacción.
 
@@ -106,4 +114,4 @@ El [cierre y las comprobaciones actuales](entrega-2-cierre-2026-10-19.md) actual
 
 T-10 ya tiene 71 pruebas unitarias/de integración, dos E2E, CI correcto y despliegue gratuito Render/Atlas comprobado. Brevo está activo: se verificaron invitación real a un correo autorizado, códigos, guardado/reanudación, envío e informe, conservando respuestas ficticias. [Evidencia de entrega final](entrega-final-verificacion-2026-11-11.md) · [Correo real](correo-brevo.md).
 
-Faltan resolver explícitamente el alcance de T-04, consolidar **`final-project-LL`**, entregar el acceso de aplicación por un canal privado y enviar Typeform. El buzón ficticio y su contraseña son opcionales para la revisión con correo propio. T-04 sigue sin implementar; T-09 sigue parcial, con borrado anticipado y gestión operativa de privacidad pendientes. El correo personal de revisión no habilita uso con postulantes reales. Los estados del 04/10 y 19/10 anteriores se conservan como registro histórico.
+Luis aprobó aplazar T-04 y confirmó que compartirá la contraseña de aplicación por el canal privado. La rama de entrega es **`final-project-LL`**; queda el envío de Typeform y facilitar efectivamente esa contraseña. El buzón ficticio es opcional para la revisión con correo propio. T-09 sigue parcial, con borrado anticipado y gestión operativa de privacidad pendientes. El correo personal de revisión no habilita uso con postulantes reales. Los estados del 04/10 y 19/10 anteriores se conservan como registro histórico.

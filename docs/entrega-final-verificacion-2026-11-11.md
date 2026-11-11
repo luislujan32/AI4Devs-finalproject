@@ -4,7 +4,7 @@
 
 [Demo pública](https://screeningroom-ll-demo.onrender.com) · [guía rápida del revisor](revision-final.md) · [buzón de pruebas](https://screeningroom-ll-demo.onrender.com/buzon/) · [configuración y recorrido](demo-publica.md#cómo-probar-como-revisor).
 
-El código funcional, las pruebas y el despliegue están preparados. El recorrido público de los dos roles está verificado, incluido el cierre con resultados conservados tras recargar; se guardaron capturas del recibo, del informe y del estado cerrado. Faltan cerrar explícitamente el alcance de T-04, facilitar el acceso privado del revisor y consolidar `final-project-LL` antes del formulario. El buzón ficticio y su contraseña son opcionales para quien use su propio correo. Este documento distingue la evidencia local y de CI de lo observado en la infraestructura pública.
+El código funcional, las pruebas y el despliegue están preparados. El recorrido público de los dos roles está verificado, incluido el cierre con resultados conservados tras recargar; se guardaron capturas del recibo, del informe y del estado cerrado. Luis aprobó aplazar T-04 para después de esta entrega y confirmó que compartirá la contraseña por el canal privado. La rama de entrega es [**`final-project-LL`**](https://github.com/luislujan32/AI4Devs-finalproject/tree/final-project-LL). Quedan el envío de Typeform y facilitar efectivamente la contraseña. El buzón ficticio es opcional para quien use su propio correo. Este documento distingue la evidencia local y de CI de lo observado en la infraestructura pública.
 
 ## Pruebas automatizadas
 
@@ -14,6 +14,7 @@ El código funcional, las pruebas y el despliegue están preparados. El recorrid
 - [GitHub Actions del commit desplegado `a77466a`](https://github.com/luislujan32/AI4Devs-finalproject/actions/runs/43016005051): completado correctamente, incluyendo E2E. Se fijó Ubuntu 22.04 para mantener compatibilidad del contenedor MongoDB utilizado en CI.
 - [GitHub Actions de la integración Brevo `bc84159`](https://github.com/luislujan32/AI4Devs-finalproject/actions/runs/43029389809): completado correctamente con las 71 pruebas, smoke y ambos E2E. El despliegue `d1c7e0a` incorpora esa implementación y documentación posterior.
 - [GitHub Actions del PR de preparación final, cabeza `9df7804`](https://github.com/luislujan32/AI4Devs-finalproject/actions/runs/43071011321): completado correctamente. El cierre documental posterior debe comprobarse por separado; no se atribuye esta ejecución a commits futuros.
+- [GitHub Actions del paquete documental `ba4c2a2`](https://github.com/luislujan32/AI4Devs-finalproject/actions/runs/43082855831): completado correctamente, incluidas las 71 pruebas, smoke y ambos E2E. La decisión de alcance posterior es documental y no modifica la implementación.
 
 ## Cierre documental y capturas locales del 11/11
 
@@ -69,15 +70,15 @@ Se contrastaron el checklist final y el gráfico facilitados por Luis con la [pl
 
 La documentación se reconcilia con el estado real: diagramas Render/Caddy/Atlas/Brevo/Mailpit, cifras actuales, estados de las cinco capacidades originales, variables de despliegue sin secretos y cinco workflows de IA seleccionados con el historial preservado. La generación IA no se presenta como implementada por haber empleado IA para construir el producto.
 
-## Pendientes para cerrar la entrega
+## Alcance confirmado y envío pendiente
 
-- Resolver explícitamente el alcance de T-04, sin retirar silenciosamente una funcionalidad prometida en entrega 1. T-09 sigue parcial y sus límites permanecen visibles.
-- Facilitar al revisor la contraseña de `revisor@example.test` por un canal privado. La contraseña del buzón se necesita solo si se ofrece la alternativa con `example.test`.
-- Consolidar la rama **`final-project-LL`** desde el estado final verificado. Mantener `finalproject-LL` como alias anterior de entrega 2.
-- Enviar Typeform con el enlace directo de la rama y el correo del calendario de formación. No hace falta un PR al máster; el PR interno #5 organiza la integración del fork y no formaliza la entrega.
+- **Resuelto por Luis:** T-04 se aplaza para después de la entrega y conserva HU-02/P-07 y sus criterios en el backlog. La diferencia respecto de entrega 1 queda explícita. T-09 sigue parcial y sus límites permanecen visibles.
+- **Rama académica:** **`final-project-LL`** contiene el paquete final; `finalproject-LL` conserva la entrega 2.
+- **Acceso privado:** Luis confirmó que facilitará al revisor la contraseña de `revisor@example.test` por el canal privado de la entrega. La del buzón solo se necesita para la alternativa con `example.test`. La confirmación de que se compartirá no acredita su recepción por el revisor.
+- **Envío formal pendiente:** Typeform con el enlace directo de la rama y el correo del calendario de formación. No hace falta un PR al máster; el PR interno #5 organiza la integración del fork y no formaliza la entrega.
 
 ## Límites conocidos
 
 Se admiten correos personales autorizados para revisión mediante Brevo y `@example.test` mediante Mailpit; nombres y respuestas deben ser ficticios. El buzón de pruebas es compartido entre revisores y efímero; Atlas conserva los datos de producto. La instancia gratuita puede dormir y necesitar un arranque en frío. La prueba local del contenedor usó 0,5 CPU y 512 MiB; Render Free ofrece 0,1 CPU y 512 MiB, por lo que no se atribuye equivalencia de rendimiento.
 
-La generación de preguntas mediante IA (T-04), el borrado anticipado y la operación completa de privacidad (T-09) siguen pendientes. La creación manual y el banco están disponibles; la evaluación es determinista. El correo externo sirve para revisión académica voluntaria; el uso con postulantes reales queda fuera de esta demo.
+La generación de preguntas mediante IA (T-04) está aplazada por decisión expresa de Luis. El borrado anticipado y la operación completa de privacidad (T-09) siguen pendientes. La creación manual y el banco están disponibles; la evaluación es determinista. El correo externo sirve para revisión académica voluntaria; el uso con postulantes reales queda fuera de esta demo.

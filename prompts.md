@@ -6,6 +6,8 @@ Este registro documenta cómo se utilizó la IA y qué decisiones tomó el autor
 
 La selección siguiente reúne **cinco workflows representativos** de todo el proyecto. Después se conserva el historial de entrega 1 y los workflows de desarrollo/final para poder contrastar las decisiones y su evolución. Cada entrada histórica describe su momento; las posteriores registran sus resoluciones.
 
+**Alcance final confirmado, 11/11:** Luis aprobó aplazar T-04 (sugerencias de preguntas con IA) y conservarlo como pendiente. Se presentan las cuatro capacidades operativas, con código, pruebas, despliegue y evidencia. La rama académica es `final-project-LL`; Luis facilitará la contraseña de revisión por el canal privado. El envío de Typeform queda pendiente.
+
 ## Herramientas, modelos y contexto — resumen actual
 
 | Fase | Herramientas y uso real | Contexto y verificación |
@@ -490,3 +492,13 @@ Por cada fase se añadirán las herramientas y modelos identificables, hasta tre
 **Verificación:** `npm run check` correcto, enlaces relativos/anclas y diff comprobados. Se generaron capturas de dashboard, revisión, postulantes y cuestionario móvil recorriendo una base local aislada con una copia del E2E existente. La inspección visual detectó una lista aún cargando y una barra fija que se veía mal en captura de página completa; se esperó la carga/guardado y se usaron capturas de viewport en escritorio. El recorrido final pasó sin cambiar el producto ni las suites versionadas. [Entornos y evidencia](docs/entrega-final-verificacion-2026-11-11.md#cierre-documental-y-capturas-locales-del-1111).
 
 **Estado:** preparación en el fork; consolidación de `final-project-LL`, acceso privado del revisor y Typeform todavía pendientes. El modelo exacto de este turno no se obtuvo del selector y no se atribuye por inferencia. No se convocaron nuevos agentes para esta reconciliación documental.
+
+## Entrega final — Workflow 26: alcance aprobado y rama académica
+
+**Decisiones humanas:** Luis eligió «Aplazar T-04 y documentarlo como pendiente» y confirmó que compartirá la contraseña de `revisor@example.test` por el canal privado de la entrega. No la envió al chat ni al repositorio.
+
+**Trabajo con IA:** se registra la decisión en README, backlog, P-07, guía de revisión y AGENTS.md. Se conservan los criterios originales de HU-02/P-07 para su desarrollo posterior; el hito entrega las cuatro capacidades operativas y mantiene explícito T-09 parcial. No se añade otro cambio OpenSpec porque no se implementa ni modifica una capacidad del producto.
+
+**Verificación y publicación:** el paquete previo `ba4c2a2` pasó CI completo con 71 pruebas, smoke y dos E2E. Este cierre cambia solo documentos: se comprueban enlaces/anclas y diff, se guarda en el fork y se prepara `final-project-LL` desde el mismo estado, conservando `finalproject-LL` de entrega 2. Se distingue la rama académica del PR interno y del envío formal; la referencia remota y su CI se verifican al publicar.
+
+**Límites:** no se modifican código de producto, credenciales, datos de Atlas, configuración de Brevo ni despliegue; continúa la implementación pública ya comprobada. Typeform y la entrega efectiva de la contraseña quedan a cargo de Luis. No se convocaron nuevos agentes ni se atribuye un modelo exacto que no se obtuvo del selector.

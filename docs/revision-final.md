@@ -6,7 +6,7 @@
 
 - **Aplicación:** https://screeningroom-ll-demo.onrender.com
 - **Recruiter de prueba:** `revisor@example.test`.
-- **Contraseña de la aplicación:** Luis debe facilitarla por el canal privado de la entrega antes de enviar el formulario. Es la contraseña de demo guardada al configurar `DEMO_RECRUITER_PASSWORD`; no está publicada en Git.
+- **Contraseña de la aplicación:** Luis confirmó que la facilitará por el canal privado de la entrega. Es la contraseña de demo guardada al configurar `DEMO_RECRUITER_PASSWORD`; no está publicada en Git. Antes de empezar la revisión, comprobar que se recibió ese acceso privado.
 - **Postulante:** no necesita una cuenta. Para probar el correo real, invitar a una dirección propia o expresamente autorizada y usar nombre/respuestas ficticios.
 - **Alternativa sin correo externo:** invitar a una dirección nueva `@example.test` y leerla en [el buzón de pruebas](https://screeningroom-ll-demo.onrender.com/buzon/), usuario `revisor`, con su contraseña independiente. Este acceso es opcional para el recorrido con correo propio.
 
@@ -53,15 +53,15 @@ Las suites y el E2E usan bases aisladas, datos ficticios y Mailpit. La configura
 
 ## Alcance y límites
 
-Cuatro capacidades están implementadas: configuración/publicación, invitación/respuesta, informe determinista y decisión humana. T-04, sugerencias de preguntas mediante IA, continúa sin implementar y su alcance final está pendiente de decisión explícita. T-09 sigue parcial: borrado anticipado y gestión operativa de privacidad. Estas funciones no deben interpretarse como disponibles por aparecer en el diseño original.
+Cuatro capacidades están implementadas: configuración/publicación, invitación/respuesta, informe determinista y decisión humana. Luis aprobó el 11/11 aplazar T-04, sugerencias de preguntas mediante IA, para después de esta entrega; su diseño sigue en el backlog y no está disponible. T-09 sigue parcial: borrado anticipado y gestión operativa de privacidad. [Decisión y trazabilidad](backlog.md#decisión-de-alcance-final--11112026).
 
 La demo sirve para revisión académica voluntaria, no para evaluar postulantes reales. Brevo envía únicamente invitación y código; no recibe respuestas ni informes. El buzón ficticio es compartido y efímero; los datos de producto y las sesiones persisten en Atlas. Hay un límite de 50 intentos de correo externo por día UTC, además de los límites por invitación/IP; la aceptación del proveedor no garantiza recepción y no hay webhooks de entrega/rebote.
 
 ## Cierre formal
 
-1. Resolver el estado de T-04 y registrar las limitaciones de T-09.
-2. Entregar al revisor la contraseña de la aplicación por un canal privado; facilitar la del buzón solo si se ofrece el recorrido ficticio.
-3. Consolidar código, README, prompts y evidencias en **`final-project-LL`**, desde el estado verificado. Conservar `finalproject-LL` como entrega 2.
-4. Comprobar el enlace de esa rama y enviar [Typeform](https://lidr.typeform.com/proyectoai4devs), seleccionando entrega final y usando el correo del calendario de formación.
+El alcance queda confirmado con T-04 aplazado y T-09 parcial documentado. Código, README, prompts y evidencias se comparten en [**`final-project-LL`**](https://github.com/luislujan32/AI4Devs-finalproject/tree/final-project-LL); `finalproject-LL` conserva la entrega 2.
 
-El código se comparte desde el fork público propio. No se necesita un PR al repositorio del máster ni un video obligatorio para esta modalidad con URL pública y código accesible. La rama final y el formulario todavía deben completarse; esta guía no acredita por sí sola su envío.
+1. Luis facilitará al revisor la contraseña de la aplicación por el canal privado de la entrega; la del buzón solo hace falta para la alternativa ficticia.
+2. Enviar [Typeform](https://lidr.typeform.com/proyectoai4devs), seleccionando entrega final, pegando el enlace de `final-project-LL` y usando el correo del calendario de formación.
+
+El código se comparte desde el fork público propio. No se necesita un PR al repositorio del máster ni un video obligatorio para esta modalidad con URL pública y código accesible. La preparación de la rama no acredita el envío de Typeform ni la entrega efectiva de la contraseña privada.

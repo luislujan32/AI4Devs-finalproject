@@ -48,6 +48,8 @@ Copiar del banco incorpora texto, tipo, opciones y orientación. El recruiter co
 
 ### P-07 — Sugerencias con IA
 
+**Estado para la final, 11/11/2026:** Luis aprobó aplazar T-04 para después de esta entrega. La capacidad no está implementada ni disponible; el contrato siguiente se conserva para su desarrollo posterior. [Decisión de alcance](backlog.md#decisión-de-alcance-final--11112026).
+
 Hasta cinco sugerencias por solicitud. Contexto: área, descripción y hasta cinco entradas relevantes del banco, seleccionadas por área sin buscador vectorial. Cada sugerencia contiene pregunta, criterio, tipo, opciones cuando corresponda y orientación. El recruiter acepta o descarta y configura la evaluación. La generación no asigna reglas definitivas, no publica ni evalúa candidatos. Un fallo no bloquea el flujo manual.
 
 ### P-08 — Obligatoriedad y faltantes
