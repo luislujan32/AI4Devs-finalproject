@@ -8,4 +8,4 @@
 - [x] Preparar y comprobar la imagen, el aprovisionamiento y el acceso protegido al buzón.
 - [x] Documentar configuración de Render/Atlas, acceso y flujo reproducible.
 - [x] Aprovisionar los servicios gratuitos y verificar acceso HTTPS y conexión real con Atlas.
-- [ ] Probar el flujo público autenticado con datos ficticios y conservar evidencia.
+- [x] Probar el flujo público autenticado con datos ficticios y conservar evidencia.

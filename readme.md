@@ -6,7 +6,7 @@ Desarrollo en el fork; **feature/entrega-2-LL** es la rama de integración. [Gu�
 
 [Estado de la entrega 2, comprobaciones y pendientes](docs/entrega-2-cierre-2026-10-19.md) · [Índice de las 33 operaciones de API](docs/api.md).
 
-**Entrega final en preparación · 11 de noviembre de 2026.** [Demo pública](https://screeningroom-ll-demo.onrender.com) en Render Free con MongoDB Atlas Free. Se verificaron en público creación/publicación, invitación, acceso desde el correo, guardado/reanudación por código, envío, informe y decisión humana. La comprobación pública del cierre está pendiente de autorización; faltan consolidar la rama de entrega y compartir las contraseñas al revisor. [Estado y evidencia de la final](docs/entrega-final-verificacion-2026-11-11.md).
+**Entrega final en preparación · 11 de noviembre de 2026.** [Demo pública](https://screeningroom-ll-demo.onrender.com) en Render Free con MongoDB Atlas Free. Se verificaron en público creación/publicación, invitación, acceso desde el correo, guardado/reanudación por código, envío, informe, decisión humana y cierre con resultados conservados tras recargar. Faltan consolidar la rama de entrega y compartir las contraseñas al revisor. [Estado y evidencia de la final](docs/entrega-final-verificacion-2026-11-11.md).
 
 **Cómo probar:** [Instalación y pruebas locales](docs/desarrollo.md#preparar-y-ejecutar) · [Generar credenciales ficticias](docs/acceso.md#preparar-una-demo-local) · [Recorrido de revisión y despliegue](docs/demo-publica.md).
 
