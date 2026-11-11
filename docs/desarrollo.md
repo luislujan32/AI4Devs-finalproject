@@ -101,6 +101,8 @@ T-05 se especifica en `openspec/specs/candidate-access` y documenta [invitacione
 
 ## Ramas de trabajo
 
+Para probar correo: `npm run test:mail` usa Brevo simulado y una base local aislada. Las pruebas HTTP fuerzan Mailpit; los dos E2E verifican configuración Mailpit/Brevo con destinatarios `example.test`, sin correo externo. Si Chromium se instaló en el directorio del proyecto, ejecutar `PLAYWRIGHT_BROWSERS_PATH=.local/playwright npm run test:e2e`. [Activación del correo de revisión](correo-brevo.md).
+
 El remoto origin debe ser el fork luislujan32/AI4Devs-finalproject. Trabajar sobre feature/entrega-2-LL o una rama de tarea creada desde ella. Antes de publicar comprobar remoto, rama y cambios; antes de un PR confirmar que la base es feature/entrega-2-LL en el fork.
 
 feature/entrega-1-LL conserva la documentación entregada. No fusionar su revert de T-00 hacia entrega 2: ese revert solo separó la documentación del desarrollo ya preservado. Borrar ramas temporales después de fusionarlas es normal; conservar las ramas estables de cada entrega. No publicar commits, PRs ni comentarios en el repositorio académico dentro del trabajo de desarrollo.

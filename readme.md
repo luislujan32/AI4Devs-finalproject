@@ -10,6 +10,8 @@ Desarrollo en el fork; **feature/entrega-2-LL** es la rama de integración. [Gu�
 
 **Cómo probar:** [Instalación y pruebas locales](docs/desarrollo.md#preparar-y-ejecutar) · [Generar credenciales ficticias](docs/acceso.md#preparar-una-demo-local) · [Recorrido de revisión y despliegue](docs/demo-publica.md).
 
+**Correo real para el revisor:** [integración con Brevo](docs/correo-brevo.md) implementada y probada con transporte simulado; pendientes activación, configuración y prueba de recepción real. Hasta completarlas, la demo pública sigue usando Mailpit.
+
 La entrega 1 definió el MVP y su diseño. `feature/entrega-2-LL` integra invitaciones, formulario, evaluación, informes, revisión humana, cierre, [el rediseño recruiter](docs/recruiter-workspace-foundations.md) y [edición con versiones para nuevas invitaciones](docs/screening-versions.md). La [verificación integrada del 04/10](docs/entrega-2-verificacion-2026-10-04.md) registra el recorrido web/API/BD con cuentas ficticias, incluyendo versiones, reanudación, conflicto y cierre. El [cierre del 19/10](docs/entrega-2-cierre-2026-10-19.md) documenta las 64 pruebas unitarias/de integración. La preparación final incorpora además un E2E en Chromium y la demo pública; T-04/T-09 siguen pendientes. [Persistencia y sus límites](docs/datos.md) · [Acceso recruiter y demo](docs/acceso.md) · [Editor y banco](docs/screenings.md).
 
 ## Índice
@@ -209,7 +211,7 @@ flowchart TD
 
 Para desarrollo se usan MongoDB y Mailpit local; T-05 envía la invitación inicial y, después de abrir el enlace, los códigos a su API HTTP de pruebas. El correo de prueba incluye un enlace de acceso de un uso; el enlace compartible sigue requiriendo el código del buzón de pruebas. La evaluación no depende del proveedor de IA y la creación manual sigue disponible si ese proveedor falla.
 
-Mailpit captura invitaciones y códigos en desarrollo y en el [buzón autenticado de la demo pública](docs/demo-publica.md), con las mismas direcciones ficticias. Quedan pendientes el transporte externo para uso real y la selección de proveedor/modelo de IA de T-04.
+Mailpit captura invitaciones y códigos ficticios en desarrollo y en el [buzón autenticado de la demo pública](docs/demo-publica.md). La integración opcional con [Brevo](docs/correo-brevo.md) admite correos personales para revisión académica; su activación y recepción externa están pendientes. La selección de proveedor/modelo de IA de T-04 sigue pendiente.
 
 ### 2.5. Seguridad
 

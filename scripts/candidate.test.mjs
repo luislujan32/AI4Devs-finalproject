@@ -76,7 +76,7 @@ before(async () => {
   const port = probe.address().port; await new Promise((resolve) => probe.close(resolve));
   origin = `http://127.0.0.1:${port}`;
   server = spawn(process.execPath, ['apps/api/dist/main.js'], { env: { ...process.env, MONGODB_URI: parsed.toString(),
-    API_PORT: String(port), PUBLIC_ORIGIN: origin, SESSION_SECRET: randomBytes(32).toString('base64url'), NODE_ENV: 'test',
+    API_PORT: String(port), PUBLIC_ORIGIN: origin, SESSION_SECRET: randomBytes(32).toString('base64url'), NODE_ENV: 'test', MAIL_PROVIDER: 'mailpit',
     SMTP_HOST: '127.0.0.1', SMTP_PORT: String(process.env.MAILPIT_SMTP_PORT ?? 1026) }, stdio: 'ignore' });
   let ready = false;
   for (let n = 0; n < 50; n++) {
@@ -151,7 +151,9 @@ test('código Mailpit de un uso, CSRF, principal separado y recarga', async () =
   assert.equal((await candidatePost('/access/request', { publicId: invitation.publicId }, { csrfToken: 'bad', cookie: csrf.cookie })).status, 403);
   const requested = await candidatePost('/access/request', { publicId: invitation.publicId }, csrf);
   assert.equal(requested.status, 200);
-  assert.deepEqual(Object.keys(await requested.json()).sort(), ['retryAfterSeconds', 'status']);
+  const receipt = await requested.json();
+  assert.deepEqual(Object.keys(receipt).sort(), ['mailDelivery', 'retryAfterSeconds', 'status']);
+  assert.equal(receipt.mailDelivery, 'mailpit');
   assert.equal((await candidatePost('/access/request', { publicId: invitation.publicId }, csrf)).status, 429);
   const code = await mailCode(email);
   assert.equal((await candidatePost('/access/verify', { publicId: invitation.publicId, code: 'abcdef' }, csrf)).status, 422);

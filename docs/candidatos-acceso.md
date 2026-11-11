@@ -3,6 +3,8 @@
 [Índice de API vigente](api.md) · [Cierre y verificación del 19/10](entrega-2-cierre-2026-10-19.md). Las evidencias fechadas conservan el estado histórico de cada ticket.
 [README](../readme.md) · [Reglas de producto](producto.md) · [UX-02](backlog.md#ux-02--formulario-del-postulante).
 
+**Actualización 11/11/2026:** se implementó [Brevo opcional para correos personales de revisión académica](correo-brevo.md), con activación/prueba pública pendientes. El modo por defecto y el recorrido histórico de esta guía siguen usando Mailpit y `example.test`. La API de código agrega el modo de entrega; los envíos externos inciertos conservan invitación y muestran aviso.
+
 T-05 permite crear invitaciones individuales para un screening publicado propio y verificar el correo ficticio del postulante. El acceso ya funciona con MongoDB y Mailpit locales. El desarrollo posterior añadió [cuestionario, guardado, revisión y envío](candidatos-formulario.md); el enlace compartido por el recruiter no autoriza por sí solo, mientras que el correo contiene una credencial de un uso.
 
 El [cierre posterior de un SC](resultados-recruiter.md) impide nuevas invitaciones, pero las ya enviadas conservan su plazo original de siete días y pueden terminarse.

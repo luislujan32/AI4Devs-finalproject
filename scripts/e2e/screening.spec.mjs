@@ -9,7 +9,7 @@ import { provisionRecruiter } from '../../apps/api/dist/auth/provision.js';
 const mongoUri = 'mongodb://127.0.0.1:27018';
 const mailpit = 'http://127.0.0.1:8026';
 
-test('publicar, invitar, retomar, enviar y decidir en navegador', async ({ page, browser }) => {
+for (const provider of ['mailpit', 'brevo']) test(`${provider}: publicar, invitar, retomar, enviar y decidir en navegador`, async ({ page, browser }) => {
   const id = randomUUID().replaceAll('-', '');
   const database = `screeningroom_demo_e2e_${id}`;
   const recruiterEmail = `recruiter-${id}@example.test`;
@@ -49,7 +49,8 @@ test('publicar, invitar, retomar, enviar y decidir en navegador', async ({ page,
       await provisionRecruiter(connection, recruiterEmail, 'Recruiter de prueba', password);
       api = spawn(process.execPath, ['apps/api/dist/main.js'], {
         env: { ...process.env, NODE_ENV: 'test', SCREENINGROOM_PUBLIC_DEMO: '0', API_PORT: String(port), PUBLIC_ORIGIN: origin,
-          MONGODB_URI: uri, MAILPIT_HTTP_PORT: '8026', SESSION_SECRET: randomBytes(32).toString('base64url') },
+          MONGODB_URI: uri, MAILPIT_HTTP_PORT: '8026', SESSION_SECRET: randomBytes(32).toString('base64url'),
+          MAIL_PROVIDER: provider, BREVO_API_KEY: 'fixture-key-with-no-real-access', MAIL_FROM_EMAIL: 'sender@example.org' },
         stdio: 'ignore',
       });
       await expect.poll(async () => {
@@ -89,6 +90,7 @@ test('publicar, invitar, retomar, enviar y decidir en navegador', async ({ page,
     await test.step('Invitar y abrir el correo en otro contexto de navegador', async () => {
       await page.getByRole('button', { name: 'Postulantes', exact: true }).click();
       await page.getByRole('button', { name: 'Invitar postulante' }).click();
+      await expect(page.getByLabel('Correo electrónico')).toHaveAttribute('placeholder', provider === 'brevo' ? 'nombre@correo.com' : 'persona@example.test');
       await page.getByLabel('Correo electrónico').fill(candidateEmail);
       await page.getByLabel('Nombre (opcional)').fill('Alex Demo');
       await page.getByRole('button', { name: 'Enviar invitación' }).click();

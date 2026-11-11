@@ -1,8 +1,10 @@
 import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module.js';
+import { validateMailConfiguration } from './candidate/mail-config.js';
 
 async function bootstrap() {
+  validateMailConfiguration();
   const port = Number(process.env.API_PORT ?? 3001);
   if (!Number.isInteger(port) || port < 1 || port > 65535) {
     throw new Error('API_PORT debe ser un puerto válido.');

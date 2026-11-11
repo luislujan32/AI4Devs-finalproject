@@ -94,7 +94,7 @@ before(async () => {
   const probe = createServer(); probe.listen(0, '127.0.0.1'); await once(probe, 'listening');
   const port = probe.address().port; await new Promise((resolve) => probe.close(resolve)); origin = `http://127.0.0.1:${port}`;
   server = spawn(process.execPath, ['apps/api/dist/main.js'], { env: { ...process.env, MONGODB_URI: parsed.toString(),
-    API_PORT: String(port), PUBLIC_ORIGIN: origin, SESSION_SECRET: randomBytes(32).toString('base64url'), NODE_ENV: 'test' }, stdio: 'ignore' });
+    API_PORT: String(port), PUBLIC_ORIGIN: origin, SESSION_SECRET: randomBytes(32).toString('base64url'), NODE_ENV: 'test', MAIL_PROVIDER: 'mailpit' }, stdio: 'ignore' });
   let ready = false;
   for (let n = 0; n < 50; n++) { if (server.exitCode !== null) throw new Error('API de prueba no inició.');
     try { if ((await call('/health/ready')).ok) { ready = true; break; } } catch { /* bounded startup */ } await delay(100); }

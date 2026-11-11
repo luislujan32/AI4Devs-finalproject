@@ -7,7 +7,8 @@ import { AuthService } from '../auth/auth.service.js';
 import { domainModels } from '../persistence/models.js';
 import { PersistenceRepository } from '../persistence/persistence.repository.js';
 import { enumQuery, pageQuery, searchQuery } from '../persistence/list-query.js';
-import { sendLocalCode, sendLocalInvitation } from './local-mail.js';
+import { MailDeliveryError, sendCode, sendInvitation } from './mail.js';
+import { fictitiousEmail, mailDelivery, realEmail } from './mail-config.js';
 import { configurationFor } from '../screenings/configuration.js';
 
 const DAY = 86400000;
@@ -29,10 +30,11 @@ export class CandidateService {
   private invitationView(row: { _id: { toString(): string }; publicId: string; candidateEmail: string; candidateName?: string | null;
     status: string; expiresAt: Date; createdAt?: Date; submittedAt?: Date | null; configurationVersion?: number;
     report?: { outcome: string; score?: number | null; threshold: number } | null;
-    review?: { decision: string; reviewedAt: Date } | null }) {
+    review?: { decision: string; reviewedAt: Date } | null; emailDeliveryStatus?: string | null }) {
     return { id: row._id.toString(), publicId: row.publicId, candidateEmail: row.candidateEmail,
       candidateName: row.candidateName ?? null, status: row.status, expiresAt: row.expiresAt, createdAt: row.createdAt,
       configurationVersion: row.configurationVersion ?? 1,
+      emailDeliveryStatus: row.emailDeliveryStatus ?? 'accepted',
       submittedAt: row.submittedAt ?? null,
       result: row.report ? { outcome: row.report.outcome, score: row.report.score ?? null, threshold: row.report.threshold } : null,
       review: row.review ? { decision: row.review.decision, reviewedAt: row.review.reviewedAt } : null };
@@ -58,21 +60,21 @@ export class CandidateService {
       ...(search ? { $or: [{ candidateName: search }, { candidateEmail: search }] } : {}) };
     const [rows, total, invited, pendingReview] = await Promise.all([
       this.models.Invitation.find(filter)
-      .select('publicId candidateEmail candidateName status expiresAt createdAt submittedAt configurationVersion report.outcome report.score report.threshold review.decision review.reviewedAt')
+      .select('publicId candidateEmail candidateName status expiresAt createdAt submittedAt configurationVersion emailDeliveryStatus report.outcome report.score report.threshold review.decision review.reviewedAt')
       .sort({ createdAt: -1, _id: -1 }).skip((page - 1) * pageSize).limit(pageSize).lean(),
       this.models.Invitation.countDocuments(filter),
       this.models.Invitation.countDocuments(scope),
       this.models.Invitation.countDocuments({ ...scope, status: 'submitted', 'review.decision': { $exists: false } }),
     ]);
-    return { invitations: rows.map((row) => this.invitationView(row)), total, page, pageSize, summary: { invited, pendingReview } };
+    return { invitations: rows.map((row) => this.invitationView(row)), total, page, pageSize, summary: { invited, pendingReview }, mailDelivery: mailDelivery() };
   }
   async create(ownerId: string, screeningId: string, input: unknown, origin: string) {
     if (!isObjectIdOrHexString(screeningId)) throw new NotFoundException('Screening no encontrado.');
     if (!origin || new URL(origin).origin !== origin) throw new UnprocessableEntityException('Origen inválido.');
     const body = record(input, ['candidateEmail', 'candidateName']);
     const candidateEmail = typeof body.candidateEmail === 'string' ? body.candidateEmail.trim().toLowerCase() : '';
-    if (candidateEmail.length > 254 || !/^[^\s@]+@(?:[^\s@.]+\.)*example\.test$/.test(candidateEmail)) {
-      throw new UnprocessableEntityException('Usá un correo ficticio terminado en example.test.');
+    if (candidateEmail.length > 254 || !(fictitiousEmail(candidateEmail) || (mailDelivery() === 'email' && realEmail(candidateEmail)))) {
+      throw new UnprocessableEntityException(mailDelivery() === 'email' ? 'Ingresá un correo electrónico válido.' : 'Usá un correo ficticio terminado en example.test.');
     }
     const candidateName = body.candidateName === undefined ? undefined : typeof body.candidateName === 'string' ? body.candidateName.trim() : null;
     if (candidateName === null || (candidateName && candidateName.length > 120)) throw new UnprocessableEntityException('Nombre inválido.');
@@ -88,15 +90,31 @@ export class CandidateService {
         const screening = await this.models.Screening.findOne({ _id: screeningId, ownerId, status: 'published' });
         if (!screening) throw new ConflictException('El screening se cerró mientras se preparaba la invitación.');
         const configuration = await configurationFor(this.models, screening, 'initial', row.configurationId);
-        try { await sendLocalInvitation(candidateEmail, candidateName, configuration.title ?? 'Screening', `${origin}/#invite=${row.publicId}&access=${emailToken}`, row.expiresAt); }
-        catch { throw new ServiceUnavailableException('No pudimos enviar la invitación. Intentá nuevamente.'); }
-        return { ...this.invitationView(row), emailSent: true };
+        await this.limitExternalMail(candidateEmail);
+        try { await sendInvitation(candidateEmail, candidateName, configuration.title ?? 'Screening', `${origin}/#invite=${row.publicId}&access=${emailToken}`, row.expiresAt); }
+        catch (error) {
+          if (error instanceof MailDeliveryError && error.uncertain) {
+            return { ...this.invitationView(row), emailDeliveryStatus: 'unconfirmed', emailSent: false };
+          }
+          throw new ServiceUnavailableException('No pudimos enviar la invitación. Intentá nuevamente.');
+        }
+        // Once accepted, never invalidate a mailed link because updating its receipt failed.
+        const receipt = await this.models.Invitation.updateOne({ _id: row._id }, { $set: { emailDeliveryStatus: 'accepted' } }).catch(() => null);
+        return { ...this.invitationView(row), emailDeliveryStatus: receipt?.matchedCount ? 'accepted' : 'unconfirmed', emailSent: true };
       } catch (error) {
         await this.models.Invitation.deleteOne({ _id: row._id, status: 'invited', answerRevision: 0 });
         throw error;
       }
     } catch (error) {
       if (error && typeof error === 'object' && 'code' in error && error.code === 11000) throw new ConflictException('Ya existe una invitación para ese correo.');
+      throw error;
+    }
+  }
+  private async limitExternalMail(recipient: string) {
+    if (mailDelivery(recipient) !== 'email') return;
+    try { await this.auth.consumeLimit('external-mail-day', 'shared-demo', 50, DAY); }
+    catch (error) {
+      if (error instanceof HttpException && error.getStatus() === 429) throw new HttpException('Alcanzamos el límite diario de correos de la demo. Probá mañana.', 429);
       throw error;
     }
   }
@@ -126,6 +144,7 @@ export class CandidateService {
     await this.auth.consumeLimit('candidate-code-ip', req.socket.remoteAddress ?? 'unknown', 20);
     const row = await this.active(body.publicId);
     if (!row) throw new NotFoundException('Invitación vencida o no disponible.');
+    await this.limitExternalMail(row.candidateEmail);
     const now = new Date(); const hourAgo = new Date(now.getTime() - HOUR);
     const code = String(randomInt(0, 1000000)).padStart(6, '0');
     const challengeId = randomBytes(16).toString('base64url');
@@ -141,9 +160,9 @@ export class CandidateService {
       $and: [{ $or: [{ 'auth.windowStartedAt': { $exists: false } }, { 'auth.windowStartedAt': { $lte: hourAgo } }] }] },
       { $set: { ...challenge, 'auth.windowStartedAt': now, 'auth.requestsInWindow': 1 } }, { returnDocument: 'after' });
     if (!updated) throw new HttpException('Esperá antes de pedir otro código.', 429);
-    try { await sendLocalCode(updated.candidateEmail, code); }
+    try { await sendCode(updated.candidateEmail, code); }
     catch { throw new ServiceUnavailableException('No pudimos entregar el código. Intentá nuevamente en un minuto.'); }
-    return { status: 'sent', retryAfterSeconds: 60 };
+    return { status: 'sent', retryAfterSeconds: 60, mailDelivery: mailDelivery(updated.candidateEmail) };
   }
   async verify(req: Request, res: Response, input: unknown) {
     this.auth.checkLoginCsrf(req);
@@ -170,8 +189,8 @@ export class CandidateService {
     return { status: 'authenticated', publicId: row.publicId, ...session };
   }
   async summary(invitationId: string) {
-    const row = await this.models.Invitation.findById(invitationId).select('status candidateName expiresAt');
+    const row = await this.models.Invitation.findById(invitationId).select('status candidateName candidateEmail expiresAt');
     if (!row) throw new UnauthorizedException('Sesión no disponible.');
-    return { status: row.status, candidateName: row.candidateName ?? null, expiresAt: row.expiresAt };
+    return { status: row.status, candidateName: row.candidateName ?? null, expiresAt: row.expiresAt, mailDelivery: mailDelivery(row.candidateEmail) };
   }
 }

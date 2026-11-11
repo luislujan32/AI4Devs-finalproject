@@ -4,12 +4,14 @@ import { provisionRecruiter } from '../apps/api/dist/auth/provision.js';
 import { verifyPassword } from '../apps/api/dist/auth/passwords.js';
 import { domainModels } from '../apps/api/dist/persistence/models.js';
 import { loadCatalog } from '../apps/api/dist/screenings/catalog.js';
+import { validateMailConfiguration } from '../apps/api/dist/candidate/mail-config.js';
 
 const database = 'screeningroom_demo_public';
 const email = 'revisor@example.test';
 const { PUBLIC_ORIGIN, MONGODB_URI, SESSION_SECRET, DEMO_RECRUITER_PASSWORD, DEMO_MAIL_PASSWORD } = process.env;
 
 async function seed() {
+  validateMailConfiguration();
   const origin = new URL(PUBLIC_ORIGIN);
   const uri = new URL(MONGODB_URI);
   if (origin.protocol !== 'https:' || origin.origin !== PUBLIC_ORIGIN ||

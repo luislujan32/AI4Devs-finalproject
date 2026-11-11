@@ -1,5 +1,33 @@
-// Mailpit stays on loopback in both local development and the public demo.
+import { fictitiousEmail, mailDelivery, realEmail, validateMailConfiguration } from './mail-config.js';
+
+export class MailDeliveryError extends Error {
+  constructor(readonly uncertain: boolean) { super('No pudimos confirmar el envío del correo.'); }
+}
+
+// Real messages never fall back to the shared test mailbox.
+async function sendMessage(recipient: string, subject: string, text: string, html?: string) {
+  if (mailDelivery(recipient) === 'mailpit') return sendLocalMessage(recipient, subject, text, html);
+  validateMailConfiguration();
+  if (!realEmail(recipient)) throw new MailDeliveryError(false);
+  let response: Response;
+  try {
+    response = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST', signal: AbortSignal.timeout(10000), redirect: 'error',
+      headers: { Accept: 'application/json', 'Content-Type': 'application/json', 'api-key': process.env.BREVO_API_KEY! },
+      body: JSON.stringify({ sender: { email: process.env.MAIL_FROM_EMAIL, name: 'Screeningroom' },
+        to: [{ email: recipient, contactPixelTrackingConsent: false }], subject,
+        ...(html ? { htmlContent: html } : { textContent: text }) }),
+    });
+  } catch { throw new MailDeliveryError(true); }
+  if (response.status !== 201) throw new MailDeliveryError(response.status >= 500 || response.status === 408);
+  try {
+    const result = await response.json() as { messageId?: unknown };
+    if (typeof result.messageId !== 'string' || !result.messageId) throw new Error();
+  } catch { throw new MailDeliveryError(true); }
+}
+
 async function sendLocalMessage(recipient: string, subject: string, text: string, html?: string) {
+  if (!fictitiousEmail(recipient)) throw new MailDeliveryError(false);
   const port = Number(process.env.MAILPIT_HTTP_PORT ?? 8026);
   if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error('Mailpit local no configurado.');
   const demo = process.env.SCREENINGROOM_PUBLIC_DEMO === '1';
@@ -19,7 +47,7 @@ const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (character) => (
   '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
 })[character]!);
 
-export async function sendLocalInvitation(recipient: string, candidateName: string | undefined, title: string, link: string, expiresAt: Date) {
+export async function sendInvitation(recipient: string, candidateName: string | undefined, title: string, link: string, expiresAt: Date) {
   const greeting = candidateName ? `Hola, ${candidateName}:` : 'Hola:';
   const deadline = `${new Intl.DateTimeFormat('es-AR', { dateStyle: 'full', timeStyle: 'short', timeZone: 'America/Argentina/Buenos_Aires' }).format(expiresAt)} (hora de Argentina)`;
   const subject = `Invitación para responder preguntas de «${title}» — Screeningroom`;
@@ -27,10 +55,10 @@ export async function sendLocalInvitation(recipient: string, candidateName: stri
   const recovery = 'Este enlace personal abre el cuestionario una sola vez y no pide código. Si querés continuar después, volvé a la invitación y verificá tu correo con un código. No compartas el enlace.';
   const text = `${greeting}\n\n${intro}\n\nResponder preguntas: ${link}\n\n${recovery}\n\nSi el botón no funciona, copiá el enlace anterior en tu navegador. Si no esperabas esta invitación, podés ignorar el mensaje.`;
   const html = `<div style="margin:0;padding:24px 12px;background:#f5f3ed;font-family:Arial,sans-serif;color:#172f2b"><div style="max-width:560px;margin:auto;padding:24px;border:1px solid #dce0d4;border-radius:14px;background:#fffdf8"><div style="font-weight:700;font-size:20px">Screeningroom</div><p style="margin:28px 0 8px;font-size:12px;font-weight:700;letter-spacing:.12em;color:#345c49">INVITACIÓN</p><h1 style="margin:0 0 18px;font-family:Georgia,serif;font-size:30px;font-weight:400;line-height:1.2">${escapeHtml(title)}</h1><p style="line-height:1.6">${escapeHtml(greeting)} ${escapeHtml(intro)}</p><p style="margin:28px 0"><a href="${escapeHtml(link)}" style="display:inline-block;padding:13px 20px;border-radius:8px;background:#172f2b;color:#fff;text-decoration:none;font-weight:700">Responder preguntas</a></p><p style="line-height:1.6">${escapeHtml(recovery)}</p><p style="font-size:13px;color:#53645b">Si el botón no funciona, copiá este enlace en tu navegador:</p><p style="font-size:13px;overflow-wrap:anywhere;word-break:break-word"><a href="${escapeHtml(link)}" style="color:#14634b">${escapeHtml(link)}</a></p><p style="margin-top:28px;padding-top:18px;border-top:1px solid #dce0d4;color:#53645b;font-size:13px;line-height:1.5">Si no esperabas esta invitación, podés ignorar el mensaje.</p></div></div>`;
-  await sendLocalMessage(recipient, subject, text, html);
+  await sendMessage(recipient, subject, text, html);
 }
 
-export async function sendLocalCode(recipient: string, code: string) {
-  await sendLocalMessage(recipient, 'Tu código de acceso a Screeningroom',
+export async function sendCode(recipient: string, code: string) {
+  await sendMessage(recipient, 'Tu código de acceso a Screeningroom',
     `Tu código de acceso es ${code}. Vence en 10 minutos.\nSi no lo solicitaste, ignorá este mensaje.`);
 }

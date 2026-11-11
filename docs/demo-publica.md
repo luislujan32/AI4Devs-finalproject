@@ -4,6 +4,8 @@ La demo usa una aplicación Docker en [Render Free](https://render.com/docs/free
 
 **Publicada y verificada el 11/11/2026:** [Screeningroom](https://screeningroom-ll-demo.onrender.com) · [buzón de pruebas](https://screeningroom-ll-demo.onrender.com/buzon/) · [estado y evidencia](entrega-final-verificacion-2026-11-11.md). Se verificaron acceso, conexión con Atlas y recorrido autenticado de los dos roles, incluido el cierre con resultados conservados.
 
+La guía siguiente describe el recorrido público ya comprobado con Mailpit. Luis aprobó después [correo real con Brevo](correo-brevo.md): la integración está probada localmente y requiere completar activación, secretos y verificación externa antes de habilitarla al revisor.
+
 ## Configurar el despliegue
 
 1. En Atlas, crear un clúster **Free** y un usuario con permiso `readWrite` solo para `screeningroom_demo_public`. Usar esa base en la ruta de la URI de conexión; conservar los parámetros del driver y codificar los caracteres especiales de la contraseña según corresponda. No cargar datos de ejemplo de Atlas.

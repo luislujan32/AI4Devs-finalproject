@@ -137,6 +137,7 @@ export const InvitationSchema = new Schema({
   submittedAt: Date, report: { type: ReportSchema, default: undefined }, review: { type: ReviewSchema, default: undefined },
   auth: { type: AuthSchema, default: undefined },
   emailAccess: { tokenHash: { type: String, select: false }, expiresAt: Date, usedAt: Date },
+  emailDeliveryStatus: { type: String, enum: ['accepted', 'unconfirmed'] },
 }, { ...stored, collection: 'invitations' });
 InvitationSchema.index({ publicId: 1 }, { unique: true });
 InvitationSchema.index({ screeningId: 1, candidateEmail: 1 }, { unique: true });
