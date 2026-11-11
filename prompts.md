@@ -388,3 +388,13 @@ Por cada fase se añadirán las herramientas y modelos identificables, hasta tre
 **Ajustes y evidencia:** una primera corrida llegó al informe y mostró que dos elementos contienen el mismo puntaje; se acotó la comprobación al resumen global. Pasaron el recorrido completo, las 64 pruebas existentes y el smoke. En un contenedor Linux amd64 limitado a 512 MiB y 0,5 CPU se comprobaron el arranque, la lectura protegida del correo, el enlace y código de acceso, y la persistencia tras reiniciar. [Guía y límites de la demo](docs/demo-publica.md).
 
 **Límites:** despliegue externo y evidencia pública pendientes. Solo se usaron datos ficticios y no se contrató infraestructura. El modelo exacto de este turno no se obtuvo del selector.
+
+## Entrega final — Workflow 23: publicación de la demo gratuita
+
+**Entrada humana:** Luis confirmó que tenía cuentas de Render y Atlas, pidió realizar la configuración en el navegador y completó personalmente el usuario de base y los secretos de Render. Autorizó expresamente los rangos `74.220.49.0/24` y `74.220.57.0/24` que Render mostraba para conectar la aplicación con Atlas.
+
+**Trabajo con IA:** Codex utilizó el navegador conectado para preparar un proyecto/clúster Atlas Free independiente, un usuario limitado a la base de demo y un servicio Docker Render Free desde el fork. Se mantuvo el coste de los planes en $0, sin disco de pago, y se desactivó el despliegue automático. Las contraseñas fueron introducidas por Luis y no se recuperaron ni registraron. Se ajustó la validación del aprovisionamiento para aceptar los secretos generados por Render. CI se fijó en Ubuntu 22.04 tras detectar un problema de compatibilidad del kernel usado por MongoDB en el runner más reciente.
+
+**Evidencia pública, 11/11/2026:** el primer arranque falló antes de habilitar la red de Atlas; tras activar los dos rangos autorizados, el mismo commit `a77466a` se desplegó correctamente. La URL pública mostró la página de acceso bajo HTTPS y la disponibilidad devolvió `status: ready` y `database: connected`. [Registro de la verificación](docs/entrega-final-verificacion-2026-11-11.md). GitHub Actions del commit desplegado pasó, incluyendo el E2E.
+
+**Pendiente:** completar el recorrido público autenticado después de que Luis entre en la app y el buzón con las contraseñas guardadas. El éxito de CI y la prueba local no se presentan como una prueba de ese recorrido público. No se usaron datos reales ni se publicó en el repositorio original del máster.
