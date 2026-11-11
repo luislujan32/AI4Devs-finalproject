@@ -1,10 +1,72 @@
 # Registro de uso de IA — Screeningroom
 
-**Autor:** Luis Lujan (LL). **Etapas:** entrega 1 documental, desarrollo de entrega 2 y preparación de la final. **Actualización:** 6 de noviembre de 2026.
+**Autor:** Luis Lujan (LL). **Etapas:** entrega 1 documental, desarrollo de entrega 2 y preparación de la final. **Actualización:** 11 de noviembre de 2026.
 
 Este registro documenta cómo se utilizó la IA y qué decisiones tomó el autor. Los workflows son resúmenes del trabajo real; solo los fragmentos expresamente marcados como literales reproducen instrucciones de la conversación. No se inventan prompts de implementación ni resultados de pruebas de una aplicación aún no desarrollada.
 
-Los apartados 1–7 conservan el registro histórico de la entrega 1. El trabajo local posterior se registra en los workflows de entrega 2 al final del documento. Cada workflow describe el estado de ese momento; los posteriores registran sus resoluciones.
+La selección siguiente reúne **cinco workflows representativos** de todo el proyecto. Después se conserva el historial de entrega 1 y los workflows de desarrollo/final para poder contrastar las decisiones y su evolución. Cada entrada histórica describe su momento; las posteriores registran sus resoluciones.
+
+## Herramientas, modelos y contexto — resumen actual
+
+| Fase | Herramientas y uso real | Contexto y verificación |
+| --- | --- | --- |
+| Análisis y diseño | ChatGPT/Work; después Codex para contrastar contratos con código | Pautas del máster, decisiones de Luis, P-01–P-08, backlog, arquitectura y fuentes oficiales |
+| Implementación y refinamiento | Codex desktop; OpenSpec; revisores por rol de producto, UX y viabilidad | `AGENTS.md`, documentos pertinentes a cada cambio, especificaciones, código y capturas ficticias; decisiones humanas registradas |
+| Pruebas y correcciones | Codex, `node:test`, MongoDB/Mailpit, Playwright/Chromium y GitHub Actions | Cálculo puro, HTTP real, concurrencia, dos roles y candidato móvil; 71 pruebas y dos E2E en el estado final previo a este cierre documental |
+| Despliegue y revisión | Codex, navegador conectado, Docker/Caddy, Render, Atlas y Brevo | Infraestructura gratuita, configuración privada introducida por Luis y recorrido público con correo autorizado; [evidencia](docs/entrega-final-verificacion-2026-11-11.md) |
+
+**Modelos:** Luis declaró usar «GPT-6 Sol Extra High» antes del trabajo del postulante. Se conserva como selección declarada, no como prueba del modelo de todos los turnos. «Extra High» expresa el esfuerzo declarado; no se convierte en nombre de modelo de API. No hay identificación exacta verificable de todas las conversaciones ni de cada subagente, por lo que no se reconstruye por inferencia. Las sugerencias de IA dentro del producto (T-04) son otra capacidad y siguen sin implementar.
+
+## Cinco workflows seleccionados
+
+### 1. Análisis — reglas de evaluación y criterio humano
+
+- **Contexto:** requisitos del screening, pesos, umbral, excluyentes y necesidad de conservar fortalezas aunque una respuesta sea desfavorable.
+- **Herramienta/modelo:** ChatGPT/Work; identificación histórica exacta no registrada.
+- **Petición real resumida:** permitir completar todo el cuestionario y entregar al reclutador un informe que le permita decidir. Se conserva un fragmento literal en el historial de producto.
+- **Trabajo y resultado:** separar promedio ponderado, excluyentes, desconocidos y decisión humana; concretar P-01–P-08 y sus ejemplos. La evaluación quedó implementada como función pura determinista.
+- **Criterio humano:** Luis pidió pesos/excluyentes y que el recruiter pudiera continuar por otros aspectos favorables. Se exige motivo al continuar con resultado adverso o pendiente; no se modifica el informe calculado.
+- **Verificación:** [reglas y ejemplos](docs/producto.md), pruebas de `scripts/attempt.test.mjs` y [recorrido público con decisión divergente](docs/entrega-final-verificacion-2026-11-11.md#recorrido-público-autenticado).
+
+### 2. Arquitectura y contexto — un harness que acompañe la implementación
+
+- **Contexto:** entrega 1, checkpoints del máster y un producto individual con React, NestJS y MongoDB; evitar infraestructura y abstracciones innecesarias.
+- **Herramienta/modelo:** ChatGPT/Work y Codex; no se verificó una selección exacta para toda esta fase.
+- **Petición real resumida:** desarrollar desde lo documentado, utilizando OpenSpec como harness y aplicando lo aprendido en los módulos.
+- **Trabajo y resultado:** monolito modular, contratos de datos/API y `AGENTS.md`; OpenSpec registra propuestas, criterios y evidencia de capacidades. Se carga el contexto pertinente al cambio en lugar de depender únicamente del chat.
+- **Criterio humano:** Luis fijó el stack, el uso de cuentas ficticias y la publicación exclusiva en su fork. Se preservan los documentos históricos sin presentarlos como código ya implementado.
+- **Verificación:** [contrato de trabajo](AGENTS.md), [harness y aprendizajes](docs/harness.md), especificaciones vivas en `openspec/specs` y workflow 1–3 de entrega 2 más abajo.
+
+### 3. Producto y UX — aprender de los fallos del primer recorrido
+
+- **Contexto:** capturas y pruebas de Luis mostraron acciones ambiguas, estados poco visibles, guardado inconsistente y decisiones que no persistían visualmente al volver a la lista.
+- **Herramienta/modelo:** Codex, revisores por rol de producto/UX/viabilidad y navegador. La selección declarada por Luis se registra en el workflow 8; no se atribuye automáticamente a todos los revisores.
+- **Petición real resumida:** investigar patrones y mejorar el harness para que cada feature llegue con estados y efectos definidos, reduciendo decisiones pequeñas delegadas al usuario durante las pruebas.
+- **Trabajo y resultado:** separar configuración y postulantes, filtros/paginación, informes con criterios y decisión independientes, lectura de la decisión después de guardarla y edición explícita. El protocolo incorpora acción → confirmación → lista → reapertura → edición/cancelación.
+- **Criterio humano:** Luis corrigió la experiencia inicial y confirmó que las ediciones del SC afectan **solo a futuras invitaciones**. También eligió guía de puntuación sin valores automáticos del banco. Los contratos se actualizaron con esas decisiones.
+- **Verificación:** [protocolo de producto](docs/experiencia-producto.md), [auditoría UX](docs/ux-workspace-audit-2026-10-04.md), [versiones](docs/screening-versions.md) y workflows 15–20 del historial. La revisión asistida no sustituye validación con recruiters representativos.
+
+### 4. Pruebas — de evidencia manual a un recorrido repetible
+
+- **Contexto:** reglas sensibles a desconocidos, envíos concurrentes, control de propiedad y recuperación de avance; el recorrido manual no acreditaba E2E automático.
+- **Herramienta/modelo:** Codex, `node:test`, HTTP/MongoDB/Mailpit, Playwright y GitHub Actions; modelo exacto por ejecución no registrado.
+- **Petición real resumida:** preparar la entrega final con tests unitarios, integración y E2E, y contrastar los resultados antes de publicar.
+- **Trabajo y resultado:** seis suites con 71 pruebas y dos E2E de los dos roles; bases aisladas, mensajes ficticios, guardado/reanudación, envío único, informe, decisión divergente y cierre. Brevo se simula en los tests de transporte.
+- **Ajustes humanos/asistidos:** se acotó un selector ambiguo al resumen del puntaje; se fijó Ubuntu 22.04 por incompatibilidad del contenedor MongoDB con el kernel del runner más reciente. Luis probó el producto y aportó fallos reales de interacción; no se confundió aprobar una suite con comprobar la recepción de correo real.
+- **Verificación:** [comandos reproducibles](docs/desarrollo.md), [CI y resultados](docs/entrega-final-verificacion-2026-11-11.md#pruebas-automatizadas) y workflows 20–24. No se atribuyen porcentajes de cobertura no medidos.
+
+### 5. Despliegue — demo gratuita y correo real con configuración privada
+
+- **Contexto:** presupuesto sin servidor de pago, cuentas existentes de Render/Atlas y ausencia de dominio propio; el revisor debía poder usar su correo.
+- **Herramienta/modelo:** Codex, navegador conectado y documentación oficial de proveedores; modelo exacto por turno no verificado.
+- **Petición real resumida:** desplegar gratuitamente y sustituir el correo exclusivamente simulado por invitaciones/códigos que lleguen a la casilla del revisor.
+- **Trabajo y resultado:** un contenedor con Caddy/NestJS/React/Mailpit, Atlas Free y transporte HTTPS de Brevo. Los mensajes reales no se copian al buzón ficticio; un envío incierto no invalida automáticamente un enlace que pudo llegar.
+- **Criterio humano:** Luis introdujo los secretos, autorizó los rangos concretos de Atlas y los mensajes a su remitente, y confirmó recepción y enlace. Los nombres/respuestas siguieron siendo ficticios. Las capturas excluyen destinatario real, claves, códigos y enlaces de acceso.
+- **Verificación:** [demo y recorrido](docs/demo-publica.md), [correo recibido y reanudación comprobados](docs/correo-brevo.md#prueba-real-del-11112026) y workflows 22–24. La verificación externa es manual y se distingue de los mocks de CI.
+
+## Historial y trazabilidad
+
+Los apartados siguientes conservan las peticiones, resultados, errores y límites en orden histórico. Las expresiones «previsto» o «pendiente» deben leerse con la fecha de cada entrada; para el estado vigente consultar el [README](readme.md) y la [guía de revisión](docs/revision-final.md).
 
 ## Herramientas y alcance de la entrega 1 — registro histórico
 
@@ -20,7 +82,7 @@ Los apartados 1–7 conservan el registro histórico de la entrega 1. El trabajo
 
 **Skills y agentes:** se utilizó la habilidad de gestión de archivos de Work para conservar borradores y anexos. No se utilizaron subagentes, comandos personalizados ni un harness propio instalado en este repositorio. Codex está previsto como apoyo para la implementación; no se afirma haber ejecutado el proyecto en la máquina del autor.
 
-## Estado actual y modelos por fase — 19/10/2026
+## Estado al cerrar entrega 2 y modelos por fase — 19/10/2026, histórico
 
 La tabla anterior y los apartados 1–7 conservan la etapa documental. El desarrollo posterior sí utilizó Codex, AGENTS.md, OpenSpec, pruebas, CI y revisores por rol; los workflows de entrega 2 lo documentan. Las afirmaciones históricas sobre herramientas aún previstas no describen el estado actual.
 
@@ -30,7 +92,7 @@ La tabla anterior y los apartados 1–7 conservan la etapa documental. El desarr
 | Diseño | ChatGPT/Work y posteriormente Codex; arquitectura, OpenSpec, revisiones de producto/UX/viabilidad | Sin identificación exacta de cada conversación o subagente |
 | Implementación | Codex desktop, AGENTS.md y OpenSpec; workflows y commits de entrega 2 | Luis declaró usar «GPT-6 Sol Extra High» antes del trabajo del postulante (workflow 8). Es una selección declarada; no acredita que todos los turnos usaran ese modelo |
 | Pruebas | Codex, node:test, HTTP/MongoDB/Mailpit, smoke y navegador integrado | No se verificó el selector exacto por ejecución; evidencia técnica en los workflows |
-| CI y preparación de operación | Codex ayudó a configurar GitHub Actions y smoke; ejecuciones remotas enlazadas | No registrado por turno; despliegue público todavía pendiente |
+| CI y preparación de operación | Codex ayudó a configurar GitHub Actions y smoke; ejecuciones remotas enlazadas | No registrado por turno; despliegue público pendiente en ese hito, comprobado después en workflows 23–24 |
 | Mantenimiento | Codex, revisiones humanas, documentación viva y correcciones de UX | Identificación exacta no verificada por turno |
 
 «Extra High» se conserva como esfuerzo declarado por Luis, sin convertirlo en nombre de modelo de API. No se reconstruyen selecciones históricas por inferencia ni se atribuye el modelo del chat principal a los subagentes. En futuras sesiones se registrará modelo/esfuerzo cuando exista evidencia visible. El proveedor y modelo de las sugerencias dentro del producto son una decisión distinta y siguen pendientes de T-04.
@@ -416,3 +478,15 @@ Por cada fase se añadirán las herramientas y modelos identificables, hasta tre
 **Activación y evidencia pública, 11/11:** Luis guardó las variables, generó la clave personalmente y autorizó mensajes de prueba a su remitente. Se preparó el formulario de clave con permisos restringidos a correo transaccional y vencimiento de tres meses. Render desplegó `d1c7e0a` correctamente. La invitación llegó y Luis confirmó que su enlace funcionó. Brevo registró entrega de invitación y dos códigos; se verificó acceso, guardado, cierre de sesión, reanudación con la misma respuesta, envío, recibo tras recarga e informe 100/100 con nombre/respuesta ficticios. Las capturas públicas omiten dirección real, claves, códigos y enlaces de acceso. Una lectura de logs que podía imprimir enlaces privados fue rechazada automáticamente; se corrigió la consulta para mostrar solo estados y utilizar el código sin imprimirlo. [Evidencia y límites](docs/correo-brevo.md). No se publicaron secretos ni cambios en el repositorio del máster.
 
 **Consolidación de contratos:** tras completar la verificación pública se archivaron `public-academic-demo` y `transactional-review-email` y se sincronizaron sus especificaciones vivas. También se actualizó el contrato anterior de acceso del candidato para reflejar ambos transportes y los envíos inciertos, conservando los límites de sesión/código. No se cambió código del producto en este cierre documental.
+
+## Entrega final — Workflow 25: contraste con el checklist y paquete del revisor
+
+**Entrada humana:** Luis compartió el documento final del máster y su gráfico de entrega. Pidió contrastarlos con lo construido y después autorizó avanzar con el cierre propuesto.
+
+**Trabajo con IA:** Codex contrastó instrucciones, plantilla oficial, código, CI, despliegue y documentos. Se identificaron T-04 anunciado sin implementar, diagramas de integraciones previstas, cifras antiguas de pruebas y el nombre de rama distinto al pedido final. Se prepararon README fiel al estado, una guía de revisión con acciones/resultados, variables de ejemplo sin secretos y esta selección de cinco workflows. El historial de entrega 1/2 se conservó. No se creó otra capacidad OpenSpec para cambios documentales.
+
+**Criterio y límites:** el requisito de 3–5 funcionalidades no se usó para retirar silenciosamente T-04 del compromiso original. Se consultó a Luis la decisión entre implementarlo o aplazarlo; mientras se espera, permanece identificado como pendiente. T-09 sigue parcial. La contraseña de demo debe facilitarse por un canal privado y no se leyeron los secretos de Render/Brevo/Atlas.
+
+**Verificación:** `npm run check` correcto, enlaces relativos/anclas y diff comprobados. Se generaron capturas de dashboard, revisión, postulantes y cuestionario móvil recorriendo una base local aislada con una copia del E2E existente. La inspección visual detectó una lista aún cargando y una barra fija que se veía mal en captura de página completa; se esperó la carga/guardado y se usaron capturas de viewport en escritorio. El recorrido final pasó sin cambiar el producto ni las suites versionadas. [Entornos y evidencia](docs/entrega-final-verificacion-2026-11-11.md#cierre-documental-y-capturas-locales-del-1111).
+
+**Estado:** preparación en el fork; consolidación de `final-project-LL`, acceso privado del revisor y Typeform todavía pendientes. El modelo exacto de este turno no se obtuvo del selector y no se atribuye por inferencia. No se convocaron nuevos agentes para esta reconciliación documental.

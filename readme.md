@@ -1,18 +1,14 @@
 # Screeningroom — Proyecto final AI4Devs
 
-Desarrollo en el fork; **feature/entrega-2-LL** es la rama de integración. [Guía local](docs/desarrollo.md) · [Aplicación de los aprendizajes del máster](docs/harness.md). La entrega 1 conserva su documentación en feature/entrega-1-LL.
+**Luis Lujan (LL) · Entrega final en preparación · Actualización: 11 de noviembre de 2026.**
 
-**Entrega 2: cierre y verificación · Luis Lujan (LL) · Actualización: 19 de octubre de 2026.**
+[Abrir la demo](https://screeningroom-ll-demo.onrender.com) · **[Guía rápida del revisor](docs/revision-final.md)** · [Pruebas y evidencia](docs/entrega-final-verificacion-2026-11-11.md) · [Registro de IA](prompts.md).
 
-[Estado de la entrega 2, comprobaciones y pendientes](docs/entrega-2-cierre-2026-10-19.md) · [Índice de las 33 operaciones de API](docs/api.md).
+El flujo principal funciona de principio a fin: configurar/publicar → invitar por correo → responder/guardar/retomar/enviar → informe → decisión del recruiter → cierre con resultados conservados. La demo usa Render Free, MongoDB Atlas Free y correo Brevo, verificado con recepción real. Las direcciones ficticias `example.test` usan Mailpit. Hay **71 pruebas unitarias/de integración y dos E2E en Chromium**.
 
-**Entrega final en preparación · 11 de noviembre de 2026.** [Demo pública](https://screeningroom-ll-demo.onrender.com) en Render Free con MongoDB Atlas Free. Se verificaron en público creación/publicación, invitación, acceso desde el correo, guardado/reanudación por código, envío, informe, decisión humana y cierre con resultados conservados tras recargar. Faltan consolidar la rama de entrega y compartir las contraseñas al revisor. [Estado y evidencia de la final](docs/entrega-final-verificacion-2026-11-11.md).
+**Pendientes de cierre:** resolver el alcance de las sugerencias de IA (T-04, sin implementar), concretar el acceso privado del revisor y consolidar la rama `final-project-LL` antes del Typeform. T-09 sigue parcial: borrado anticipado y gestión operativa de privacidad. Esta es una demo académica con nombres y respuestas ficticios; no se habilita su uso con postulantes reales.
 
-**Cómo probar:** [Instalación y pruebas locales](docs/desarrollo.md#preparar-y-ejecutar) · [Generar credenciales ficticias](docs/acceso.md#preparar-una-demo-local) · [Recorrido de revisión y despliegue](docs/demo-publica.md).
-
-**Correo real para el revisor:** [Brevo activado y verificado](docs/correo-brevo.md). Invitaciones y códigos llegan al correo personal autorizado; el recorrido se comprobó hasta el informe. Las direcciones `example.test` continúan usando el buzón de pruebas. Hay 71 pruebas unitarias/de integración y dos E2E automatizados, además de la verificación pública.
-
-La entrega 1 definió el MVP y su diseño. `feature/entrega-2-LL` integra invitaciones, formulario, evaluación, informes, revisión humana, cierre, [el rediseño recruiter](docs/recruiter-workspace-foundations.md) y [edición con versiones para nuevas invitaciones](docs/screening-versions.md). La [verificación integrada del 04/10](docs/entrega-2-verificacion-2026-10-04.md) registra el recorrido web/API/BD con cuentas ficticias, incluyendo versiones, reanudación, conflicto y cierre. El [cierre del 19/10](docs/entrega-2-cierre-2026-10-19.md) documenta las 64 pruebas unitarias/de integración de ese hito. La preparación final incorpora dos E2E en Chromium, siete pruebas de correo y la demo pública con Brevo; T-04/T-09 siguen pendientes. [Persistencia y sus límites](docs/datos.md) · [Acceso recruiter y demo](docs/acceso.md) · [Editor y banco](docs/screenings.md).
+[Instalación local](docs/desarrollo.md#preparar-y-ejecutar) · [Índice de las 33 operaciones de API](docs/api.md) · [Harness y aprendizajes del máster](docs/harness.md). Las entregas anteriores y sus resultados se conservan como [historial de entrega 2](docs/entrega-2-cierre-2026-10-19.md).
 
 ## Índice
 
@@ -39,17 +35,19 @@ Luis Lujan. Proyecto individual con asistencia de ChatGPT y Codex.
 
 ### 0.3. Descripción breve
 
-Aplicación web de screening de candidatos. El recruiter prepara preguntas y criterios del puesto, asigna pesos y requisitos excluyentes y comparte una invitación individual. El candidato responde, revisa y retoma su avance sin crear una cuenta. El sistema genera un informe con puntuación, evidencia y faltantes; el recruiter registra su decisión por separado. Un banco por áreas y sugerencias de IA ayudan a preparar los cuestionarios.
+Aplicación web de screening de candidatos. El recruiter prepara preguntas y criterios del puesto, asigna pesos y requisitos excluyentes y envía una invitación individual. El candidato responde, revisa y retoma su avance sin crear una cuenta. El sistema genera un informe con puntuación, evidencia y faltantes; el recruiter registra su decisión por separado. El banco por áreas y las preguntas propias permiten preparar los cuestionarios. Las sugerencias de IA previstas en T-04 todavía no están disponibles.
 
 ### 0.4. URL de la aplicación
 
 [Abrir Screeningroom](https://screeningroom-ll-demo.onrender.com) · [Buzón de pruebas](https://screeningroom-ll-demo.onrender.com/buzon/).
 
-Acceso a la aplicación: **`revisor@example.test`**, con la contraseña conservada por Luis para compartir por el canal de entrega. El revisor puede invitar a su correo personal y completar el cuestionario con datos ficticios. Para pruebas con `example.test`, el buzón opcional usa **`revisor`** y otra contraseña, también privada. [Recorrido del revisor y límites de la demo](docs/demo-publica.md#cómo-probar-como-revisor). Render Free puede tardar alrededor de un minuto en despertar tras un período sin visitas.
+Acceso a la aplicación: **`revisor@example.test`**. Luis conserva la contraseña de demo y debe facilitarla al revisor por un canal privado antes de enviar la entrega. No hay una contraseña publicada en este repositorio. El revisor puede invitar a su propio correo y completar el cuestionario con nombre y respuestas ficticios; para este recorrido no necesita acceder a Mailpit. El buzón opcional para `example.test` usa **`revisor`** y otra contraseña privada. [Pasos y resultados esperados](docs/revision-final.md). Render Free puede tardar alrededor de un minuto en despertar tras un período sin visitas.
 
 ### 0.5. Repositorio
 
-[Repositorio del proyecto](https://github.com/luislujan32/AI4Devs-finalproject). Rama de desarrollo de la entrega 2: `feature/entrega-2-LL`. La entrega 1 se conserva en `feature/entrega-1-LL` y su [PR académico #340](https://github.com/LIDR-academy/AI4Devs-finalproject/pull/340).
+[Repositorio público del proyecto](https://github.com/luislujan32/AI4Devs-finalproject). Preparación final en `feature/entrega-final-demo-LL`; integración en `feature/entrega-2-LL`. La rama académica final debe llamarse **`final-project-LL`** y se creará desde el estado final verificado. `finalproject-LL` es el alias anterior de entrega 2 y no debe confundirse con la final. La entrega 1 se conserva en `feature/entrega-1-LL` y su [PR académico #340](https://github.com/LIDR-academy/AI4Devs-finalproject/pull/340).
+
+Según las pautas finales, la entrega formal se realiza enviando el enlace directo de la rama mediante [Typeform](https://lidr.typeform.com/proyectoai4devs), con el correo del calendario de formación. No requiere un PR al repositorio del máster. El fork es público; si pasa a privado, debe concederse lectura a `LIDR-AI4Devs`.
 
 ## 1. Descripción general del producto
 
@@ -64,13 +62,17 @@ El producto admite distintos tipos de puestos. Las preguntas propias permiten tr
 
 ### 1.2. Características y funcionalidades principales
 
-**Cinco capacidades principales:**
+**Estado de las cinco capacidades planteadas en la entrega 1:**
 
-1. Preparar y publicar screenings con preguntas propias o del banco, pesos, condiciones excluyentes y umbral.
-2. Obtener propuestas de preguntas mediante IA y revisarlas antes de incorporarlas.
-3. Invitar a candidatos, validar su acceso por correo y permitir responder, guardar, retomar y enviar.
-4. Consultar un informe por criterio, con evidencia y un resultado calculado de manera determinista.
-5. Registrar la revisión del recruiter, incluso cuando su decisión difiera del resultado calculado.
+| Capacidad | Estado verificado |
+| --- | --- |
+| Preparar y publicar screenings con preguntas propias o del banco, pesos, excluyentes y umbral | Implementada |
+| Obtener propuestas de preguntas mediante IA y revisarlas antes de incorporarlas | T-04 pendiente; decisión de alcance para la final aún por cerrar |
+| Invitar, validar acceso por correo y responder, guardar, retomar y enviar | Implementada |
+| Consultar un informe por criterio, con evidencia y cálculo determinista | Implementada |
+| Registrar la decisión del recruiter, incluso distinta del resultado calculado | Implementada |
+
+Cuatro capacidades están operativas. La generación de preguntas no se presenta como terminada ni se elimina del compromiso original sin resolver explícitamente su alcance.
 
 Autenticación, control de acceso y conservación de datos sostienen estas capacidades; no son productos separados.
 
@@ -83,7 +85,7 @@ Las reglas de evaluación, publicación, banco y revisión humana se especifican
 ### 1.3. Diseño y experiencia de usuario
 
 1. El recruiter inicia sesión con correo y contraseña. En el MVP las cuentas se aprovisionan mediante un comando administrativo; no se desarrolla registro público, roles complejos ni recuperación de contraseña por interfaz.
-2. Crea el screening, elige área y agrega preguntas propias, del banco o sugeridas por IA. Confirma puntuación, pesos, excluyentes, obligatoriedad y umbral.
+2. Crea el screening, elige área y agrega preguntas propias o del banco. Confirma puntuación, pesos, excluyentes, obligatoriedad y umbral. Las sugerencias por IA siguen pendientes de T-04.
 3. Publica una configuración válida. Cada versión publicada queda inmutable. Editar el mismo SC prepara una nueva versión para futuras invitaciones; las ya emitidas conservan sus preguntas y reglas. Puede cerrar el SC para detener nuevas invitaciones o crear otro SC independiente basado en la configuración activa.
 4. Registra el correo del candidato y obtiene un enlace individual para compartir. El nombre es opcional. Una invitación contiene un único intento; no hay importación masiva ni reintentos de evaluación en el MVP.
 5. Al abrir el enlace del correo por primera vez, el candidato accede mediante un token de un uso. El enlace que copia el recruiter requiere un código enviado al correo registrado. El identificador público por sí solo no permite leer el cuestionario ni respuestas. El código comprueba acceso al buzón, no identidad civil ni titularidad exclusiva.
@@ -95,7 +97,41 @@ Las reglas de evaluación, publicación, banco y revisión humana se especifican
 
 Las sesiones del recruiter duran como máximo 8 horas; las del candidato, 2 horas y nunca más que la vigencia de su invitación. El servidor comprueba estas condiciones en cada operación. Revalidar el acceso recupera el mismo intento. Vencer una invitación no elimina inmediatamente el informe del recruiter.
 
-Estos wireframes representan tres pantallas principales. Son bocetos de estructura, no capturas de una aplicación implementada.
+**Producto implementado:** las capturas locales del 11/11 muestran el listado, editor, postulantes y cuestionario móvil con datos ficticios y una base aislada. El recibo y el informe siguientes se obtuvieron en la demo pública. El [registro de evidencia](docs/entrega-final-verificacion-2026-11-11.md) distingue ambos entornos; [la recepción de correo real](docs/correo-brevo.md#prueba-real-del-11112026) se verificó por separado.
+
+<details>
+<summary>Espacio recruiter: estados, conteos, búsqueda y filtros</summary>
+
+![Listado de screenings, captura local](docs/evidencias/entrega-final-dashboard-local-2026-11-11.png)
+
+</details>
+
+<details>
+<summary>Configuración y revisión antes de publicar</summary>
+
+![Revisión del screening antes de publicarlo, captura local](docs/evidencias/entrega-final-editor-local-2026-11-11.png)
+
+</details>
+
+<details>
+<summary>Postulante: cuestionario móvil y confirmación de envío</summary>
+
+![Cuestionario a 375 px, captura local](docs/evidencias/entrega-final-cuestionario-local-2026-11-11.png)
+
+![Confirmación del candidato después de enviar y recargar, demo pública](docs/evidencias/entrega-final-recibo-2026-11-11.png)
+
+</details>
+
+<details>
+<summary>Seguimiento: lista de postulantes, informe y decisión</summary>
+
+![Lista de postulantes con estados independientes, captura local](docs/evidencias/entrega-final-postulantes-local-2026-11-11.png)
+
+![Informe con resultado y decisión humana separados, demo pública](docs/evidencias/entrega-final-informe-2026-11-11.png)
+
+</details>
+
+**Diseño inicial, entrega 1:** los siguientes wireframes son bocetos históricos de estructura.
 
 ![Wireframes de configuración, candidato e informe](docs/wireframes.svg)
 
@@ -103,13 +139,13 @@ Estos wireframes representan tres pantallas principales. Son bocetos de estructu
 | --- | --- |
 | Acceso del recruiter | Correo, contraseña, iniciar sesión, errores sin revelar si una cuenta existe |
 | Listado | Screenings propios, estados borrador/publicado/cerrado, conteos, búsqueda, filtros y paginación |
-| Editor | Puesto, área, descripción, preguntas, reglas, banco, sugerencias, vista previa y publicar |
+| Editor | Puesto, área, descripción, preguntas, reglas, banco, revisión previa y publicar; sugerencias IA pendientes |
 | Postulantes | Invitación por correo, nombre opcional, recepción, criterios y decisión en columnas independientes, filtros, paginación e informe; borrado individual pendiente de T-09 |
 | Acceso del candidato | Solicitar código, verificarlo y avisos de vencimiento/reenvío |
 | Cuestionario | Una pregunta por paso, anterior/siguiente, progreso, guardar y salir, resumen editable antes de enviar |
 | Informe | Resultado, puntuación o cálculo pendiente, evidencia, excluyentes, faltantes y revisión humana |
 
-Los formularios tendrán etiquetas, navegación por teclado, foco visible y mensajes que no dependan solo del color. Se diseñará el cuestionario para móvil. Solo se muestra «Guardado» cuando el servidor confirmó la persistencia. No se conserva información del candidato en `localStorage`.
+Los formularios incluyen etiquetas, navegación por teclado, foco visible y estados descritos mediante texto. El E2E del candidato usa 375 × 812 px y comprueba que no haya desbordamiento horizontal; las comprobaciones manuales adicionales están fechadas en la evidencia. Esto no equivale a una auditoría completa de accesibilidad ni a validación con recruiters representativos, que sigue pendiente. Solo se muestra «Guardado» cuando el servidor confirmó la persistencia. No se conserva información del candidato en `localStorage`.
 
 ### 1.4. Instrucciones de instalación
 
@@ -129,11 +165,13 @@ Un backend modular y una interfaz web. En despliegue, NestJS sirve la API y los 
 flowchart TD
   R["Recruiter"] --> W["Interfaz React"]
   C["Candidato"] --> W
-  W -->|HTTPS| A["API NestJS"]
-  A --> D[("MongoDB")]
-  A --> E["Correo SMTP"]
-  A --> L["Generador de preguntas IA"]
+  W -->|API bajo el mismo origen HTTPS| A["API NestJS"]
+  A --> D[("MongoDB Atlas: dominio y sesiones")]
+  A -->|Correo autorizado: HTTPS| E["Brevo transaccional"]
+  A -->|example.test: HTTP interno| M["Mailpit: buzón ficticio"]
 ```
+
+La generación de preguntas mediante IA no forma parte de este diagrama implementado: T-04 sigue pendiente. La evaluación de respuestas es local y determinista.
 
 **Consistencia de reglas y respuestas:**
 
@@ -145,14 +183,14 @@ Esta elección aprovecha la atomicidad de escritura de un documento de MongoDB; 
 
 ### 2.2. Descripción de componentes principales
 
-| Módulo | Responsabilidad |
+| Componente | Responsabilidad e implementación |
 | --- | --- |
-| Auth | Acceso del recruiter, códigos del candidato, sesiones y autorización |
-| Screenings | Borradores, banco, validación, publicación de versiones, historial, copia independiente y cierre |
-| Suggestions | Contexto de vacante, llamada de IA y validación de propuestas |
-| Invitations | Correo, enlace, vigencia, respuestas y envío final |
-| Evaluation | Función determinista de evaluación, sin llamadas externas |
-| Reports | Lectura del informe y registro de revisión humana |
+| Auth | Módulo de acceso recruiter, sesiones y autorización |
+| Screenings | Módulo de borradores, banco, publicación, versiones, copia y cierre |
+| Candidate | Módulo de invitaciones, correo, códigos, acceso y respuestas del candidato; expone también informe/revisión al recruiter propietario |
+| Evaluation | Función pura de evaluación usada al enviar; no consulta proveedores externos |
+| Persistence | Schemas, índices y operaciones de MongoDB/Mongoose |
+| Suggestions, previsto en T-04 | No implementado: contexto de vacante, llamada de IA y validación de propuestas |
 
 **Stack elegido:** React + Vite + TypeScript en frontend; NestJS con Express en backend; MongoDB mediante Mongoose; monorepo con npm workspaces.
 
@@ -180,67 +218,76 @@ PostgreSQL también sería válido. Se elige MongoDB porque la configuración y 
 | `docs/wireframes.svg` | Incluido | Bocetos de interfaz |
 | `apps/web` | Integrado en entrega 2 | Acceso del recruiter, editor, invitaciones, formulario del postulante, informe y revisión humana |
 | `apps/api` | Integrado en entrega 2 | NestJS/Express, MongoDB, autenticación, screenings, invitaciones, evaluación, informes y revisión humana |
-| `.github/workflows` | Configurado y ejecutado; [evidencia integrada](docs/entrega-2-verificacion-2026-10-04.md) | Tipos, lint, build, OpenSpec, cinco suites de pruebas y smoke con MongoDB/Mailpit |
+| `scripts/*.test.mjs` | Seis suites, 71 pruebas | Unitarios de cálculo/correo e integración HTTP/MongoDB/Mailpit |
+| `scripts/e2e/screening.spec.mjs` | Dos E2E en Chromium | Recorrido completo con los dos roles y candidato móvil |
+| `deploy`, `Dockerfile` | Desplegados | Imagen única, Caddy, aprovisionamiento de demo y buzón ficticio |
+| `.github/workflows/check.yml` | Configurado y ejecutado; [evidencia final](docs/entrega-final-verificacion-2026-11-11.md) | Tipos, lint, build, OpenSpec, seis suites, smoke y ambos E2E |
 
 El monorepo contiene frontend y backend como npm workspaces. Cada regla se mantiene en su documento de referencia. [Comandos y workflow OpenSpec](docs/desarrollo.md).
 
 ### 2.4. Infraestructura y despliegue
 
-**Demo desplegada el 11/11/2026.** Un servicio Docker en Render Free sirve la SPA y la API bajo el mismo origen HTTPS. MongoDB Atlas Free conserva datos y sesiones en una base exclusiva de demo. Un buzón Mailpit autenticado captura las invitaciones y códigos ficticios. La generación de preguntas mediante IA sigue pendiente. [Configuración y verificación](docs/demo-publica.md).
+**Demo desplegada y verificada el 11/11/2026.** Render Free termina HTTPS y envía tráfico a Caddy en el contenedor. Caddy deriva la app/API a NestJS y `/buzon/` a Mailpit autenticado, con acceso web de lectura. NestJS sirve React compilado y la API; MongoDB Atlas Free conserva dominio y sesiones en una base exclusiva. Brevo entrega invitaciones/códigos al correo autorizado del revisor. [Configuración y verificación](docs/demo-publica.md).
 
 ```mermaid
 flowchart TD
   B["Navegador"] -->|HTTPS| P["Entrada TLS del hosting"]
-  subgraph APP["Servicio de aplicación"]
-    N["NestJS: API y archivos React"]
+  subgraph APP["Render Free: un contenedor Docker"]
+    G["Caddy: puerto 10000"]
+    N["NestJS: API y React, loopback 3001"]
+    S["Mailpit autenticado, loopback 8026"]
+    G -->|App y API| N
+    G -->|/buzon/: GET y HEAD| S
+    N -->|example.test: HTTP interno| S
   end
-  P --> N
-  N -->|Conexión autenticada| M[("MongoDB")]
-  N -->|Envío de códigos| S["SMTP"]
-  N -->|Contexto del puesto| I["Proveedor de IA"]
+  P --> G
+  N -->|TLS y usuario limitado a la base de demo| M[("MongoDB Atlas Free")]
+  N -->|HTTPS: invitación y código| E["Brevo transaccional"]
 ```
 
-**Proceso previsto:**
+**Proceso implementado:**
 
 1. Instalar las dependencias bloqueadas, comprobar tipos/lint y ejecutar las pruebas disponibles en CI.
 2. Compilar React y NestJS; empaquetar el backend junto con los archivos estáticos del frontend como una única versión desplegable.
-3. Configurar desde el entorno las conexiones de MongoDB, SMTP e IA, las claves de sesión/códigos y la URL pública. Ningún secreto se guarda en Git.
-4. Preparar la base de datos y sus índices mediante una tarea explícita. Crear la cuenta del recruiter y cargar solo el banco revisado; los datos ficticios de demostración se cargan por separado.
-5. Publicar el servicio detrás de HTTPS, restringir el acceso de red a MongoDB y comprobar el inicio de sesión y la entrega de códigos.
+3. Configurar en Render la conexión MongoDB, el secreto de sesión, las dos contraseñas de demo y Brevo (`MAIL_PROVIDER`, `BREVO_API_KEY`, `MAIL_FROM_EMAIL`). El origen se obtiene de Render o de `PUBLIC_ORIGIN`. [.env.example](.env.example) contiene nombres y ejemplos sin secretos; [la guía](docs/demo-publica.md#configurar-el-despliegue) distingue los entornos.
+4. El arranque ejecuta `deploy/seed-demo.mjs`, valida la base exclusiva de demo y los secretos, prepara índices y aprovisiona `revisor@example.test` y el banco revisado. Reiniciar no borra los screenings ni reemplaza una contraseña existente.
+5. Publicar detrás de HTTPS, restringir Atlas a los rangos de salida autorizados de Render y verificar `/api/health/ready`, login y correo. Los despliegues son manuales; el despliegue automático está desactivado.
 6. Ejecutar el flujo completo con un screening ficticio. Tras publicar configuraciones versionadas, un binario previo al soporte de versiones no es compatible con las nuevas invitaciones: corregir hacia adelante o restaurar una versión compatible, siguiendo [los límites de compatibilidad](docs/screening-versions.md). No realizar un rollback de datos improvisado.
 
-Para desarrollo se usan MongoDB y Mailpit local; T-05 envía la invitación inicial y, después de abrir el enlace, los códigos a su API HTTP de pruebas. El correo de prueba incluye un enlace de acceso de un uso; el enlace compartible sigue requiriendo el código del buzón de pruebas. La evaluación no depende del proveedor de IA y la creación manual sigue disponible si ese proveedor falla.
+Para desarrollo se usan MongoDB y Mailpit locales; invitaciones/códigos ficticios se capturan por su API HTTP. El enlace del correo permite un acceso de un uso; el enlace compartible requiere código. No existe aún un proveedor de sugerencias IA conectado; banco, autoría manual y evaluación funcionan sin él.
 
 Mailpit captura invitaciones y códigos ficticios en desarrollo y en el [buzón autenticado de la demo pública](docs/demo-publica.md). [Brevo](docs/correo-brevo.md) envía al correo personal del revisor, con recepción, códigos y recorrido público verificados el 11/11. La selección de proveedor/modelo de IA de T-04 sigue pendiente.
 
 ### 2.5. Seguridad
 
-Controles implementados de acceso, sesiones, CSRF, validación, conservación y límites; T-09 debe completar aviso/contacto y borrado operativo. HTTPS, proveedor real y operación de producción se verificarán al desplegar. La integración de IA sigue pendiente:
+Controles implementados de acceso, sesiones, CSRF, validación, conservación y límites. HTTPS y correo Brevo se verificaron en la demo pública; no se afirma operación de producción. T-09 sigue parcial y debe completar contacto/responsable y borrado operativo antes de un uso con postulantes reales. La integración de IA sigue pendiente:
 
 - **Autorización:** cada recruiter accede solo a sus screenings e invitaciones. Cada sesión de candidato accede a una invitación concreta; no acepta un identificador arbitrario para cambiar de candidato. Objetos ajenos se responden como no encontrados.
 - **Sesiones:** cookies `HttpOnly`, `Secure` en HTTPS y `SameSite=Lax`; identificador renovado al autenticar. Sesiones persistidas en MongoDB, cierre de sesión y expiración comprobada por servidor. Las mutaciones requieren token CSRF y validación de origen. NestJS advierte que el almacén en memoria por defecto no es adecuado para producción. [Referencia](https://docs.nestjs.com/techniques/session).
 - **Credenciales:** contraseñas con Argon2id; códigos generados criptográficamente, almacenados como HMAC con clave del servidor y vinculados al desafío/invitación; secretos fuera del repositorio. Los límites contra fuerza bruta se guardan por invitación y se complementan por IP. Consumo y verificación del código son atómicos. [Almacenamiento de contraseñas](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html), [principios para códigos y tokens](https://cheatsheetseries.owasp.org/cheatsheets/Forgot_Password_Cheat_Sheet.html).
 - **Minimización:** correo, nombre opcional y respuestas pertinentes. No se piden documentos de identidad, foto, fecha de nacimiento ni datos sensibles por defecto. Banco inicial sin criterios de características personales ajenas al puesto. La revisión humana debe verificar la pertinencia de preguntas propias o sugeridas.
-- **Transparencia:** aviso antes de responder con propósito, responsable/contacto configurado, acceso del recruiter y plazo de conservación. Identificar afirmaciones como declaraciones del candidato; no presentar niveles o competencias como certificados.
+- **Transparencia:** el aviso del candidato explica el uso académico, el acceso del recruiter, la conservación y el proveedor de correo cuando corresponde. Configurar el responsable/contacto operativo sigue pendiente de T-09. Las respuestas se identifican como declaraciones, no como competencias certificadas.
 - **Conservación:** invitaciones, respuestas, informe y revisión se eliminan a los 90 días desde la invitación en la demo. Consultas y autorización niegan acceso tras el plazo aunque la limpieza física esté pendiente. El borrado anticipado de invitaciones y limpieza de sesiones relacionadas sigue pendiente en T-09. No se incluye backup de datos personales en la demo; cualquier despliegue con backups deberá definir también su eliminación.
-- **IA limitada:** solo descripción del puesto, área y preguntas pertinentes del banco. No se envían identidades, respuestas ni informes de candidatos. La salida es una propuesta validada, sin herramientas para publicar o modificar datos. La descripción se trata como entrada no confiable. No se garantiza filtrado semántico perfecto: el recruiter revisa antes de publicar.
+- **Límite previsto para T-04, aún sin implementar:** solo descripción del puesto, área y preguntas pertinentes del banco; nunca identidades, respuestas o informes. La propuesta deberá validarse y revisarse sin capacidad de publicar ni modificar candidatos. Este diseño no acredita controles de un generador que todavía no existe.
 - **Operación:** HTTPS, validación de entradas y límites de tamaño; logs de errores sin respuestas, contraseñas, códigos ni cuerpos de solicitudes. Fixtures y demostración con datos ficticios.
 
 Estas son decisiones de diseño y buenas prácticas; no una declaración de certificación legal. El plazo propuesto no se presenta como obligación normativa.
 
 ### 2.6. Tests
 
-La suite actual usa `node:test` con pruebas puras y HTTP real sobre MongoDB/Mailpit aislados. La [verificación integrada](docs/entrega-2-verificacion-2026-10-04.md) separa las 64 pruebas automatizadas, el smoke y el recorrido manual en navegador. El recorrido manual no sustituye una suite E2E automatizada para la final.
+La suite actual usa `node:test` para cálculo puro, transporte de correo simulado e integración HTTP real sobre MongoDB/Mailpit aislados. Son **71 pruebas en seis suites**: persistencia 14, acceso 13, screenings 24, invitaciones 7, intento/evaluación 6 y correo 7. Además hay **dos E2E en Chromium**, con configuración Mailpit y Brevo; ambos usan destinatarios ficticios y no envían correo externo. La recepción real por Brevo se comprobó manualmente y se documenta aparte.
 
-| Nivel | Evidencia esperada para la entrega final |
+| Nivel | Evidencia actual |
 | --- | --- |
 | Unitario, node:test, implementado | Fórmula, precedencia, faltantes, redondeo y validación de configuración |
 | Integración, node:test + HTTP + MongoDB/Mailpit, implementado | Ownership, OTP/enlace de correo, versiones, expiración, conflictos, envío único, informes y decisiones; borrado anticipado pendiente |
 | Interfaz, navegador manual, disponible | Editor, persistencia, versión recibida, acceso, recuperación, revisión/envío, informe, decisión y móvil |
 | E2E automatizado, implementado | Crear/publicar → invitar → correo/código → responder/retomar/enviar → informe → revisión humana → cierre |
-| Calidad de IA | Casos de vacantes revisados por el autor: relevancia, fidelidad a requisitos, ausencia de preguntas improcedentes y recuperación ante fallos |
+| Calidad de sugerencias IA, pendiente de T-04 | No hay generador implementado ni resultados de evaluación de sus propuestas; los casos de calidad siguen previstos |
 
-CI configura instalación reproducible, tipos, lint, build, OpenSpec, cinco suites de producto, smoke y el [recorrido E2E con Chromium](docs/desarrollo.md#recorrido-e2e-en-navegador). El E2E usa una base aislada, datos ficticios y correos de prueba. No se impone un porcentaje de cobertura ajeno a los requisitos académicos.
+CI ejecuta instalación reproducible, tipos, lint, build, OpenSpec, las seis suites, smoke y el [recorrido E2E](docs/desarrollo.md#recorrido-e2e-en-navegador). [Evidencia final y CI](docs/entrega-final-verificacion-2026-11-11.md). Las 64 pruebas de los documentos del 04/10 y 19/10 corresponden al hito histórico de entrega 2.
+
+Para reproducir: [preparar infraestructura y credenciales locales](docs/desarrollo.md#preparar-y-ejecutar), ejecutar `npm run check`, las seis suites y `npm run smoke`; después instalar Chromium y ejecutar `npm run test:e2e`, según la guía. No se impone un porcentaje de cobertura ajeno a las pautas académicas.
 
 ## 3. Modelo de datos
 
@@ -274,6 +321,8 @@ Todos los documentos de dominio tienen `_id: ObjectId`, `createdAt: Date` y `upd
 | `invitations` | `screeningId`, `ownerId: ObjectId`; `configurationId?`, `configurationVersion?` (sin referencia resuelve v1 legacy); `publicId: string` aleatorio opaco único; `candidateEmail: string` normalizado; `candidateName: string?`; `status: invited/in_progress/submitted`; `expiresAt`, `purgeAt: Date`; `answerRevision: integer >= 0`; `answers: Answer[]`; `submittedAt: Date?`; `report: Report?`; `review: Review?`; `auth: objeto` con desafío, HMAC, expiración, fallos y límite horario; `emailAccess?` con resumen autenticado de token, vigencia y consumo |
 | `sessions` | Sesión del store: identificador opaco, principal recruiter/candidato, `userId` o `invitationId`, token CSRF y expiración. No guarda contraseñas, respuestas ni códigos |
 
+Las invitaciones incorporan además `emailDeliveryStatus: accepted/unconfirmed` para conservar el estado de aceptación del correo y recuperarlo al recargar. `accepted` no significa recepción o lectura; `unconfirmed` conserva la invitación cuando el proveedor pudo haberla aceptado sin devolver una respuesta concluyente. [Contrato de correo](docs/correo-brevo.md#comportamiento-del-producto).
+
 | Objeto | Atributos y reglas |
 | --- | --- |
 | `Question` | `id: string` único en screening; `bankQuestionId: ObjectId?`; `criterion`, `text: string` hasta 120/500; `type`; `required: boolean`; `scored: boolean`; `weight: integer 1–5` solo si puntúa; `options: {id,label,score?}[]`; `guidance: string?` (orientación copiada del banco, conservada en la pregunta); `exclusion: {acceptedOptionIds: string[]}?`. Opciones de pregunta puntuable llevan `score: integer 0–100` |
@@ -302,7 +351,7 @@ Errores comunes: `401` sesión ausente/expirada; `403` protección CSRF; `404` r
 
 ## 5. Historias de usuario
 
-Tres historias representativas. [HU-02, HU-05 y backlog completo](docs/backlog.md) complementan las cinco capacidades del MVP. P-01 a P-08 remiten al [contrato funcional](docs/producto.md).
+Tres historias representativas. [HU-02, HU-05 y backlog completo](docs/backlog.md) conservan el alcance original y su estado de implementación, incluida HU-02 pendiente. P-01 a P-08 remiten al [contrato funcional](docs/producto.md).
 
 ### HU-01 — Preparar y publicar
 
@@ -374,3 +423,5 @@ Tres tickets representativos: datos, backend y frontend. [Backlog y criterio de 
 La entrega 1 se presentó mediante `feature/entrega-1-LL` y el [PR académico #340](https://github.com/LIDR-academy/AI4Devs-finalproject/pull/340). La implementación avanza en `feature/entrega-2-LL`. [PR de integración #2 del fork](https://github.com/luislujan32/AI4Devs-finalproject/pull/2): flujo principal, espacio recruiter, versiones para futuras invitaciones y documentación consolidada. [Validación y pendientes](docs/entrega-2-verificacion-2026-10-04.md).
 
 [PR de cierre #3](https://github.com/luislujan32/AI4Devs-finalproject/pull/3): documentación/API reconciliadas y nueva verificación del 19/10. [Evidencia actual y pendientes de la final](docs/entrega-2-cierre-2026-10-19.md).
+
+[PR interno de preparación final #5](https://github.com/luislujan32/AI4Devs-finalproject/pull/5): dos E2E, imagen Docker, demo gratuita y correo Brevo; base `feature/entrega-2-LL`. Se encontraba en borrador, abierto y sin fusionar al contrastar las pautas el 11/11. El PR organiza el desarrollo del fork; la entrega académica se formaliza con la rama final y Typeform.

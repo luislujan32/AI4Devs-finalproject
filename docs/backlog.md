@@ -2,6 +2,18 @@
 
 [Volver al README](../readme.md). Las historias HU-01, HU-03 y HU-04 y los tres tickets representativos se documentan allí. Este anexo conserva las dos historias adicionales y la planificación completa.
 
+## Estado para el cierre final — 11/11/2026
+
+| Bloque | Estado verificado | Pendiente |
+| --- | --- | --- |
+| T-00/T-01/T-02/T-03 | Base, persistencia, acceso y configuración/publicación implementados | Validación con recruiters representativos |
+| T-05/T-06/T-07/T-08 | Invitación, respuestas, cálculo, informe, decisión y cierre implementados; correo real comprobado con Brevo | Evolución posterior del producto, sin presentarla como requisito de este checklist |
+| T-04 | Sin implementar; HU-02 y sus criterios se conservan | Decisión explícita: completarlo antes de entregar o aprobar su aplazamiento |
+| T-09 | Controles de acceso, avisos académicos, conservación y límites implementados; ticket parcial | Borrado anticipado, limpieza relacionada y responsable/contacto operativo antes de postulantes reales |
+| T-10 | 71 pruebas, dos E2E, CI y despliegue público con evidencia | Cierre integral condicionado a resolver el alcance pendiente, facilitar acceso del revisor, consolidar `final-project-LL` y enviar Typeform |
+
+La entrega 1 planteó cinco capacidades; cuatro están operativas. El checklist final admite 3–5 funcionalidades, pero esto no elimina por sí solo el compromiso de T-04 ni vuelve completo T-09. La decisión de alcance debe registrarse expresamente. [Guía del revisor](revision-final.md) · [Verificación final](entrega-final-verificacion-2026-11-11.md).
+
 ## HU-02 — Obtener sugerencias de IA
 
 **Como** recruiter, **quiero** propuestas relacionadas con el puesto y el área, **para** reducir el trabajo de redacción.
@@ -94,4 +106,4 @@ El [cierre y las comprobaciones actuales](entrega-2-cierre-2026-10-19.md) actual
 
 T-10 ya tiene 71 pruebas unitarias/de integración, dos E2E, CI correcto y despliegue gratuito Render/Atlas comprobado. Brevo está activo: se verificaron invitación real a un correo autorizado, códigos, guardado/reanudación, envío e informe, conservando respuestas ficticias. [Evidencia de entrega final](entrega-final-verificacion-2026-11-11.md) · [Correo real](correo-brevo.md).
 
-Faltan consolidar la rama académica y entregar las credenciales por el canal acordado, junto con el formulario. T-04 sigue sin implementar; T-09 sigue parcial, con borrado anticipado y gestión operativa de privacidad pendientes. El correo personal de revisión no habilita uso con postulantes reales. Los estados del 04/10 y 19/10 anteriores se conservan como registro histórico.
+Faltan resolver explícitamente el alcance de T-04, consolidar **`final-project-LL`**, entregar el acceso de aplicación por un canal privado y enviar Typeform. El buzón ficticio y su contraseña son opcionales para la revisión con correo propio. T-04 sigue sin implementar; T-09 sigue parcial, con borrado anticipado y gestión operativa de privacidad pendientes. El correo personal de revisión no habilita uso con postulantes reales. Los estados del 04/10 y 19/10 anteriores se conservan como registro histórico.

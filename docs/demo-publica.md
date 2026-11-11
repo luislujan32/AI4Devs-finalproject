@@ -2,7 +2,7 @@
 
 La demo usa una aplicación Docker en [Render Free](https://render.com/docs/free) y una base [MongoDB Atlas Free](https://www.mongodb.com/docs/atlas/tutorial/deploy-free-tier-cluster/). El contenedor sirve React, la API y un buzón de prueba en la misma URL. Los datos de producto persisten en Atlas. Brevo envía las invitaciones y códigos al correo personal autorizado del revisor; Mailpit captura únicamente direcciones ficticias.
 
-**Publicada y verificada el 11/11/2026:** [Screeningroom](https://screeningroom-ll-demo.onrender.com) · [buzón de pruebas](https://screeningroom-ll-demo.onrender.com/buzon/) · [estado y evidencia](entrega-final-verificacion-2026-11-11.md). Se verificaron acceso, conexión con Atlas y recorrido autenticado de los dos roles, incluido el cierre con resultados conservados.
+**Publicada y verificada el 11/11/2026:** [Screeningroom](https://screeningroom-ll-demo.onrender.com) · [guía rápida del revisor](revision-final.md) · [buzón de pruebas](https://screeningroom-ll-demo.onrender.com/buzon/) · [estado y evidencia](entrega-final-verificacion-2026-11-11.md). Se verificaron acceso, conexión con Atlas y recorrido autenticado de los dos roles, incluido el cierre con resultados conservados.
 
 El 11/11 también se activó y verificó [correo real con Brevo](correo-brevo.md), sin comprar un dominio. La guía de revisión siguiente usa este recorrido y conserva la alternativa ficticia con Mailpit.
 
@@ -19,6 +19,9 @@ El 11/11 también se activó y verificó [correo real con Brevo](correo-brevo.md
 | `SESSION_SECRET` | Secreto aleatorio, al menos 32 caracteres, estable entre despliegues |
 | `DEMO_RECRUITER_PASSWORD` | Contraseña aleatoria del revisor de la app, de 16 a 128 caracteres base64 o base64url |
 | `DEMO_MAIL_PASSWORD` | Otra contraseña aleatoria para el buzón, de 16 a 128 caracteres base64 o base64url |
+| `MAIL_PROVIDER` | `brevo` para habilitar correo real; `mailpit` para solo direcciones ficticias |
+| `BREVO_API_KEY` | Clave privada de API de Brevo, necesaria con proveedor `brevo` |
+| `MAIL_FROM_EMAIL` | Remitente verificado de Brevo, necesario con proveedor `brevo` |
 
 Generar cada secreto por separado con un gestor de contraseñas o con Node.js: `node -e "console.log(require('node:crypto').randomBytes(32).toString('base64url'))"`. Cargar los valores en el panel de Render. La aplicación usa el [origen HTTPS que provee Render](https://render.com/docs/environment-variables#all-runtimes). Si se configura `PUBLIC_ORIGIN` explícitamente, debe coincidir con el origen HTTPS sin barra final.
 
@@ -28,7 +31,7 @@ También se puede usar **Generate** en Render para los tres secretos. Guardar la
 
 ## Cómo probar como revisor
 
-Abrir [la aplicación](https://screeningroom-ll-demo.onrender.com). Compartir la contraseña de `revisor@example.test` por el canal de entrega acordado, sin publicarla en Git. Luis la guardó como `DEMO_RECRUITER_PASSWORD`. La contraseña opcional de Mailpit (`DEMO_MAIL_PASSWORD`, usuario `revisor`) solo hace falta para direcciones ficticias. No compartir credenciales de Atlas, Render, Brevo ni el secreto de sesión.
+Abrir [la aplicación](https://screeningroom-ll-demo.onrender.com). La [guía rápida](revision-final.md) reúne acciones y resultados esperados. Antes de enviar el formulario debe concretarse la entrega privada de la contraseña de `revisor@example.test`, sin publicarla en Git. Luis la guardó como `DEMO_RECRUITER_PASSWORD`. La contraseña opcional de Mailpit (`DEMO_MAIL_PASSWORD`, usuario `revisor`) solo hace falta para direcciones ficticias. No compartir credenciales de Atlas, Render, Brevo ni el secreto de sesión.
 
 1. Abrir la app e iniciar sesión como `revisor@example.test` con la contraseña de demo. Crear un screening de Tecnología, agregar una pregunta Sí/No y marcarla requerida y puntuable. Configurar Sí = 100, No = 0, peso 3 y umbral 70. Marcar Sí como única respuesta que cumple el requisito excluyente. Revisar y publicar.
 2. En **Postulantes**, invitar al propio correo personal usando un nombre ficticio. Leer el mensaje en la bandeja de correo (revisar spam si hace falta) y seguir el enlace. Funciona una sola vez; se puede usar una ventana privada para separar los roles. Para probar sin correo externo, usar una dirección nueva `@example.test` y abrir **/buzon/** con las credenciales opcionales.

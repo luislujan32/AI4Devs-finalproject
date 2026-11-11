@@ -2,9 +2,9 @@
 
 ## Estado
 
-[Demo pública](https://screeningroom-ll-demo.onrender.com) · [buzón de pruebas](https://screeningroom-ll-demo.onrender.com/buzon/) · [instrucciones para el revisor](demo-publica.md#cómo-probar-como-revisor).
+[Demo pública](https://screeningroom-ll-demo.onrender.com) · [guía rápida del revisor](revision-final.md) · [buzón de pruebas](https://screeningroom-ll-demo.onrender.com/buzon/) · [configuración y recorrido](demo-publica.md#cómo-probar-como-revisor).
 
-El código funcional, las pruebas y el despliegue están preparados. El recorrido público de los dos roles está verificado, incluido el cierre con resultados conservados tras recargar; se guardaron capturas del recibo, del informe y del estado cerrado. Faltan compartir las dos contraseñas de revisión y consolidar la rama de entrega. Este documento distingue la evidencia local y de CI de lo observado en la infraestructura pública.
+El código funcional, las pruebas y el despliegue están preparados. El recorrido público de los dos roles está verificado, incluido el cierre con resultados conservados tras recargar; se guardaron capturas del recibo, del informe y del estado cerrado. Faltan cerrar explícitamente el alcance de T-04, facilitar el acceso privado del revisor y consolidar `final-project-LL` antes del formulario. El buzón ficticio y su contraseña son opcionales para quien use su propio correo. Este documento distingue la evidencia local y de CI de lo observado en la infraestructura pública.
 
 ## Pruebas automatizadas
 
@@ -13,6 +13,20 @@ El código funcional, las pruebas y el despliegue están preparados. El recorrid
 - Dos E2E en Chromium, con configuración Mailpit y Brevo: creación/publicación, invitación, acceso por correo, guardado, salida y reanudación por código, envío, informe, decisión divergente con motivo y cierre con informe disponible. Usan bases aisladas y direcciones ficticias, sin enviar correo externo.
 - [GitHub Actions del commit desplegado `a77466a`](https://github.com/luislujan32/AI4Devs-finalproject/actions/runs/43016005051): completado correctamente, incluyendo E2E. Se fijó Ubuntu 22.04 para mantener compatibilidad del contenedor MongoDB utilizado en CI.
 - [GitHub Actions de la integración Brevo `bc84159`](https://github.com/luislujan32/AI4Devs-finalproject/actions/runs/43029389809): completado correctamente con las 71 pruebas, smoke y ambos E2E. El despliegue `d1c7e0a` incorpora esa implementación y documentación posterior.
+- [GitHub Actions del PR de preparación final, cabeza `9df7804`](https://github.com/luislujan32/AI4Devs-finalproject/actions/runs/43071011321): completado correctamente. El cierre documental posterior debe comprobarse por separado; no se atribuye esta ejecución a commits futuros.
+
+## Cierre documental y capturas locales del 11/11
+
+Al contrastar las pautas finales se actualizaron README, configuración de ejemplo, guías de revisión y selección de workflows de IA. `npm run check` pasó de nuevo: tipos, lint, compilación y 15 elementos OpenSpec válidos. Se verificaron los archivos y anclas de los enlaces relativos de los documentos editados y el formato del diff.
+
+Se volvió a ejecutar el recorrido Mailpit de los dos roles para generar cuatro capturas con una copia local del E2E existente, sin cambiar la suite versionada. Pasó creación/publicación, invitación, acceso, guardado/reanudación, envío, informe, decisión y cierre. La base temporal se limpió al terminar; los mensajes fueron ficticios. Este recorrido adicional de evidencia no aumenta el número de E2E de la suite ni sustituye la verificación pública descrita abajo. Las 71 pruebas tienen su evidencia de CI enlazada arriba; no se atribuye una nueva ejecución completa a este cambio documental.
+
+- [Dashboard](evidencias/entrega-final-dashboard-local-2026-11-11.png), escritorio 1280 × 1100.
+- [Revisión de configuración](evidencias/entrega-final-editor-local-2026-11-11.png), escritorio 1280 × 1100.
+- [Postulantes](evidencias/entrega-final-postulantes-local-2026-11-11.png), escritorio 1280 × 1100.
+- [Cuestionario](evidencias/entrega-final-cuestionario-local-2026-11-11.png), contenido completo con viewport móvil de 375 × 812.
+
+Las capturas se inspeccionaron visualmente. Se esperó al guardado y a la carga de la lista; las imágenes de escritorio usan viewport para evitar el artefacto de barras fijas en la captura de página completa. Las vistas del recibo/informe público siguientes siguen correspondiendo a sus recorridos originales.
 
 ## Despliegue público observado
 
@@ -49,9 +63,18 @@ Al retomar esta última comprobación, Render presentó su pantalla de arranque 
 
 ![Informe conservado tras cerrar y recargar](evidencias/entrega-final-informe-cerrado-2026-11-11.png)
 
+## Contraste con las pautas finales
+
+Se contrastaron el checklist final y el gráfico facilitados por Luis con la [plantilla oficial](https://github.com/LIDR-academy-temp/AI4Devs-finalproject/blob/main/readme.md), el repositorio, el CI y el despliegue. Corresponde la **opción A**, con código en el fork público propio. Las pautas exigen 3–5 funcionalidades, unitarios/integración y al menos un E2E; hay cuatro capacidades operativas, 71 pruebas y dos E2E. La URL pública y las capturas aportan evidencia; en esta modalidad el video es opcional.
+
+La documentación se reconcilia con el estado real: diagramas Render/Caddy/Atlas/Brevo/Mailpit, cifras actuales, estados de las cinco capacidades originales, variables de despliegue sin secretos y cinco workflows de IA seleccionados con el historial preservado. La generación IA no se presenta como implementada por haber empleado IA para construir el producto.
+
 ## Pendientes para cerrar la entrega
 
-- Compartir con el revisor las dos contraseñas guardadas por Luis y consolidar la rama `finalproject-LL` tras verificarla.
+- Resolver explícitamente el alcance de T-04, sin retirar silenciosamente una funcionalidad prometida en entrega 1. T-09 sigue parcial y sus límites permanecen visibles.
+- Facilitar al revisor la contraseña de `revisor@example.test` por un canal privado. La contraseña del buzón se necesita solo si se ofrece la alternativa con `example.test`.
+- Consolidar la rama **`final-project-LL`** desde el estado final verificado. Mantener `finalproject-LL` como alias anterior de entrega 2.
+- Enviar Typeform con el enlace directo de la rama y el correo del calendario de formación. No hace falta un PR al máster; el PR interno #5 organiza la integración del fork y no formaliza la entrega.
 
 ## Límites conocidos
 

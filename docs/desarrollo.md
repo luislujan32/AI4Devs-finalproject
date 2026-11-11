@@ -5,7 +5,7 @@
 
 ## Alcance actual
 
-El [cierre de entrega 2 del 19/10](entrega-2-cierre-2026-10-19.md) es la referencia de estado y comprobaciones actuales. Las secciones de evidencia por ticket conservan sus fechas originales.
+La [verificación final del 11/11](entrega-final-verificacion-2026-11-11.md) es la referencia actual: 71 pruebas unitarias/de integración, dos E2E y despliegue público con Brevo verificado. El [cierre de entrega 2 del 19/10](entrega-2-cierre-2026-10-19.md) y las secciones por ticket conservan sus resultados históricos.
 
 T-00 prepara la base del proyecto: React/Vite, NestJS/Express, MongoDB/Mongoose y npm workspaces. GET /api/health/ready comprueba disponibilidad real de la API y MongoDB. No implementa todavía el recorrido de screenings y no equivale a la entrega 2 completa.
 
@@ -58,6 +58,7 @@ npm run test:auth
 npm run test:screenings
 npm run test:candidate
 npm run test:attempt
+npm run test:mail
 npm run smoke
 ```
 
@@ -65,7 +66,7 @@ npm run smoke
 
 El contrato de indisponibilidad se comprueba también invocando el controlador real con una conexión aislada desconectada: debe devolver 503 sin URI. Esa comprobación aislada no demuestra por sí sola toda la recuperación HTTP ante una caída real del servidor.
 
-Las cinco suites prueban producto con bases aisladas; `smoke` verifica infraestructura. El navegador se verifica por separado: una suite HTTP no acredita apariencia ni E2E automatizado de interfaz. La configuración .github/workflows/check.yml reproduce las comprobaciones con MongoDB en CI. Un resultado local no acredita ejecución remota de CI.
+Las seis suites suman 71 pruebas: persistencia 14, acceso 13, screenings 24, invitaciones 7, intento/evaluación 6 y correo 7. Combinan cálculo/transporte simulados con HTTP y bases aisladas; `smoke` verifica infraestructura. El navegador se verifica por separado: una suite HTTP no acredita apariencia ni E2E de interfaz. `.github/workflows/check.yml` ejecuta estas comprobaciones y ambos E2E con MongoDB/Mailpit. [Resultados y ejecuciones remotas](entrega-final-verificacion-2026-11-11.md#pruebas-automatizadas).
 
 ### Recorrido E2E en navegador
 
@@ -77,7 +78,9 @@ npm exec -- playwright install chromium --only-shell
 npm run test:e2e
 ```
 
-Playwright inicia el build en un puerto libre, crea una base temporal y usa un recruiter y un postulante ficticios. El recorrido incluye publicación, invitación, apertura desde correo, guardado, reanudación con código, envío en vista móvil, informe, decisión humana y cierre. La prueba lee solo los mensajes de su destinatario aleatorio, elimina solo su base al terminar y deja intacta la demo de desarrollo. GitHub Actions instala Chromium y ejecuta el mismo recorrido.
+Playwright ejecuta dos E2E, uno con configuración Mailpit y otro con Brevo. Cada uno inicia el build en un puerto libre, crea una base temporal y usa un recruiter y un postulante ficticios. El recorrido incluye publicación, invitación, apertura desde correo, guardado, reanudación con código, envío en vista móvil de 375 × 812 px, informe, decisión humana y cierre. Los dos usan direcciones `example.test` y leen sus mensajes en Mailpit; no requieren una clave Brevo real ni envían correo externo. Cada prueba lee solo los mensajes de su destinatario aleatorio, elimina solo su base y deja intacta la demo de desarrollo. GitHub Actions instala Chromium y ejecuta los mismos recorridos.
+
+Si Chromium ya está instalado en el directorio del proyecto, puede usarse `PLAYWRIGHT_BROWSERS_PATH=.local/playwright npm run test:e2e` sin volver a descargarlo. La recepción real mediante Brevo se documenta como [evidencia manual independiente](correo-brevo.md#prueba-real-del-11112026).
 
 Para preparar la versión pública, consultar la [guía de la demo](demo-publica.md).
 
@@ -101,9 +104,9 @@ T-05 se especifica en `openspec/specs/candidate-access` y documenta [invitacione
 
 ## Ramas de trabajo
 
-Para probar correo: `npm run test:mail` usa Brevo simulado y una base local aislada. Las pruebas HTTP fuerzan Mailpit; los dos E2E verifican configuración Mailpit/Brevo con destinatarios `example.test`, sin correo externo. Si Chromium se instaló en el directorio del proyecto, ejecutar `PLAYWRIGHT_BROWSERS_PATH=.local/playwright npm run test:e2e`. [Activación del correo de revisión](correo-brevo.md).
-
 El remoto origin debe ser el fork luislujan32/AI4Devs-finalproject. Trabajar sobre feature/entrega-2-LL o una rama de tarea creada desde ella. Antes de publicar comprobar remoto, rama y cambios; antes de un PR confirmar que la base es feature/entrega-2-LL en el fork.
+
+La preparación final se realiza en `feature/entrega-final-demo-LL`. La rama académica solicitada por las pautas finales es **`final-project-LL`**; debe fijar el estado final verificado y compartirse mediante Typeform. `finalproject-LL`, sin el primer guion, es el alias de la entrega 2 y se conserva. Un PR de desarrollo no sustituye el formulario final.
 
 feature/entrega-1-LL conserva la documentación entregada. No fusionar su revert de T-00 hacia entrega 2: ese revert solo separó la documentación del desarrollo ya preservado. Borrar ramas temporales después de fusionarlas es normal; conservar las ramas estables de cada entrega. No publicar commits, PRs ni comentarios en el repositorio académico dentro del trabajo de desarrollo.
 
