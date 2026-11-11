@@ -4,7 +4,7 @@
 
 [Demo pública](https://screeningroom-ll-demo.onrender.com) · [buzón de pruebas](https://screeningroom-ll-demo.onrender.com/buzon/) · [instrucciones para el revisor](demo-publica.md#cómo-probar-como-revisor).
 
-El código funcional, las pruebas y el despliegue están preparados. Falta completar el recorrido público autenticado, conservar sus capturas, compartir las dos contraseñas de revisión y consolidar la rama de entrega. Este documento distingue la evidencia local y de CI de lo observado en la infraestructura pública.
+El código funcional, las pruebas y el despliegue están preparados. El recorrido público se verificó hasta el informe y la decisión humana, con capturas del recibo y de la evaluación. Falta comprobar públicamente el cierre, compartir las dos contraseñas de revisión y consolidar la rama de entrega. Este documento distingue la evidencia local y de CI de lo observado en la infraestructura pública.
 
 ## Pruebas automatizadas
 
@@ -25,12 +25,27 @@ El primer despliegue falló antes de configurar el acceso de red. Después de ac
 
 ![Acceso público de Screeningroom](evidencias/entrega-final-acceso-2026-11-11.png)
 
-## Pendiente de verificación pública
+## Recorrido público autenticado
 
-- Acceder a la app y al buzón con las credenciales de revisión.
-- Repetir el flujo de los dos roles en la URL pública, incluyendo retomar mediante código, envío, informe, decisión y cierre.
-- Conservar capturas del recibo y del informe sin enlaces de acceso ni secretos.
-- Entregar las contraseñas de la app y del buzón al revisor mediante el canal acordado y consolidar la rama `finalproject-LL` tras verificarla.
+Luis confirmó el acceso a la app y al buzón con las credenciales guardadas. Se realizó esta prueba manual en Brave sobre el despliegue `a77466a`:
+
+1. Crear **Soporte técnico · demo final** en Tecnología. Configurar una pregunta Sí/No sobre control de versiones, requerida, con peso 3, valores Sí = 100 y No = 0, requisito excluyente cumplido solo por Sí y umbral 70. El borrador se guardó y se publicó v1.
+2. Invitar a **Alex Demo**, `alex-final-1111@example.test`. El correo llegó al buzón autenticado y su enlace abrió el cuestionario sin pedir código; el token de un uso desapareció de la URL.
+3. Responder **No**, guardar y cerrar acceso. Pedir un código, leerlo en el buzón y retomar la misma respuesta guardada.
+4. Revisar las respuestas. El envío estaba deshabilitado antes de confirmar la revisión; al confirmar y enviar apareció el recibo, conservado tras recargar, sin acciones de edición.
+5. Recargar Postulantes: una respuesta recibida y una por revisar. Abrir el informe: **0/100**, umbral 70 y requisito excluyente incumplido, con la evidencia de la respuesta.
+6. Elegir **Continuar**. El formulario rechazó el motivo vacío. Registrar un motivo ficticio de experiencia equivalente y volver a la lista: decisión **Continuar**, criterios **No cumple**, cero por revisar. Reabrir el informe conservó decisión y motivo sin modificar el cálculo.
+
+![Recibo público tras recargar](evidencias/entrega-final-recibo-2026-11-11.png)
+
+![Informe y decisión independiente del cálculo](evidencias/entrega-final-informe-2026-11-11.png)
+
+![Evidencia del requisito y motivo de la decisión](evidencias/entrega-final-informe-detalle-2026-11-11.png)
+
+## Pendientes para cerrar la entrega
+
+- Confirmar el cierre del SC ficticio y comprobar que el informe sigue disponible tras recargar. El control automático del navegador solicitó autorización específica de Luis; no se ejecutó el cierre sin ella. Este paso sí está cubierto por el E2E local/CI.
+- Compartir con el revisor las dos contraseñas guardadas por Luis y consolidar la rama `finalproject-LL` tras verificarla.
 
 ## Límites conocidos
 
