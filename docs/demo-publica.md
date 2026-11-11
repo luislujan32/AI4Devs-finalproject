@@ -1,10 +1,10 @@
 # Demo pública para la entrega final
 
-La demo usa una aplicación Docker en [Render Free](https://render.com/docs/free) y una base [MongoDB Atlas Free](https://www.mongodb.com/docs/atlas/tutorial/deploy-free-tier-cluster/). El contenedor sirve React, la API y un buzón de prueba en la misma URL. Los datos de producto persisten en Atlas. Mailpit captura solo correos ficticios; se puede probar la invitación y el código sin un dominio ni un proveedor de correo externo.
+La demo usa una aplicación Docker en [Render Free](https://render.com/docs/free) y una base [MongoDB Atlas Free](https://www.mongodb.com/docs/atlas/tutorial/deploy-free-tier-cluster/). El contenedor sirve React, la API y un buzón de prueba en la misma URL. Los datos de producto persisten en Atlas. Brevo envía las invitaciones y códigos al correo personal autorizado del revisor; Mailpit captura únicamente direcciones ficticias.
 
 **Publicada y verificada el 11/11/2026:** [Screeningroom](https://screeningroom-ll-demo.onrender.com) · [buzón de pruebas](https://screeningroom-ll-demo.onrender.com/buzon/) · [estado y evidencia](entrega-final-verificacion-2026-11-11.md). Se verificaron acceso, conexión con Atlas y recorrido autenticado de los dos roles, incluido el cierre con resultados conservados.
 
-La guía siguiente describe el recorrido público ya comprobado con Mailpit. Luis aprobó después [correo real con Brevo](correo-brevo.md): la integración está probada localmente y requiere completar activación, secretos y verificación externa antes de habilitarla al revisor.
+El 11/11 también se activó y verificó [correo real con Brevo](correo-brevo.md), sin comprar un dominio. La guía de revisión siguiente usa este recorrido y conserva la alternativa ficticia con Mailpit.
 
 ## Configurar el despliegue
 
@@ -28,19 +28,22 @@ También se puede usar **Generate** en Render para los tres secretos. Guardar la
 
 ## Cómo probar como revisor
 
-Abrir [la aplicación](https://screeningroom-ll-demo.onrender.com). Compartir las dos contraseñas de revisión por el canal de entrega acordado, sin publicarlas en Git. Luis las guardó al configurar Render: `DEMO_RECRUITER_PASSWORD` corresponde a la app y `DEMO_MAIL_PASSWORD` al buzón. No compartir credenciales de Atlas, Render ni el secreto de sesión.
+Abrir [la aplicación](https://screeningroom-ll-demo.onrender.com). Compartir la contraseña de `revisor@example.test` por el canal de entrega acordado, sin publicarla en Git. Luis la guardó como `DEMO_RECRUITER_PASSWORD`. La contraseña opcional de Mailpit (`DEMO_MAIL_PASSWORD`, usuario `revisor`) solo hace falta para direcciones ficticias. No compartir credenciales de Atlas, Render, Brevo ni el secreto de sesión.
 
 1. Abrir la app e iniciar sesión como `revisor@example.test` con la contraseña de demo. Crear un screening de Tecnología, agregar una pregunta Sí/No y marcarla requerida y puntuable. Configurar Sí = 100, No = 0, peso 3 y umbral 70. Marcar Sí como única respuesta que cumple el requisito excluyente. Revisar y publicar.
-2. En **Postulantes**, enviar una invitación a un correo nuevo que termine en `@example.test`, por ejemplo `alex-demo-01@example.test`. Abrir **/buzon/** en la misma URL e ingresar con el usuario `revisor` y la contraseña del buzón. Abrir el correo y seguir el enlace. El enlace funciona una sola vez; se puede usar una ventana privada para separar los roles.
-3. Como postulante, elegir **No**, guardar avance y cerrar acceso. Pedir un código, leerlo en el buzón y retomar la respuesta. Revisar, confirmar y enviar; verificar el recibo.
+2. En **Postulantes**, invitar al propio correo personal usando un nombre ficticio. Leer el mensaje en la bandeja de correo (revisar spam si hace falta) y seguir el enlace. Funciona una sola vez; se puede usar una ventana privada para separar los roles. Para probar sin correo externo, usar una dirección nueva `@example.test` y abrir **/buzon/** con las credenciales opcionales.
+3. Como postulante, elegir **No**, guardar avance y cerrar acceso. Pedir un código, leerlo en el mismo correo y retomar la respuesta. Revisar, confirmar y enviar; verificar el recibo.
 4. Como reclutador, abrir el informe: muestra 0/100 y el requisito incumplido. Registrar **Continuar** con un motivo ficticio y comprobar que la decisión queda separada del resultado. Cerrar el SC y volver a abrir su informe.
 
 ## Comprobaciones y límites
 
-- El buzón solicita credenciales y el acceso web es de lectura. No se usan direcciones, nombres ni respuestas reales. La base y sus credenciales están aisladas del desarrollo local.
+- El buzón solicita credenciales y su acceso web es de lectura. Solo contiene mensajes ficticios; los correos personales se envían por Brevo. Usar únicamente una dirección propia o autorizada, con nombres y respuestas ficticios. La base y sus credenciales están aisladas del desarrollo local.
+- La app limita a 50 intentos externos por día UTC las invitaciones y códigos. La aceptación del proveedor no garantiza recepción en bandeja; el recorrido de recepción real fue confirmado con el correo autorizado de Luis. No se implementan webhooks de rebote/entrega.
 - Render Free duerme tras 15 minutos sin visitas. La primera carga puede demorar alrededor de un minuto. Un reinicio puede vaciar el buzón; se puede pedir un código nuevo y retomar el intento conservado en MongoDB.
 - Verificar el plan Free y los límites del workspace. Según [Render](https://render.com/docs/faq#all-of-my-services-run-on-free-instances-can-i-still-be-billed), sin método de pago el exceso de cuota suspende servicios o compilaciones. Si ya hay un método cargado, revisar los límites antes de desplegar.
 - Antes de entregar: probar la URL desde una ventana privada, verificar login HTTPS, buzón sin credenciales, invitación, código, envío e informe; capturar evidencia y actualizar los enlaces. La prueba del contenedor en local no acredita el despliegue público.
+
+**Ampliación con Brevo verificada, 11/11/2026:** se desplegó `d1c7e0a` y se envió la invitación al remitente expresamente autorizado por Luis. Confirmó recepción y enlace; Brevo registró entrega de invitación y códigos. Se comprobó guardar/salir/retomar con otro código real, envío, recibo tras recarga e informe 100/100 con datos ficticios. [Evidencia del correo real](correo-brevo.md#prueba-real-del-11112026).
 
 **Verificado en local, 06/11/2026:** 64 pruebas unitarias/de integración, smoke y un E2E en Chromium. La imagen Linux amd64 inició con 512 MiB y 0,5 CPU contra un MongoDB aislado. Se verificaron banco de 15 preguntas, cookies seguras y enlaces con origen HTTPS, invitación y código, acceso anónimo al buzón rechazado, escrituras públicas bloqueadas y apertura de un mensaje en Chromium con credenciales. El reinicio conservó el screening y la invitación en MongoDB.
 

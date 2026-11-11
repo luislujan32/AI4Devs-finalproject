@@ -8,10 +8,11 @@ El código funcional, las pruebas y el despliegue están preparados. El recorrid
 
 ## Pruebas automatizadas
 
-- 64 pruebas unitarias/de integración: persistencia 14, acceso 13, screenings 24, invitaciones 7 e intento/evaluación 6.
+- 71 pruebas unitarias/de integración: persistencia 14, acceso 13, screenings 24, invitaciones 7, intento/evaluación 6 y correo 7.
 - Smoke de la API y comprobaciones de tipos, lint, compilación y OpenSpec.
-- Un E2E en Chromium: creación/publicación, invitación, acceso por correo, guardado, salida y reanudación por código, envío, informe, decisión divergente con motivo y cierre con informe disponible. Usa una base aislada y datos ficticios.
+- Dos E2E en Chromium, con configuración Mailpit y Brevo: creación/publicación, invitación, acceso por correo, guardado, salida y reanudación por código, envío, informe, decisión divergente con motivo y cierre con informe disponible. Usan bases aisladas y direcciones ficticias, sin enviar correo externo.
 - [GitHub Actions del commit desplegado `a77466a`](https://github.com/luislujan32/AI4Devs-finalproject/actions/runs/43016005051): completado correctamente, incluyendo E2E. Se fijó Ubuntu 22.04 para mantener compatibilidad del contenedor MongoDB utilizado en CI.
+- [GitHub Actions de la integración Brevo `bc84159`](https://github.com/luislujan32/AI4Devs-finalproject/actions/runs/43029389809): completado correctamente con las 71 pruebas, smoke y ambos E2E. El despliegue `d1c7e0a` incorpora esa implementación y documentación posterior.
 
 ## Despliegue público observado
 
@@ -20,6 +21,7 @@ El código funcional, las pruebas y el despliegue están preparados. El recorrid
 - Acceso de red: `74.220.49.0/24` y `74.220.57.0/24`, mostrados por Render y autorizados expresamente por Luis. Ambas reglas quedaron activas; son rangos compartidos de Render, con autenticación de base obligatoria.
 - La aplicación mostró el formulario de acceso en su URL HTTPS. `/api/health/ready` devolvió `status: ready` y `database: connected`.
 - Luis creó el usuario de base e introdujo los secretos directamente en los paneles. No se incorporan a código, capturas públicas ni este documento.
+- Se actualizó después a `d1c7e0a` con Brevo configurado por Luis. Se verificó recepción real de invitación y códigos en el destinatario autorizado, reanudación, envío y un informe de 100/100. [Registro y capturas del correo real](correo-brevo.md#prueba-real-del-11112026).
 
 El primer despliegue falló antes de configurar el acceso de red. Después de activar ambos rangos se desplegó el mismo commit correctamente. La pantalla de espera de Render no se consideró evidencia de que la aplicación estuviera lista.
 
@@ -53,6 +55,6 @@ Al retomar esta última comprobación, Render presentó su pantalla de arranque 
 
 ## Límites conocidos
 
-Solo se admiten datos ficticios y correos `@example.test`. El buzón es compartido entre revisores y efímero; Atlas conserva los datos de producto. La instancia gratuita puede dormir y necesitar un arranque en frío. La prueba local del contenedor usó 0,5 CPU y 512 MiB; Render Free ofrece 0,1 CPU y 512 MiB, por lo que no se atribuye equivalencia de rendimiento.
+Se admiten correos personales autorizados para revisión mediante Brevo y `@example.test` mediante Mailpit; nombres y respuestas deben ser ficticios. El buzón de pruebas es compartido entre revisores y efímero; Atlas conserva los datos de producto. La instancia gratuita puede dormir y necesitar un arranque en frío. La prueba local del contenedor usó 0,5 CPU y 512 MiB; Render Free ofrece 0,1 CPU y 512 MiB, por lo que no se atribuye equivalencia de rendimiento.
 
-La generación de preguntas mediante IA (T-04), el borrado anticipado y la operación completa de privacidad (T-09) siguen pendientes. La creación manual y el banco están disponibles; la evaluación es determinista. El correo externo y el uso con postulantes reales quedan fuera de esta demo académica.
+La generación de preguntas mediante IA (T-04), el borrado anticipado y la operación completa de privacidad (T-09) siguen pendientes. La creación manual y el banco están disponibles; la evaluación es determinista. El correo externo sirve para revisión académica voluntaria; el uso con postulantes reales queda fuera de esta demo.

@@ -89,3 +89,9 @@ Próximo trabajo: concretar el contrato de T-04 y la integración del proveedor.
 ## Preparación de entrega 2 — 19/10/2026
 
 El [cierre y las comprobaciones actuales](entrega-2-cierre-2026-10-19.md) actualizan el registro histórico: documentación/API reconciliadas, 64 pruebas repetidas, smoke y recorrido principal en navegador con datos ficticios. El núcleo está preparado para este hito; la entrega formal requiere completar el formulario con la URL solicitada. T-04, borrado anticipado y preparación de despliegue/E2E automatizado mantienen su alcance para la final, sin presentarlos como terminados.
+
+## Preparación final — 11/11/2026
+
+T-10 ya tiene 71 pruebas unitarias/de integración, dos E2E, CI correcto y despliegue gratuito Render/Atlas comprobado. Brevo está activo: se verificaron invitación real a un correo autorizado, códigos, guardado/reanudación, envío e informe, conservando respuestas ficticias. [Evidencia de entrega final](entrega-final-verificacion-2026-11-11.md) · [Correo real](correo-brevo.md).
+
+Faltan consolidar la rama académica y entregar las credenciales por el canal acordado, junto con el formulario. T-04 sigue sin implementar; T-09 sigue parcial, con borrado anticipado y gestión operativa de privacidad pendientes. El correo personal de revisión no habilita uso con postulantes reales. Los estados del 04/10 y 19/10 anteriores se conservan como registro histórico.

@@ -10,9 +10,9 @@ Desarrollo en el fork; **feature/entrega-2-LL** es la rama de integración. [Gu�
 
 **Cómo probar:** [Instalación y pruebas locales](docs/desarrollo.md#preparar-y-ejecutar) · [Generar credenciales ficticias](docs/acceso.md#preparar-una-demo-local) · [Recorrido de revisión y despliegue](docs/demo-publica.md).
 
-**Correo real para el revisor:** [integración con Brevo](docs/correo-brevo.md) implementada y probada con transporte simulado; pendientes activación, configuración y prueba de recepción real. Hasta completarlas, la demo pública sigue usando Mailpit.
+**Correo real para el revisor:** [Brevo activado y verificado](docs/correo-brevo.md). Invitaciones y códigos llegan al correo personal autorizado; el recorrido se comprobó hasta el informe. Las direcciones `example.test` continúan usando el buzón de pruebas. Hay 71 pruebas unitarias/de integración y dos E2E automatizados, además de la verificación pública.
 
-La entrega 1 definió el MVP y su diseño. `feature/entrega-2-LL` integra invitaciones, formulario, evaluación, informes, revisión humana, cierre, [el rediseño recruiter](docs/recruiter-workspace-foundations.md) y [edición con versiones para nuevas invitaciones](docs/screening-versions.md). La [verificación integrada del 04/10](docs/entrega-2-verificacion-2026-10-04.md) registra el recorrido web/API/BD con cuentas ficticias, incluyendo versiones, reanudación, conflicto y cierre. El [cierre del 19/10](docs/entrega-2-cierre-2026-10-19.md) documenta las 64 pruebas unitarias/de integración. La preparación final incorpora además un E2E en Chromium y la demo pública; T-04/T-09 siguen pendientes. [Persistencia y sus límites](docs/datos.md) · [Acceso recruiter y demo](docs/acceso.md) · [Editor y banco](docs/screenings.md).
+La entrega 1 definió el MVP y su diseño. `feature/entrega-2-LL` integra invitaciones, formulario, evaluación, informes, revisión humana, cierre, [el rediseño recruiter](docs/recruiter-workspace-foundations.md) y [edición con versiones para nuevas invitaciones](docs/screening-versions.md). La [verificación integrada del 04/10](docs/entrega-2-verificacion-2026-10-04.md) registra el recorrido web/API/BD con cuentas ficticias, incluyendo versiones, reanudación, conflicto y cierre. El [cierre del 19/10](docs/entrega-2-cierre-2026-10-19.md) documenta las 64 pruebas unitarias/de integración de ese hito. La preparación final incorpora dos E2E en Chromium, siete pruebas de correo y la demo pública con Brevo; T-04/T-09 siguen pendientes. [Persistencia y sus límites](docs/datos.md) · [Acceso recruiter y demo](docs/acceso.md) · [Editor y banco](docs/screenings.md).
 
 ## Índice
 
@@ -45,7 +45,7 @@ Aplicación web de screening de candidatos. El recruiter prepara preguntas y cri
 
 [Abrir Screeningroom](https://screeningroom-ll-demo.onrender.com) · [Buzón de pruebas](https://screeningroom-ll-demo.onrender.com/buzon/).
 
-Acceso a la aplicación: **`revisor@example.test`**. Acceso al buzón: **`revisor`**. Son dos contraseñas distintas, conservadas por Luis para compartir por el canal de entrega; no se publican en Git. [Recorrido del revisor y límites de la demo](docs/demo-publica.md#cómo-probar-como-revisor). Render Free puede tardar alrededor de un minuto en despertar tras un período sin visitas. Usar únicamente datos ficticios y correos `@example.test`.
+Acceso a la aplicación: **`revisor@example.test`**, con la contraseña conservada por Luis para compartir por el canal de entrega. El revisor puede invitar a su correo personal y completar el cuestionario con datos ficticios. Para pruebas con `example.test`, el buzón opcional usa **`revisor`** y otra contraseña, también privada. [Recorrido del revisor y límites de la demo](docs/demo-publica.md#cómo-probar-como-revisor). Render Free puede tardar alrededor de un minuto en despertar tras un período sin visitas.
 
 ### 0.5. Repositorio
 
@@ -211,7 +211,7 @@ flowchart TD
 
 Para desarrollo se usan MongoDB y Mailpit local; T-05 envía la invitación inicial y, después de abrir el enlace, los códigos a su API HTTP de pruebas. El correo de prueba incluye un enlace de acceso de un uso; el enlace compartible sigue requiriendo el código del buzón de pruebas. La evaluación no depende del proveedor de IA y la creación manual sigue disponible si ese proveedor falla.
 
-Mailpit captura invitaciones y códigos ficticios en desarrollo y en el [buzón autenticado de la demo pública](docs/demo-publica.md). La integración opcional con [Brevo](docs/correo-brevo.md) admite correos personales para revisión académica; su activación y recepción externa están pendientes. La selección de proveedor/modelo de IA de T-04 sigue pendiente.
+Mailpit captura invitaciones y códigos ficticios en desarrollo y en el [buzón autenticado de la demo pública](docs/demo-publica.md). [Brevo](docs/correo-brevo.md) envía al correo personal del revisor, con recepción, códigos y recorrido público verificados el 11/11. La selección de proveedor/modelo de IA de T-04 sigue pendiente.
 
 ### 2.5. Seguridad
 

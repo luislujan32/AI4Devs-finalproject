@@ -1,6 +1,6 @@
 # Correo real para la revisión académica
 
-Luis aprobó Brevo para que otra persona reciba la invitación y los códigos en su correo, sin comprar un dominio. La integración está implementada y probada con transporte simulado. **Faltan la activación de la cuenta, la configuración en Render y la prueba de recepción real.** La demo pública verificada anteriormente sigue utilizando Mailpit hasta completar estos pasos.
+Luis aprobó Brevo para que otra persona reciba la invitación y los códigos en su correo, sin comprar un dominio. **Activado y verificado en público el 11/11/2026**, sobre el despliegue `d1c7e0a`. La recepción inicial y el funcionamiento del enlace fueron confirmados por Luis; también se comprobaron códigos reales, reanudación, envío e informe. Mailpit permanece para direcciones ficticias y pruebas automáticas.
 
 ## Configuración privada en Render
 
@@ -38,9 +38,21 @@ Esta es una revisión académica voluntaria: usar solo un correo propio o autori
 
 La interfaz recuerda el uso del correo y la conservación de hasta 90 días desde la invitación. T-09 continúa parcial: no se presenta esta integración como borrado anticipado completo, gestión de consentimiento de un servicio de selección ni preparación para postulantes reales. Los mensajes también quedan sujetos al almacenamiento y configuración de la cuenta Brevo.
 
-## Prueba real pendiente
+## Prueba real del 11/11/2026
 
-Con un destinatario expresamente autorizado: crear/publicar un SC de prueba, invitar, comprobar recepción y enlace HTTPS, abrir sin código, guardar/salir, pedir y recibir un código, retomar/enviar y consultar el informe. No incluir direcciones reales, códigos ni tokens en capturas o evidencia pública. Conservar la prueba académica previa de Mailpit por separado.
+Luis introdujo personalmente los secretos en Render y autorizó enviar la prueba al mismo correo del remitente verificado. Se desplegó `d1c7e0a` correctamente, sin cambiar plan ni credenciales anteriores. La clave se preparó con acceso restringido a Emails transaccionales y vencimiento de tres meses; no se leyó su valor.
+
+1. Se copió el SC ficticio anterior a **Validación de correo · demo Brevo**, se revisó y publicó v1, manteniendo independiente el informe del original.
+2. Se envió una invitación a la dirección autorizada, con nombre ficticio **Revisor Demo**. Brevo registró **Enviado/Entregado**. Luis confirmó que recibió el correo y abrió el enlace correctamente.
+3. Se abrió el enlace compartible en el navegador de pruebas y se solicitó un código. Brevo lo marcó entregado; la verificación abrió el cuestionario y la ayuda indicó bandeja/spam.
+4. Se respondió **Sí**, se guardó y se cerró acceso. Otro código real permitió recuperar la respuesta guardada. No se publicaron códigos ni enlaces de acceso en la evidencia.
+5. Se revisó y envió la respuesta. El recibo permaneció tras recargar. El informe del recruiter mostró **100/100**, umbral 70 y excluyente cumplido, con decisión humana todavía pendiente.
+
+El SC de esta prueba quedó publicado para revisión. La prueba anterior de Mailpit conserva su estado cerrado y la decisión independiente. La verificación del proveedor se limitó a los mensajes autorizados; una lectura que podía mostrar enlaces privados fue bloqueada y se sustituyó por consultas de estado y extracción privada del código sin imprimirlo.
+
+![Recibo de la prueba con correo real](evidencias/entrega-final-brevo-recibo-2026-11-11.png)
+
+![Informe del intento enviado](evidencias/entrega-final-brevo-informe-2026-11-11.png)
 
 ## Evidencia automatizada
 
@@ -48,4 +60,4 @@ Se incorporaron siete pruebas de correo: configuración, payload y escape HTML, 
 
 Dos E2E recorren el producto con configuración Mailpit y Brevo, usando siempre direcciones `example.test`; por ello no llaman al proveedor real. Comprueban las ayudas del formulario y el recorrido de guardar/salir/retomar/enviar/informe/decisión/cierre, con candidato a 375 × 812. El transporte HTTPS real se simula en la suite de correo; estas pruebas no acreditan recepción externa. Tipos, lint, compilación, OpenSpec y smoke también pasaron.
 
-[GitHub Actions del commit `bc84159`](https://github.com/luislujan32/AI4Devs-finalproject/actions/runs/43029389809) terminó correctamente, incluidas las 71 pruebas, smoke y ambos E2E. La activación y recepción real en el despliegue siguen pendientes. En Render se prepararon, sin guardar, `MAIL_PROVIDER=brevo` y los campos vacíos de clave/remitente para que Luis cargue sus valores personalmente; las variables existentes se conservaron.
+[GitHub Actions del commit de implementación `bc84159`](https://github.com/luislujan32/AI4Devs-finalproject/actions/runs/43029389809) terminó correctamente, incluidas las 71 pruebas, smoke y ambos E2E. El despliegue posterior `d1c7e0a` añadió documentación sin cambiar la implementación y fue el utilizado en la prueba real descrita arriba.

@@ -15,6 +15,7 @@ Luis aprobó usar Brevo sin comprar un dominio para que un revisor complete el r
 - `transactional-review-email`: invitaciones y códigos reales para revisión académica.
 
 ### Modified Capabilities
+- `candidate-access`: invitaciones y códigos mediante el transporte configurado, con estado de envío incierto persistido.
 - `public-academic-demo`: direcciones personales de revisión admitidas al activar correo externo, sin abandonar los escenarios ficticios de Mailpit.
 
 ## Impact

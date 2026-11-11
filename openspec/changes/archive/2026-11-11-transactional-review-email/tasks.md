@@ -7,4 +7,4 @@
 
 ## Public verification
 
-- [ ] Configurar cuenta/remitente y secretos con Luis, desplegar y verificar invitación/código en un correo autorizado.
+- [x] Configurar cuenta/remitente y secretos con Luis, desplegar y verificar invitación/código en un correo autorizado.
