@@ -13,12 +13,14 @@ La demo usa una aplicación Docker en [Render Free](https://render.com/docs/free
 | --- | --- |
 | `MONGODB_URI` | URI de Atlas con la base `screeningroom_demo_public` |
 | `SESSION_SECRET` | Secreto aleatorio, al menos 32 caracteres, estable entre despliegues |
-| `DEMO_RECRUITER_PASSWORD` | Contraseña aleatoria del revisor de la app, de 16 a 128 caracteres base64url |
-| `DEMO_MAIL_PASSWORD` | Otra contraseña aleatoria para el buzón, de 16 a 128 caracteres base64url |
+| `DEMO_RECRUITER_PASSWORD` | Contraseña aleatoria del revisor de la app, de 16 a 128 caracteres base64 o base64url |
+| `DEMO_MAIL_PASSWORD` | Otra contraseña aleatoria para el buzón, de 16 a 128 caracteres base64 o base64url |
 
 Generar cada secreto por separado con un gestor de contraseñas o con Node.js: `node -e "console.log(require('node:crypto').randomBytes(32).toString('base64url'))"`. Cargar los valores en el panel de Render. La aplicación usa el [origen HTTPS que provee Render](https://render.com/docs/environment-variables#all-runtimes). Si se configura `PUBLIC_ORIGIN` explícitamente, debe coincidir con el origen HTTPS sin barra final.
 
 El arranque crea `revisor@example.test` y carga las quince preguntas aprobadas. Al reiniciar se conservan cuenta y datos. Mantener la contraseña del recruiter mientras se reutilice esta base; el arranque detecta una contraseña distinta y no reemplaza la cuenta.
+
+También se puede usar **Generate** en Render para los tres secretos. Guardar las contraseñas de la app y del buzón para entregarlas al revisor. No volver a generarlas en una base ya aprovisionada. La contraseña del usuario de Atlas es otra credencial: se incorpora a `MONGODB_URI` y no se comparte con el revisor.
 
 ## Cómo probar como revisor
 

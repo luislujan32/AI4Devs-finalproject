@@ -15,8 +15,8 @@ async function seed() {
   if (origin.protocol !== 'https:' || origin.origin !== PUBLIC_ORIGIN ||
     !['mongodb:', 'mongodb+srv:'].includes(uri.protocol) || uri.pathname !== `/${database}` ||
     !SESSION_SECRET || SESSION_SECRET.length < 32 ||
-    !/^[A-Za-z0-9_-]{16,128}$/.test(DEMO_RECRUITER_PASSWORD ?? '') ||
-    !/^[A-Za-z0-9_-]{16,128}$/.test(DEMO_MAIL_PASSWORD ?? '') ||
+    !/^[A-Za-z0-9_+/=-]{16,128}$/.test(DEMO_RECRUITER_PASSWORD ?? '') ||
+    !/^[A-Za-z0-9_+/=-]{16,128}$/.test(DEMO_MAIL_PASSWORD ?? '') ||
     new Set([SESSION_SECRET, DEMO_RECRUITER_PASSWORD, DEMO_MAIL_PASSWORD]).size !== 3) {
     throw new Error('Configuración de demo inválida.');
   }
