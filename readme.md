@@ -4,6 +4,8 @@
 
 [Abrir la demo](https://screeningroom-ll-demo.onrender.com) · **[Guía rápida del revisor](docs/revision-final.md)** · [Pruebas y evidencia](docs/entrega-final-verificacion-2026-11-11.md) · [Registro de IA](prompts.md).
 
+> **La primera carga puede tardar alrededor de un minuto.** La demo usa [Render Free](https://render.com/docs/free#spinning-down-on-idle), que suspende la aplicación tras 15 minutos sin tráfico. Al volver a abrirla puede aparecer una pantalla de Render con aspecto de consola y mensajes en inglés mientras se inicia el servicio. Esperá un momento; si después de aproximadamente un minuto no aparece el acceso a Screeningroom, recargá la página.
+
 El flujo principal funciona de principio a fin: configurar/publicar → invitar por correo → responder/guardar/retomar/enviar → informe → decisión del recruiter → cierre con resultados conservados. La demo usa Render Free, MongoDB Atlas Free y correo Brevo, verificado con recepción real. Las direcciones ficticias `example.test` usan Mailpit. Hay **71 pruebas unitarias/de integración y dos E2E en Chromium**.
 
 **Alcance final confirmado por Luis el 11/11:** se entregan las cuatro capacidades operativas; las sugerencias de preguntas con IA (T-04) se aplazan explícitamente y permanecen en el backlog. T-09 sigue parcial: borrado anticipado y gestión operativa de privacidad. La [cuenta pública de revisión](#04-url-de-la-aplicación) está disponible desde el 12/11, separada de las pruebas privadas. Esta demo académica usa nombres y respuestas ficticios. El envío de Typeform corresponde a Luis.
@@ -41,6 +43,8 @@ Aplicación web de screening de candidatos. El recruiter prepara preguntas y cri
 
 [Abrir Screeningroom](https://screeningroom-ll-demo.onrender.com) · [Buzón de pruebas](https://screeningroom-ll-demo.onrender.com/buzon/).
 
+**Al entrar:** si aparece la pantalla de arranque de Render con mensajes en inglés, esperá alrededor de un minuto y recargá si todavía no aparece el formulario. Es el alojamiento gratuito reactivando la aplicación después de un período sin visitas.
+
 | Acceso público de demo | Valor |
 | --- | --- |
 | URL | https://screeningroom-ll-demo.onrender.com |
@@ -49,7 +53,7 @@ Aplicación web de screening de candidatos. El recruiter prepara preguntas y cri
 
 **Cuenta pública y compartida:** permite crear/editar screenings, invitar y registrar decisiones. Cualquier persona con este acceso puede ver o modificar lo que se cree en esa cuenta, incluidos los correos de invitados. Usar nombres y respuestas ficticios; para probar correo real, utilizar una dirección propia/autorizada de pruebas que se acepte compartir. No cargar datos de postulantes reales. Se conserva el límite de 50 intentos de correo externo por día UTC.
 
-Incluye **«Demo pública · Soporte técnico»**, un ejemplo publicado sin postulantes. Se puede crear otro SC para recorrer todas las acciones. La cuenta anterior `revisor@example.test`, sus pruebas y el buzón Mailpit conservan acceso privado. Para el recorrido con correo propio no hace falta entrar al buzón. [Pasos y resultados esperados](docs/revision-final.md) · [Alta y verificación del acceso público](docs/acceso-publico-demo-2026-11-12.md). Render Free puede tardar alrededor de un minuto en despertar tras un período sin visitas.
+Incluye **«Demo pública · Soporte técnico»**, un ejemplo publicado sin postulantes. Se puede crear otro SC para recorrer todas las acciones. La cuenta anterior `revisor@example.test`, sus pruebas y el buzón Mailpit conservan acceso privado. Para el recorrido con correo propio no hace falta entrar al buzón. [Pasos y resultados esperados](docs/revision-final.md) · [Alta y verificación del acceso público](docs/acceso-publico-demo-2026-11-12.md).
 
 ### 0.5. Repositorio
 
