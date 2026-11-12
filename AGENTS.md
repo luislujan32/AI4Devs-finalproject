@@ -22,7 +22,7 @@ Proyecto individual AI4Devs. Stack aprobado: React/Vite/TypeScript, NestJS/Expre
 - docs/candidatos-formulario.md: respuestas, evaluación, envío y UX del postulante de T-07/T-06.
 - docs/revision-final.md: acceso de revisión, recorrido de los dos roles y límites de la entrega final.
 
-Decisión expresa de Luis, 11/11/2026: T-04 (sugerencias de preguntas IA) se aplaza para después de la entrega final y permanece pendiente en HU-02/P-07. El hito entrega cuatro capacidades operativas; no reabrir ese alcance ni presentar el generador como disponible. T-09 sigue parcial y la demo usa nombres/respuestas ficticios. Luis facilitará la contraseña de la cuenta de revisión por el canal privado de la entrega.
+Decisión expresa de Luis, 11/11/2026: T-04 (sugerencias de preguntas IA) se aplaza para después de la entrega final y permanece pendiente en HU-02/P-07. El hito entrega cuatro capacidades operativas; no reabrir ese alcance ni presentar el generador como disponible. T-09 sigue parcial y la demo usa nombres/respuestas ficticios. El 12/11 Luis aprobó publicar una cuenta de demo separada, demo@example.test, con su contraseña deliberadamente pública en README/guía. Es la única excepción de credenciales públicas: la cuenta anterior y los secretos de infraestructura/buzón siguen privados. Advertir que los datos de esa cuenta, incluidos correos, son compartidos. Ver docs/acceso-publico-demo-2026-11-12.md.
 
 ## Repositorio y ramas
 

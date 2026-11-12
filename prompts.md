@@ -1,12 +1,12 @@
 # Registro de uso de IA — Screeningroom
 
-**Autor:** Luis Lujan (LL). **Etapas:** entrega 1 documental, desarrollo de entrega 2 y preparación de la final. **Actualización:** 11 de noviembre de 2026.
+**Autor:** Luis Lujan (LL). **Etapas:** entrega 1 documental, desarrollo de entrega 2 y preparación de la final. **Actualización:** 12 de noviembre de 2026.
 
 Este registro documenta cómo se utilizó la IA y qué decisiones tomó el autor. Los workflows son resúmenes del trabajo real; solo los fragmentos expresamente marcados como literales reproducen instrucciones de la conversación. No se inventan prompts de implementación ni resultados de pruebas de una aplicación aún no desarrollada.
 
 La selección siguiente reúne **cinco workflows representativos** de todo el proyecto. Después se conserva el historial de entrega 1 y los workflows de desarrollo/final para poder contrastar las decisiones y su evolución. Cada entrada histórica describe su momento; las posteriores registran sus resoluciones.
 
-**Alcance final confirmado, 11/11:** Luis aprobó aplazar T-04 (sugerencias de preguntas con IA) y conservarlo como pendiente. Se presentan las cuatro capacidades operativas, con código, pruebas, despliegue y evidencia. La rama académica es `final-project-LL`; Luis facilitará la contraseña de revisión por el canal privado. El envío de Typeform queda pendiente.
+**Alcance final confirmado, 11/11:** Luis aprobó aplazar T-04 (sugerencias de preguntas con IA) y conservarlo como pendiente. Se presentan las cuatro capacidades operativas, con código, pruebas, despliegue y evidencia. La rama académica es `final-project-LL`. **Actualización de acceso, 12/11:** aprobó crear una cuenta de demo separada y publicar su contraseña en README, sin revelar las credenciales anteriores ni de infraestructura. El envío de Typeform queda a su cargo.
 
 ## Herramientas, modelos y contexto — resumen actual
 
@@ -502,3 +502,13 @@ Por cada fase se añadirán las herramientas y modelos identificables, hasta tre
 **Verificación y publicación:** el paquete previo `ba4c2a2` pasó CI completo con 71 pruebas, smoke y dos E2E. Este cierre cambia solo documentos: se comprueban enlaces/anclas y diff, se guarda en el fork y se prepara `final-project-LL` desde el mismo estado, conservando `finalproject-LL` de entrega 2. Se distingue la rama académica del PR interno y del envío formal; la referencia remota y su CI se verifican al publicar.
 
 **Límites:** no se modifican código de producto, credenciales, datos de Atlas, configuración de Brevo ni despliegue; continúa la implementación pública ya comprobada. Typeform y la entrega efectiva de la contraseña quedan a cargo de Luis. No se convocaron nuevos agentes ni se atribuye un modelo exacto que no se obtuvo del selector.
+
+## Entrega final — Workflow 27: acceso público separado para el revisor
+
+**Entrada humana:** Luis informó que Typeform no ofrecía un campo para compartir la contraseña y pidió publicar URL, usuario y contraseña en README. Tras señalar que la cuenta anterior contenía la prueba con su correo real, eligió crear una cuenta pública separada. Inició sesión personalmente en Atlas cuando se lo solicitó el navegador.
+
+**Trabajo con IA:** se preparó `demo@example.test`, con una contraseña exclusivamente de demo destinada a publicación. Se usaron la función Argon2id del backend y `UserSchema` para validar el documento antes de crearlo mediante el explorador de datos de Atlas. No se leyeron contraseñas anteriores ni claves de servicios. Se conservó la cuenta anterior y se actualizó README, guía y contexto del agente con la excepción autorizada y los límites de una cuenta compartida.
+
+**Verificación:** login real por HTTPS, listado inicialmente vacío, acceso denegado al SC del usuario anterior y creación/publicación/recarga de un ejemplo ficticio sin postulantes. Se mantuvieron las reglas de scoring y no se enviaron nuevos correos externos. La conversión del editor Atlas de Extended JSON a ObjectId/ISODate se comprobó antes de insertar. El arranque en frío de Render se distinguió de un fallo de credenciales.
+
+**Resultado y límites:** acceso disponible sin un canal privado adicional; la contraseña se publica por autorización expresa como fixture de demo, no como secreto de infraestructura. Se advierte que otros usuarios de esa cuenta pueden ver/modificar sus datos y correos. Mailpit conserva credenciales privadas. No se modificaron código de aplicación, proveedor, red, planes ni tests; el aprovisionamiento fue operativo, no un nuevo módulo. [Registro de acceso](docs/acceso-publico-demo-2026-11-12.md). No se convocaron nuevos agentes ni se reconstruye un modelo no identificado por el selector.

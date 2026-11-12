@@ -5,16 +5,18 @@
 ## Acceso
 
 - **Aplicación:** https://screeningroom-ll-demo.onrender.com
-- **Recruiter de prueba:** `revisor@example.test`.
-- **Contraseña de la aplicación:** Luis confirmó que la facilitará por el canal privado de la entrega. Es la contraseña de demo guardada al configurar `DEMO_RECRUITER_PASSWORD`; no está publicada en Git. Antes de empezar la revisión, comprobar que se recibió ese acceso privado.
+- **Recruiter público de prueba:** `demo@example.test`.
+- **Contraseña pública de demo:** `ScreeningroomDemo2026`.
 - **Postulante:** no necesita una cuenta. Para probar el correo real, invitar a una dirección propia o expresamente autorizada y usar nombre/respuestas ficticios.
-- **Alternativa sin correo externo:** invitar a una dirección nueva `@example.test` y leerla en [el buzón de pruebas](https://screeningroom-ll-demo.onrender.com/buzon/), usuario `revisor`, con su contraseña independiente. Este acceso es opcional para el recorrido con correo propio.
+- **Alternativa con Mailpit:** las direcciones `@example.test` llegan al [buzón de pruebas](https://screeningroom-ll-demo.onrender.com/buzon/), cuyo acceso conserva Luis de forma privada. La contraseña pública de aplicación no abre ese buzón; el recorrido recomendado del revisor usa una dirección propia de pruebas.
 
-Si Render muestra que la aplicación está despertando, esperar alrededor de un minuto y recargar. Las contraseñas del revisor no son las credenciales de Atlas, Render o Brevo ni el secreto de sesión.
+**Cuenta compartida:** todos sus screenings, correos de invitados, respuestas y decisiones son visibles para otras personas que usen este acceso. Mantener nombres y respuestas ficticios; usar una dirección propia/autorizada de pruebas que se acepte compartir. La cuenta privada anterior y sus registros siguen separados. [Alta y verificación](acceso-publico-demo-2026-11-12.md).
+
+Si Render muestra que la aplicación está despertando, esperar alrededor de un minuto y recargar. La contraseña publicada sirve únicamente para esta cuenta de la app, no para Atlas, Render, Brevo ni el buzón privado.
 
 ## Recorrido principal y resultados esperados
 
-Usar un SC nuevo y una ventana privada para el candidato, manteniendo la sesión recruiter en la ventana principal. Así se evita mezclar los dos roles. El nombre y las respuestas deben ser ficticios aunque el correo sea propio.
+Hay un ejemplo publicado, **«Demo pública · Soporte técnico»**, sin postulantes al preparar el acceso. Para comprobar todas las acciones, usar un SC nuevo y una ventana privada para el candidato, manteniendo la sesión recruiter en la ventana principal. El nombre y las respuestas deben ser ficticios aunque el correo sea propio; la dirección de prueba será visible en la cuenta compartida.
 
 | Paso | Acción | Resultado esperado |
 | --- | --- | --- |
@@ -61,7 +63,7 @@ La demo sirve para revisión académica voluntaria, no para evaluar postulantes 
 
 El alcance queda confirmado con T-04 aplazado y T-09 parcial documentado. Código, README, prompts y evidencias se comparten en [**`final-project-LL`**](https://github.com/luislujan32/AI4Devs-finalproject/tree/final-project-LL); `finalproject-LL` conserva la entrega 2.
 
-1. Luis facilitará al revisor la contraseña de la aplicación por el canal privado de la entrega; la del buzón solo hace falta para la alternativa ficticia.
+1. El acceso público de aplicación ya está en el README y en esta guía; no requiere recibir una contraseña por otro canal. La cuenta privada y Mailpit mantienen sus credenciales reservadas.
 2. Enviar [Typeform](https://lidr.typeform.com/proyectoai4devs), seleccionando entrega final, pegando el enlace de `final-project-LL` y usando el correo del calendario de formación.
 
-El código se comparte desde el fork público propio. No se necesita un PR al repositorio del máster ni un video obligatorio para esta modalidad con URL pública y código accesible. La preparación de la rama no acredita el envío de Typeform ni la entrega efectiva de la contraseña privada.
+El código se comparte desde el fork público propio. No se necesita un PR al repositorio del máster ni un video obligatorio para esta modalidad con URL pública y código accesible. Preparar la rama y su acceso no acredita el envío de Typeform.

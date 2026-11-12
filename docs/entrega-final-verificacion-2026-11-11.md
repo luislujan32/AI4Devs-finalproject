@@ -4,7 +4,7 @@
 
 [Demo pública](https://screeningroom-ll-demo.onrender.com) · [guía rápida del revisor](revision-final.md) · [buzón de pruebas](https://screeningroom-ll-demo.onrender.com/buzon/) · [configuración y recorrido](demo-publica.md#cómo-probar-como-revisor).
 
-El código funcional, las pruebas y el despliegue están preparados. El recorrido público de los dos roles está verificado, incluido el cierre con resultados conservados tras recargar; se guardaron capturas del recibo, del informe y del estado cerrado. Luis aprobó aplazar T-04 para después de esta entrega y confirmó que compartirá la contraseña por el canal privado. La rama de entrega es [**`final-project-LL`**](https://github.com/luislujan32/AI4Devs-finalproject/tree/final-project-LL). Quedan el envío de Typeform y facilitar efectivamente la contraseña. El buzón ficticio es opcional para quien use su propio correo. Este documento distingue la evidencia local y de CI de lo observado en la infraestructura pública.
+El código funcional, las pruebas y el despliegue están preparados. El recorrido público de los dos roles está verificado, incluido el cierre con resultados conservados tras recargar. Luis aprobó aplazar T-04. **Actualización del 12/11:** autorizó una cuenta de demo pública separada; URL, usuario y contraseña ya se incluyen en README/guía. Se comprobaron login, separación de datos y un ejemplo publicado sin postulantes. [Registro del acceso público](acceso-publico-demo-2026-11-12.md). La rama de entrega es [**`final-project-LL`**](https://github.com/luislujan32/AI4Devs-finalproject/tree/final-project-LL); el envío de Typeform sigue a cargo de Luis. El buzón ficticio mantiene acceso privado. Este documento distingue la evidencia local, de CI y pública.
 
 ## Pruebas automatizadas
 
@@ -74,7 +74,7 @@ La documentación se reconcilia con el estado real: diagramas Render/Caddy/Atlas
 
 - **Resuelto por Luis:** T-04 se aplaza para después de la entrega y conserva HU-02/P-07 y sus criterios en el backlog. La diferencia respecto de entrega 1 queda explícita. T-09 sigue parcial y sus límites permanecen visibles.
 - **Rama académica:** **`final-project-LL`** contiene el paquete final; `finalproject-LL` conserva la entrega 2.
-- **Acceso privado:** Luis confirmó que facilitará al revisor la contraseña de `revisor@example.test` por el canal privado de la entrega. La del buzón solo se necesita para la alternativa con `example.test`. La confirmación de que se compartirá no acredita su recepción por el revisor.
+- **Acceso actualizado el 12/11:** cuenta pública independiente `demo@example.test`, con contraseña en README/guía, autorizada por Luis al no existir un campo para compartirla en Typeform. La cuenta anterior y Mailpit mantienen credenciales privadas. El acceso público ya está verificado; no queda una contraseña de app por enviar al revisor.
 - **Envío formal pendiente:** Typeform con el enlace directo de la rama y el correo del calendario de formación. No hace falta un PR al máster; el PR interno #5 organiza la integración del fork y no formaliza la entrega.
 
 ## Límites conocidos

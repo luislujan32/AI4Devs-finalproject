@@ -2,7 +2,7 @@
 
 [Volver al README](../readme.md). Las historias HU-01, HU-03 y HU-04 y los tres tickets representativos se documentan allí. Este anexo conserva las dos historias adicionales y la planificación completa.
 
-## Estado para el cierre final — 11/11/2026
+## Estado para el cierre final — actualizado el 12/11/2026
 
 | Bloque | Estado verificado | Pendiente |
 | --- | --- | --- |
@@ -10,7 +10,7 @@
 | T-05/T-06/T-07/T-08 | Invitación, respuestas, cálculo, informe, decisión y cierre implementados; correo real comprobado con Brevo | Evolución posterior del producto, sin presentarla como requisito de este checklist |
 | T-04 | Aplazado por Luis el 11/11; sin implementar | HU-02, P-07 y sus criterios se conservan para después de esta entrega |
 | T-09 | Controles de acceso, avisos académicos, conservación y límites implementados; ticket parcial | Borrado anticipado, limpieza relacionada y responsable/contacto operativo antes de postulantes reales |
-| T-10 | 71 pruebas, dos E2E, CI, despliegue público y documentación/evidencia de revisión preparados | Luis facilitará la contraseña por el canal privado y enviará Typeform con `final-project-LL` |
+| T-10 | 71 pruebas, dos E2E, CI, despliegue público, cuenta pública separada y documentación/evidencia preparados | Envío de Typeform por Luis con `final-project-LL` |
 
 La entrega 1 planteó cinco capacidades; cuatro están operativas. El checklist final admite 3–5 funcionalidades. El aplazamiento de T-04 fue aprobado expresamente, no deducido del mínimo académico; T-09 sigue parcial. [Guía del revisor](revision-final.md) · [Verificación final](entrega-final-verificacion-2026-11-11.md).
 
@@ -115,3 +115,7 @@ El [cierre y las comprobaciones actuales](entrega-2-cierre-2026-10-19.md) actual
 T-10 ya tiene 71 pruebas unitarias/de integración, dos E2E, CI correcto y despliegue gratuito Render/Atlas comprobado. Brevo está activo: se verificaron invitación real a un correo autorizado, códigos, guardado/reanudación, envío e informe, conservando respuestas ficticias. [Evidencia de entrega final](entrega-final-verificacion-2026-11-11.md) · [Correo real](correo-brevo.md).
 
 Luis aprobó aplazar T-04 y confirmó que compartirá la contraseña de aplicación por el canal privado. La rama de entrega es **`final-project-LL`**; queda el envío de Typeform y facilitar efectivamente esa contraseña. El buzón ficticio es opcional para la revisión con correo propio. T-09 sigue parcial, con borrado anticipado y gestión operativa de privacidad pendientes. El correo personal de revisión no habilita uso con postulantes reales. Los estados del 04/10 y 19/10 anteriores se conservan como registro histórico.
+
+## Acceso de revisión actualizado — 12/11/2026
+
+Typeform no ofreció un campo para compartir el acceso privado. Luis aprobó una cuenta de demo pública independiente: `demo@example.test`, con contraseña y URL en README/guía. Se verificaron login, separación de datos y creación/publicación de un SC de ejemplo sin postulantes. Las pruebas previas y los secretos de servicios permanecen privados. [Registro y límites del acceso compartido](acceso-publico-demo-2026-11-12.md). Esto reemplaza el pendiente de contraseña por otro canal; el envío del formulario sigue a cargo de Luis.

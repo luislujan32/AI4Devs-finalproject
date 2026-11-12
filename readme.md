@@ -1,12 +1,12 @@
 # Screeningroom — Proyecto final AI4Devs
 
-**Luis Lujan (LL) · Entrega final preparada, pendiente de envío · Actualización: 11 de noviembre de 2026.**
+**Luis Lujan (LL) · Entrega final preparada · Actualización: 12 de noviembre de 2026.**
 
 [Abrir la demo](https://screeningroom-ll-demo.onrender.com) · **[Guía rápida del revisor](docs/revision-final.md)** · [Pruebas y evidencia](docs/entrega-final-verificacion-2026-11-11.md) · [Registro de IA](prompts.md).
 
 El flujo principal funciona de principio a fin: configurar/publicar → invitar por correo → responder/guardar/retomar/enviar → informe → decisión del recruiter → cierre con resultados conservados. La demo usa Render Free, MongoDB Atlas Free y correo Brevo, verificado con recepción real. Las direcciones ficticias `example.test` usan Mailpit. Hay **71 pruebas unitarias/de integración y dos E2E en Chromium**.
 
-**Alcance final confirmado por Luis el 11/11:** se entregan las cuatro capacidades operativas; las sugerencias de preguntas con IA (T-04) se aplazan explícitamente y permanecen en el backlog. T-09 sigue parcial: borrado anticipado y gestión operativa de privacidad. Esta es una demo académica con nombres y respuestas ficticios. **Pendientes del envío:** Luis facilitará la contraseña de prueba por el canal privado de la entrega y enviará Typeform con la rama `final-project-LL`.
+**Alcance final confirmado por Luis el 11/11:** se entregan las cuatro capacidades operativas; las sugerencias de preguntas con IA (T-04) se aplazan explícitamente y permanecen en el backlog. T-09 sigue parcial: borrado anticipado y gestión operativa de privacidad. La [cuenta pública de revisión](#04-url-de-la-aplicación) está disponible desde el 12/11, separada de las pruebas privadas. Esta demo académica usa nombres y respuestas ficticios. El envío de Typeform corresponde a Luis.
 
 [Instalación local](docs/desarrollo.md#preparar-y-ejecutar) · [Índice de las 33 operaciones de API](docs/api.md) · [Harness y aprendizajes del máster](docs/harness.md). Las entregas anteriores y sus resultados se conservan como [historial de entrega 2](docs/entrega-2-cierre-2026-10-19.md).
 
@@ -41,7 +41,15 @@ Aplicación web de screening de candidatos. El recruiter prepara preguntas y cri
 
 [Abrir Screeningroom](https://screeningroom-ll-demo.onrender.com) · [Buzón de pruebas](https://screeningroom-ll-demo.onrender.com/buzon/).
 
-Acceso a la aplicación: **`revisor@example.test`**. Luis confirmó que facilitará la contraseña de demo al revisor por el canal privado de la entrega; no se publica en este repositorio. El revisor puede invitar a su propio correo y completar el cuestionario con nombre y respuestas ficticios; para este recorrido no necesita acceder a Mailpit. El buzón opcional para `example.test` usa **`revisor`** y otra contraseña privada. [Pasos y resultados esperados](docs/revision-final.md). Render Free puede tardar alrededor de un minuto en despertar tras un período sin visitas.
+| Acceso público de demo | Valor |
+| --- | --- |
+| URL | https://screeningroom-ll-demo.onrender.com |
+| Usuario | `demo@example.test` |
+| Contraseña | `ScreeningroomDemo2026` |
+
+**Cuenta pública y compartida:** permite crear/editar screenings, invitar y registrar decisiones. Cualquier persona con este acceso puede ver o modificar lo que se cree en esa cuenta, incluidos los correos de invitados. Usar nombres y respuestas ficticios; para probar correo real, utilizar una dirección propia/autorizada de pruebas que se acepte compartir. No cargar datos de postulantes reales. Se conserva el límite de 50 intentos de correo externo por día UTC.
+
+Incluye **«Demo pública · Soporte técnico»**, un ejemplo publicado sin postulantes. Se puede crear otro SC para recorrer todas las acciones. La cuenta anterior `revisor@example.test`, sus pruebas y el buzón Mailpit conservan acceso privado. Para el recorrido con correo propio no hace falta entrar al buzón. [Pasos y resultados esperados](docs/revision-final.md) · [Alta y verificación del acceso público](docs/acceso-publico-demo-2026-11-12.md). Render Free puede tardar alrededor de un minuto en despertar tras un período sin visitas.
 
 ### 0.5. Repositorio
 
