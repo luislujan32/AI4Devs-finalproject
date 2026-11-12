@@ -3,6 +3,7 @@ import { api, ApiError, type Session } from './api';
 import { RecruiterReport } from './RecruiterReport';
 
 type Invitation = { id: string; publicId: string; candidateEmail: string; candidateName: string | null;
+  emailDeliveryStatus: 'accepted' | 'unconfirmed';
   configurationVersion: number;
   status: 'invited' | 'in_progress' | 'submitted'; expiresAt: string; submittedAt: string | null;
   result: { outcome: 'meets' | 'not_meets' | 'needs_review'; score: number | null; threshold: number } | null;
@@ -33,8 +34,10 @@ export function Invitations({ screeningId, activeVersion, closed, session, onExp
   const [error, setError] = useState('');
   const [loadError, setLoadError] = useState('');
   const [notice, setNotice] = useState('');
+  const [noticeUncertain, setNoticeUncertain] = useState(false);
   const [copied, setCopied] = useState('');
   const [manualLink, setManualLink] = useState('');
+  const [mailDelivery, setMailDelivery] = useState<'mailpit' | 'email' | null>(null);
   const [reportId, setReportId] = useState(readReport);
 
   useEffect(() => { const change = () => setReportId(readReport()); window.addEventListener('hashchange', change);
@@ -49,8 +52,8 @@ export function Invitations({ screeningId, activeVersion, closed, session, onExp
     if (status) params.set('status', status);
     if (result) params.set('result', result);
     if (decision) params.set('decision', decision);
-    api<{ invitations: Invitation[]; total: number; summary: typeof summary }>(`/screenings/${screeningId}/invitations?${params}`, session)
-      .then((data) => { if (active) { setItems(data.invitations); setTotal(data.total); setSummary(data.summary); } })
+    api<{ invitations: Invitation[]; total: number; summary: typeof summary; mailDelivery: 'mailpit' | 'email' }>(`/screenings/${screeningId}/invitations?${params}`, session)
+      .then((data) => { if (active) { setItems(data.invitations); setTotal(data.total); setSummary(data.summary); setMailDelivery(data.mailDelivery); } })
       .catch((reason: unknown) => { if (!active) return; if (reason instanceof ApiError && reason.status === 401) onExpired();
         else { setItems([]); setTotal(0); setLoadError('No pudimos cargar los postulantes. Volvé a intentar.'); } })
       .finally(() => { if (active) setLoading(false); });
@@ -68,7 +71,10 @@ export function Invitations({ screeningId, activeVersion, closed, session, onExp
       const created = await api<Invitation>(`/screenings/${screeningId}/invitations`, session, 'POST',
         { candidateEmail: email, ...(name.trim() ? { candidateName: name.trim() } : {}) });
       setEmail(''); setName(''); setFormOpen(false); clearFilters(); setRefresh((value) => value + 1);
-      setNotice(`Invitación enviada a ${created.candidateEmail}.`);
+      setNoticeUncertain(created.emailDeliveryStatus === 'unconfirmed');
+      setNotice(created.emailDeliveryStatus === 'unconfirmed'
+        ? 'Invitación creada. No pudimos confirmar el envío del correo. Podés copiar el enlace desde la lista para compartirlo.'
+        : `Invitación enviada a ${created.candidateEmail}.`);
     } catch (reason) {
       if (reason instanceof ApiError && reason.status === 401) onExpired();
       else setError(`No se envió la invitación. ${reason instanceof Error ? reason.message : 'Volvé a intentar.'}`);
@@ -95,16 +101,18 @@ export function Invitations({ screeningId, activeVersion, closed, session, onExp
       <div className="invitation-form-heading"><h3>Nueva invitación</h3><p>El correo incluye un enlace personal para comenzar.</p></div>
       <div className="invitation-form-fields">
         <div className="field"><label htmlFor="candidate-email">Correo electrónico</label><input id="candidate-email" type="email" required
-          pattern=".+@(?:.+\.)?example\.test" placeholder="persona@example.test" autoComplete="off" maxLength={254} value={email}
+          pattern={mailDelivery === 'mailpit' ? '.+@(?:.+\\.)?example\\.test' : undefined}
+          placeholder={mailDelivery === 'email' ? 'nombre@correo.com' : 'persona@example.test'} disabled={!mailDelivery} autoComplete="off" maxLength={254} value={email}
           onChange={(event) => setEmail(event.target.value)} /></div>
         <div className="field"><label htmlFor="candidate-name">Nombre <span className="optional">(opcional)</span></label><input id="candidate-name"
           maxLength={120} value={name} onChange={(event) => setName(event.target.value)} placeholder="Por ejemplo, Alex" /></div>
       </div>
-      <p className="field-hint">En esta versión de prueba se usan direcciones @example.test. Consultá el mensaje en Mailpit local.</p>
-      <button type="submit" disabled={busy}>{busy ? 'Enviando…' : 'Enviar invitación'}</button>
+      <p className="field-hint">{mailDelivery === 'email' ? 'El mensaje llegará al correo indicado. Usá tu correo o el de alguien que haya aceptado probar la demo; completá el cuestionario con datos ficticios.'
+        : mailDelivery === 'mailpit' ? 'En esta versión de prueba se usan direcciones @example.test. Consultá el mensaje en el buzón de prueba.' : 'Cargando configuración de correo…'}</p>
+      <button type="submit" disabled={busy || !mailDelivery}>{busy ? 'Enviando…' : 'Enviar invitación'}</button>
     </form>}
     {error && <p className="inline-error" role="alert">{error}</p>}
-    {notice && <div className="invitation-notice" role="status"><span>{notice}</span><button className="text-action" type="button" onClick={() => setNotice('')} aria-label="Cerrar confirmación">Cerrar</button></div>}
+    {notice && <div className={`invitation-notice${noticeUncertain ? ' delivery-warning' : ''}`} role="status"><span>{notice}</span><button className="text-action" type="button" onClick={() => setNotice('')} aria-label="Cerrar confirmación">Cerrar</button></div>}
     <div className="candidate-list-header"><div><h3>Lista de postulantes</h3><p>{total} {total === 1 ? 'resultado' : 'resultados'}{queue ? ' por revisar' : ''}</p></div></div>
     <div className="candidate-filters"><div className="field"><label htmlFor="candidate-search">Buscar por nombre o correo</label><input id="candidate-search" type="search" maxLength={120}
       value={search} onChange={(event) => { setSearch(event.target.value); setNotice(''); }} placeholder="Buscar postulante" /></div>
@@ -132,6 +140,7 @@ export function Invitations({ screeningId, activeVersion, closed, session, onExp
           : new Date(item.expiresAt) > new Date() && <button className="icon-action" type="button" aria-label={`Copiar enlace de ${item.candidateName || item.candidateEmail}`}
             title="Copiar enlace" onClick={() => void copy(item)}><svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg></button>}</div>
         {copied === item.publicId && <p className="copy-confirmation" role="status">Enlace copiado</p>}
+        {item.emailDeliveryStatus === 'unconfirmed' && item.status !== 'submitted' && <p className="review-warning delivery-warning">Envío de correo sin confirmar. Podés compartir el enlace; la persona verificará su correo con un código.</p>}
         {manualLink === item.publicId && <div className="field manual-link"><label htmlFor={`link-${item.id}`}>Seleccioná y copiá el enlace</label>
           <input id={`link-${item.id}`} readOnly value={link(item.publicId)} onFocus={(event) => event.target.select()} /></div>}
       </li>)}</ul></> : !loadError && <div className="listing-empty">{search || queue || status || result || decision ? <><h3>No hay postulantes con estos filtros</h3><p>Probá otra búsqueda o limpiá los filtros.</p></>

@@ -20,7 +20,7 @@ const cookie = (response, name) => response.headers.getSetCookie().find((value) 
 const request = (path, options = {}) => fetch(`${origin}/api${path}`, options);
 async function start() {
   api = spawn(process.execPath, ['apps/api/dist/main.js'], { env: { ...process.env, MONGODB_URI: process.env.T02_TEST_URI, API_PORT: String(port),
-    SESSION_SECRET: secret, PUBLIC_ORIGIN: origin, NODE_ENV: 'test' }, stdio: 'ignore' });
+    SESSION_SECRET: secret, PUBLIC_ORIGIN: origin, NODE_ENV: 'test', MAIL_PROVIDER: 'mailpit' }, stdio: 'ignore' });
   for (let n = 0; n < 50; n++) {
     if (api.exitCode !== null) throw new Error('La API no pudo iniciar.');
     try { if ((await request('/health/ready')).ok) return; } catch { /* bounded startup */ }

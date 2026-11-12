@@ -2,6 +2,8 @@
 
 [Desarrollo local](desarrollo.md) · [Contrato del proyecto](../AGENTS.md).
 
+**Estado vigente, 11/11/2026:** el flujo principal tiene pruebas HTTP/MongoDB, dos E2E de los dos roles y evidencia pública con correo real. [Verificación final](entrega-final-verificacion-2026-11-11.md) · [Cinco workflows representativos de IA](../prompts.md#cinco-workflows-seleccionados). Las tablas y comprobaciones fechadas de este documento conservan el estado de cada etapa.
+
 ## Fuentes y autoridad
 
 Luis aportó el 27/09/2026 trece checkpoints: contexto base de agentes, S3 y su transición, SDD/OpenSpec y módulos 4 a 12. Se revisaron sus principios, conclusiones y secciones pertinentes para este proyecto. Este documento registra su aplicación selectiva; no sustituye los materiales del curso ni afirma una auditoría de todos sus ejercicios y referencias externas.
@@ -68,3 +70,17 @@ Las especificaciones vivas se sincronizan con los cambios implementados. La ampl
 ## Cierre documental del 19/10/2026
 
 El feedback de entrega 1 se contrastó con el producto implementado. Se reconciliaron versiones/copia, listas paginadas, errores HTTP y campos del informe; [api.md](api.md) reúne todas las rutas y se comprobó su correspondencia con los controladores. [El cierre](entrega-2-cierre-2026-10-19.md) registra nuevas regresiones y recorrido manual, manteniendo separados comportamiento, pruebas automatizadas, evidencia visual y entrega formal. El registro de modelos distingue selección declarada de Luis y modelos históricos no identificados. No se creó otro cambio OpenSpec para corregir documentación de capacidades ya implementadas ni se añadieron agentes a una verificación rutinaria.
+
+## Reconciliación de la entrega final — 11/11/2026
+
+El checklist final se contrastó con el código, CI, demo y documentos; no se consideró suficiente que una función apareciera descrita en la entrega 1. Se detectaron diagramas con integraciones aún previstas, cifras antiguas de tests y la diferencia entre `finalproject-LL` de entrega 2 y `final-project-LL` solicitada para la final. El cierre documental corrige esas diferencias y prepara [acciones y resultados verificables para el revisor](revision-final.md).
+
+La evidencia actual distingue 71 pruebas unitarias/de integración, dos E2E con correo ficticio y recepción real de Brevo comprobada manualmente. Los E2E no acreditan entrega externa; el despliegue local no acredita la URL pública; un PR interno no acredita el envío de Typeform. T-04 sigue pendiente y T-09 parcial: completar el mínimo académico no autoriza a borrar esos compromisos del historial.
+
+**Decisión posterior de Luis, 11/11:** se aprueba explícitamente aplazar T-04 y mantenerlo en el backlog para después de esta entrega. La documentación y el contexto del agente registran esa decisión sin alterar HU-02/P-07 ni fingir una integración. El hito académico se prepara en `final-project-LL`; Luis confirmó que facilitará la contraseña por el canal privado. Typeform y la entrega efectiva del acceso siguen siendo acciones distintas de preparar la rama.
+
+El aprendizaje de producto/UX de entrega 2 se mantiene en el protocolo: concretar estados y efectos antes del código, revisar por roles cuando cambian varias pantallas y recorrer confirmación, lista, reapertura y edición. OpenSpec y los agentes ayudan a ejecutar ese criterio, pero no sustituyen definirlo ni observar el producto. La edición documental de este cierre no requiere otra capacidad OpenSpec ni nuevos agentes.
+
+## Acceso público autorizado — 12/11/2026
+
+Al no existir un campo de contraseña en Typeform, Luis eligió publicar el acceso de una cuenta de demo separada. Se distinguió una credencial deliberadamente pública de los secretos de servicios y de la cuenta anterior, que contenía una prueba con correo real. Se validó el alta contra el esquema y luego en la app pública: login, listado vacío inicial, denegación del SC ajeno y creación/publicación de un ejemplo. [Registro operativo](acceso-publico-demo-2026-11-12.md). No se cambió código de producto ni se creó otra capacidad OpenSpec para este aprovisionamiento y su documentación.

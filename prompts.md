@@ -1,10 +1,74 @@
 # Registro de uso de IA — Screeningroom
 
-**Autor:** Luis Lujan (LL). **Etapas:** entrega 1 documental y desarrollo de entrega 2. **Actualización:** 19 de octubre de 2026.
+**Autor:** Luis Lujan (LL). **Etapas:** entrega 1 documental, desarrollo de entrega 2 y preparación de la final. **Actualización:** 12 de noviembre de 2026.
 
 Este registro documenta cómo se utilizó la IA y qué decisiones tomó el autor. Los workflows son resúmenes del trabajo real; solo los fragmentos expresamente marcados como literales reproducen instrucciones de la conversación. No se inventan prompts de implementación ni resultados de pruebas de una aplicación aún no desarrollada.
 
-Los apartados 1–7 conservan el registro histórico de la entrega 1. El trabajo local posterior se registra en los workflows de entrega 2 al final del documento. Cada workflow describe el estado de ese momento; los posteriores registran sus resoluciones.
+La selección siguiente reúne **cinco workflows representativos** de todo el proyecto. Después se conserva el historial de entrega 1 y los workflows de desarrollo/final para poder contrastar las decisiones y su evolución. Cada entrada histórica describe su momento; las posteriores registran sus resoluciones.
+
+**Alcance final confirmado, 11/11:** Luis aprobó aplazar T-04 (sugerencias de preguntas con IA) y conservarlo como pendiente. Se presentan las cuatro capacidades operativas, con código, pruebas, despliegue y evidencia. La rama académica es `final-project-LL`. **Actualización de acceso, 12/11:** aprobó crear una cuenta de demo separada y publicar su contraseña en README, sin revelar las credenciales anteriores ni de infraestructura. El envío de Typeform queda a su cargo.
+
+## Herramientas, modelos y contexto — resumen actual
+
+| Fase | Herramientas y uso real | Contexto y verificación |
+| --- | --- | --- |
+| Análisis y diseño | ChatGPT/Work; después Codex para contrastar contratos con código | Pautas del máster, decisiones de Luis, P-01–P-08, backlog, arquitectura y fuentes oficiales |
+| Implementación y refinamiento | Codex desktop; OpenSpec; revisores por rol de producto, UX y viabilidad | `AGENTS.md`, documentos pertinentes a cada cambio, especificaciones, código y capturas ficticias; decisiones humanas registradas |
+| Pruebas y correcciones | Codex, `node:test`, MongoDB/Mailpit, Playwright/Chromium y GitHub Actions | Cálculo puro, HTTP real, concurrencia, dos roles y candidato móvil; 71 pruebas y dos E2E en el estado final previo a este cierre documental |
+| Despliegue y revisión | Codex, navegador conectado, Docker/Caddy, Render, Atlas y Brevo | Infraestructura gratuita, configuración privada introducida por Luis y recorrido público con correo autorizado; [evidencia](docs/entrega-final-verificacion-2026-11-11.md) |
+
+**Modelos:** Luis declaró usar «GPT-6 Sol Extra High» antes del trabajo del postulante. Se conserva como selección declarada, no como prueba del modelo de todos los turnos. «Extra High» expresa el esfuerzo declarado; no se convierte en nombre de modelo de API. No hay identificación exacta verificable de todas las conversaciones ni de cada subagente, por lo que no se reconstruye por inferencia. Las sugerencias de IA dentro del producto (T-04) son otra capacidad y siguen sin implementar.
+
+## Cinco workflows seleccionados
+
+### 1. Análisis — reglas de evaluación y criterio humano
+
+- **Contexto:** requisitos del screening, pesos, umbral, excluyentes y necesidad de conservar fortalezas aunque una respuesta sea desfavorable.
+- **Herramienta/modelo:** ChatGPT/Work; identificación histórica exacta no registrada.
+- **Petición real resumida:** permitir completar todo el cuestionario y entregar al reclutador un informe que le permita decidir. Se conserva un fragmento literal en el historial de producto.
+- **Trabajo y resultado:** separar promedio ponderado, excluyentes, desconocidos y decisión humana; concretar P-01–P-08 y sus ejemplos. La evaluación quedó implementada como función pura determinista.
+- **Criterio humano:** Luis pidió pesos/excluyentes y que el recruiter pudiera continuar por otros aspectos favorables. Se exige motivo al continuar con resultado adverso o pendiente; no se modifica el informe calculado.
+- **Verificación:** [reglas y ejemplos](docs/producto.md), pruebas de `scripts/attempt.test.mjs` y [recorrido público con decisión divergente](docs/entrega-final-verificacion-2026-11-11.md#recorrido-público-autenticado).
+
+### 2. Arquitectura y contexto — un harness que acompañe la implementación
+
+- **Contexto:** entrega 1, checkpoints del máster y un producto individual con React, NestJS y MongoDB; evitar infraestructura y abstracciones innecesarias.
+- **Herramienta/modelo:** ChatGPT/Work y Codex; no se verificó una selección exacta para toda esta fase.
+- **Petición real resumida:** desarrollar desde lo documentado, utilizando OpenSpec como harness y aplicando lo aprendido en los módulos.
+- **Trabajo y resultado:** monolito modular, contratos de datos/API y `AGENTS.md`; OpenSpec registra propuestas, criterios y evidencia de capacidades. Se carga el contexto pertinente al cambio en lugar de depender únicamente del chat.
+- **Criterio humano:** Luis fijó el stack, el uso de cuentas ficticias y la publicación exclusiva en su fork. Se preservan los documentos históricos sin presentarlos como código ya implementado.
+- **Verificación:** [contrato de trabajo](AGENTS.md), [harness y aprendizajes](docs/harness.md), especificaciones vivas en `openspec/specs` y workflow 1–3 de entrega 2 más abajo.
+
+### 3. Producto y UX — aprender de los fallos del primer recorrido
+
+- **Contexto:** capturas y pruebas de Luis mostraron acciones ambiguas, estados poco visibles, guardado inconsistente y decisiones que no persistían visualmente al volver a la lista.
+- **Herramienta/modelo:** Codex, revisores por rol de producto/UX/viabilidad y navegador. La selección declarada por Luis se registra en el workflow 8; no se atribuye automáticamente a todos los revisores.
+- **Petición real resumida:** investigar patrones y mejorar el harness para que cada feature llegue con estados y efectos definidos, reduciendo decisiones pequeñas delegadas al usuario durante las pruebas.
+- **Trabajo y resultado:** separar configuración y postulantes, filtros/paginación, informes con criterios y decisión independientes, lectura de la decisión después de guardarla y edición explícita. El protocolo incorpora acción → confirmación → lista → reapertura → edición/cancelación.
+- **Criterio humano:** Luis corrigió la experiencia inicial y confirmó que las ediciones del SC afectan **solo a futuras invitaciones**. También eligió guía de puntuación sin valores automáticos del banco. Los contratos se actualizaron con esas decisiones.
+- **Verificación:** [protocolo de producto](docs/experiencia-producto.md), [auditoría UX](docs/ux-workspace-audit-2026-10-04.md), [versiones](docs/screening-versions.md) y workflows 15–20 del historial. La revisión asistida no sustituye validación con recruiters representativos.
+
+### 4. Pruebas — de evidencia manual a un recorrido repetible
+
+- **Contexto:** reglas sensibles a desconocidos, envíos concurrentes, control de propiedad y recuperación de avance; el recorrido manual no acreditaba E2E automático.
+- **Herramienta/modelo:** Codex, `node:test`, HTTP/MongoDB/Mailpit, Playwright y GitHub Actions; modelo exacto por ejecución no registrado.
+- **Petición real resumida:** preparar la entrega final con tests unitarios, integración y E2E, y contrastar los resultados antes de publicar.
+- **Trabajo y resultado:** seis suites con 71 pruebas y dos E2E de los dos roles; bases aisladas, mensajes ficticios, guardado/reanudación, envío único, informe, decisión divergente y cierre. Brevo se simula en los tests de transporte.
+- **Ajustes humanos/asistidos:** se acotó un selector ambiguo al resumen del puntaje; se fijó Ubuntu 22.04 por incompatibilidad del contenedor MongoDB con el kernel del runner más reciente. Luis probó el producto y aportó fallos reales de interacción; no se confundió aprobar una suite con comprobar la recepción de correo real.
+- **Verificación:** [comandos reproducibles](docs/desarrollo.md), [CI y resultados](docs/entrega-final-verificacion-2026-11-11.md#pruebas-automatizadas) y workflows 20–24. No se atribuyen porcentajes de cobertura no medidos.
+
+### 5. Despliegue — demo gratuita y correo real con configuración privada
+
+- **Contexto:** presupuesto sin servidor de pago, cuentas existentes de Render/Atlas y ausencia de dominio propio; el revisor debía poder usar su correo.
+- **Herramienta/modelo:** Codex, navegador conectado y documentación oficial de proveedores; modelo exacto por turno no verificado.
+- **Petición real resumida:** desplegar gratuitamente y sustituir el correo exclusivamente simulado por invitaciones/códigos que lleguen a la casilla del revisor.
+- **Trabajo y resultado:** un contenedor con Caddy/NestJS/React/Mailpit, Atlas Free y transporte HTTPS de Brevo. Los mensajes reales no se copian al buzón ficticio; un envío incierto no invalida automáticamente un enlace que pudo llegar.
+- **Criterio humano:** Luis introdujo los secretos, autorizó los rangos concretos de Atlas y los mensajes a su remitente, y confirmó recepción y enlace. Los nombres/respuestas siguieron siendo ficticios. Las capturas excluyen destinatario real, claves, códigos y enlaces de acceso.
+- **Verificación:** [demo y recorrido](docs/demo-publica.md), [correo recibido y reanudación comprobados](docs/correo-brevo.md#prueba-real-del-11112026) y workflows 22–24. La verificación externa es manual y se distingue de los mocks de CI.
+
+## Historial y trazabilidad
+
+Los apartados siguientes conservan las peticiones, resultados, errores y límites en orden histórico. Las expresiones «previsto» o «pendiente» deben leerse con la fecha de cada entrada; para el estado vigente consultar el [README](readme.md) y la [guía de revisión](docs/revision-final.md).
 
 ## Herramientas y alcance de la entrega 1 — registro histórico
 
@@ -20,7 +84,7 @@ Los apartados 1–7 conservan el registro histórico de la entrega 1. El trabajo
 
 **Skills y agentes:** se utilizó la habilidad de gestión de archivos de Work para conservar borradores y anexos. No se utilizaron subagentes, comandos personalizados ni un harness propio instalado en este repositorio. Codex está previsto como apoyo para la implementación; no se afirma haber ejecutado el proyecto en la máquina del autor.
 
-## Estado actual y modelos por fase — 19/10/2026
+## Estado al cerrar entrega 2 y modelos por fase — 19/10/2026, histórico
 
 La tabla anterior y los apartados 1–7 conservan la etapa documental. El desarrollo posterior sí utilizó Codex, AGENTS.md, OpenSpec, pruebas, CI y revisores por rol; los workflows de entrega 2 lo documentan. Las afirmaciones históricas sobre herramientas aún previstas no describen el estado actual.
 
@@ -30,7 +94,7 @@ La tabla anterior y los apartados 1–7 conservan la etapa documental. El desarr
 | Diseño | ChatGPT/Work y posteriormente Codex; arquitectura, OpenSpec, revisiones de producto/UX/viabilidad | Sin identificación exacta de cada conversación o subagente |
 | Implementación | Codex desktop, AGENTS.md y OpenSpec; workflows y commits de entrega 2 | Luis declaró usar «GPT-6 Sol Extra High» antes del trabajo del postulante (workflow 8). Es una selección declarada; no acredita que todos los turnos usaran ese modelo |
 | Pruebas | Codex, node:test, HTTP/MongoDB/Mailpit, smoke y navegador integrado | No se verificó el selector exacto por ejecución; evidencia técnica en los workflows |
-| CI y preparación de operación | Codex ayudó a configurar GitHub Actions y smoke; ejecuciones remotas enlazadas | No registrado por turno; despliegue público todavía pendiente |
+| CI y preparación de operación | Codex ayudó a configurar GitHub Actions y smoke; ejecuciones remotas enlazadas | No registrado por turno; despliegue público pendiente en ese hito, comprobado después en workflows 23–24 |
 | Mantenimiento | Codex, revisiones humanas, documentación viva y correcciones de UX | Identificación exacta no verificada por turno |
 
 «Extra High» se conserva como esfuerzo declarado por Luis, sin convertirlo en nombre de modelo de API. No se reconstruyen selecciones históricas por inferencia ni se atribuye el modelo del chat principal a los subagentes. En futuras sesiones se registrará modelo/esfuerzo cuando exista evidencia visible. El proveedor y modelo de las sugerencias dentro del producto son una decisión distinta y siguen pendientes de T-04.
@@ -378,3 +442,73 @@ Por cada fase se añadirán las herramientas y modelos identificables, hasta tre
 **Verificación:** tipos/lint/build/OpenSpec, 64 pruebas automatizadas y smoke con MongoDB/Mailpit locales y bases aisladas. Se contrastaron 33 rutas de controladores con el índice, sintaxis/referencias YAML y los esquemas con respuestas HTTP reales de publicación, informe y errores 401/422. Navegador: crear/configurar/recargar/publicar, invitación, acceso desde correo sin OTP, guardar/salir/retomar con OTP, envío por teclado y recibo tras recarga, informe, decisión divergente con motivo, regreso/reapertura y cierre. Captura móvil del recibo a 375 × 812 efectivos sin desbordamiento; se usó captura de viewport para evitar el artefacto de la captura de página completa detectado anteriormente. [Evidencia y límites](docs/entrega-2-cierre-2026-10-19.md).
 
 **Límites y publicación:** no se modificó el código del producto, no se enviaron correos externos ni se usaron datos reales. La automatización de navegador para CI sigue pendiente. No se completó el formulario académico ni se publicó en el repositorio original. [PR de cierre #3 del fork](https://github.com/luislujan32/AI4Devs-finalproject/pull/3), con base entrega 2. Sus checks registran CI por separado de las pruebas locales. No se convocaron nuevos subagentes.
+
+## Entrega final — Workflow 22: E2E y demo sin servidor de pago
+
+**Entrada humana:** Luis autorizó avanzar con la automatización y preguntó cómo publicar la app y la base sin pagar infraestructura.
+
+**Trabajo con IA:** Codex contrastó la documentación oficial de Playwright, Render, MongoDB Atlas y Mailpit con el código existente. Se especificó con OpenSpec una demo ficticia con Render Free, Atlas Free y buzón autenticado. Se automatizó el recorrido de los dos roles con una API compilada, MongoDB aislado y correo de prueba; el navegador selecciona acciones y campos por su texto o nombre accesible. Se agregó a GitHub Actions.
+
+**Ajustes y evidencia:** una primera corrida llegó al informe y mostró que dos elementos contienen el mismo puntaje; se acotó la comprobación al resumen global. Pasaron el recorrido completo, las 64 pruebas existentes y el smoke. En un contenedor Linux amd64 limitado a 512 MiB y 0,5 CPU se comprobaron el arranque, la lectura protegida del correo, el enlace y código de acceso, y la persistencia tras reiniciar. [Guía y límites de la demo](docs/demo-publica.md).
+
+**Límites:** despliegue externo y evidencia pública pendientes. Solo se usaron datos ficticios y no se contrató infraestructura. El modelo exacto de este turno no se obtuvo del selector.
+
+## Entrega final — Workflow 23: publicación de la demo gratuita
+
+**Entrada humana:** Luis confirmó que tenía cuentas de Render y Atlas, pidió realizar la configuración en el navegador y completó personalmente el usuario de base y los secretos de Render. Autorizó expresamente los rangos `74.220.49.0/24` y `74.220.57.0/24` que Render mostraba para conectar la aplicación con Atlas.
+
+**Trabajo con IA:** Codex utilizó el navegador conectado para preparar un proyecto/clúster Atlas Free independiente, un usuario limitado a la base de demo y un servicio Docker Render Free desde el fork. Se mantuvo el coste de los planes en $0, sin disco de pago, y se desactivó el despliegue automático. Las contraseñas fueron introducidas por Luis y no se recuperaron ni registraron. Se ajustó la validación del aprovisionamiento para aceptar los secretos generados por Render. CI se fijó en Ubuntu 22.04 tras detectar un problema de compatibilidad del kernel usado por MongoDB en el runner más reciente.
+
+**Evidencia pública, 11/11/2026:** el primer arranque falló antes de habilitar la red de Atlas; tras activar los dos rangos autorizados, el mismo commit `a77466a` se desplegó correctamente. La URL pública mostró la página de acceso bajo HTTPS y la disponibilidad devolvió `status: ready` y `database: connected`. [Registro de la verificación](docs/entrega-final-verificacion-2026-11-11.md). GitHub Actions del commit desplegado pasó, incluyendo el E2E.
+
+**Verificación pública posterior al acceso:** Luis ingresó a la app y al buzón. En Brave se creó y publicó un SC ficticio con puntaje y excluyente; se recibió la invitación y se abrió sin código; se guardó, cerró acceso y retomó por código; se enviaron las respuestas y se recargó el recibo. El informe mostró 0/100 y el requisito incumplido. Se comprobó el motivo obligatorio al elegir continuar y la persistencia de la decisión en lista e informe. Se conservaron capturas sin tokens ni contraseñas.
+
+**Cierre público:** el control automático del navegador pidió autorización específica para cerrar el SC de prueba. Luis la otorgó y se ejecutó el cierre. Tras recargar se conservaron el estado cerrado, el informe, la decisión y el motivo; Postulantes dejó de ofrecer nuevas invitaciones y permitió reabrir el informe. Durante esta comprobación se observó un arranque en frío de Render: se esperó a recuperar la aplicación y se verificó el estado antes de repetir la solicitud. La sesión y los datos persistieron. No se usaron datos reales ni se publicó en el repositorio original del máster.
+
+## Entrega final — Workflow 24: correo de revisión con Brevo
+
+**Entrada humana:** Luis pidió que el revisor pudiera recibir invitación y códigos en su correo personal. Confirmó que no tiene dominio y aprobó Brevo después de contrastar la restricción de Resend. Indicó que ya tenía cuenta Brevo.
+
+**Trabajo con IA:** Codex revisó código, fuentes oficiales de Brevo/Render y el contrato de experiencia antes de abrir `transactional-review-email`. Se agregó un transporte HTTPS explícito, validación al iniciar y compatibilidad con las invitaciones ficticias previas. Las direcciones reales no se copian al buzón compartido. Se conservan invitaciones con envío incierto y se muestra ese estado al volver/recargar. MongoDB limita los intentos externos por día; la UI adapta ayudas y recuerda el carácter académico y ficticio de las respuestas. No se envían informes ni respuestas al proveedor ni se crean campañas.
+
+**Verificación local:** 71 pruebas unitarias/de integración, dos E2E con candidato móvil, tipos/lint/build/OpenSpec y smoke. El transporte Brevo se simuló y no se enviaron correos externos. La primera suite candidata señaló la proyección cerrada del recibo de código; se actualizó para permitir únicamente el nuevo modo de entrega junto a estado/espera. Los E2E necesitaron apuntar al navegador de pruebas ya instalado en `.local/playwright`. [Contrato, evidencia y límites](docs/correo-brevo.md).
+
+**Configuración externa pendiente:** el navegador mostró remitente Screeningroom verificado y una solicitud de verificar teléfono antes de enviar mensajes. Las claves deben generarse e introducirse por Luis directamente en los paneles; no se leen ni guardan en el repositorio. Activación, despliegue y recepción real no se presentan como comprobados por los tests simulados. La preparación se publica únicamente en el fork.
+
+**CI y preparación:** GitHub Actions de `bc84159` pasó las 71 pruebas, checks, smoke y ambos E2E. Se dejó el diálogo de verificación telefónica en Brevo y se prepararon en Render, sin guardar, el proveedor y los campos nuevos de clave/remitente. No se revelaron los secretos existentes ni se generó una clave en nombre de Luis.
+
+**Activación y evidencia pública, 11/11:** Luis guardó las variables, generó la clave personalmente y autorizó mensajes de prueba a su remitente. Se preparó el formulario de clave con permisos restringidos a correo transaccional y vencimiento de tres meses. Render desplegó `d1c7e0a` correctamente. La invitación llegó y Luis confirmó que su enlace funcionó. Brevo registró entrega de invitación y dos códigos; se verificó acceso, guardado, cierre de sesión, reanudación con la misma respuesta, envío, recibo tras recarga e informe 100/100 con nombre/respuesta ficticios. Las capturas públicas omiten dirección real, claves, códigos y enlaces de acceso. Una lectura de logs que podía imprimir enlaces privados fue rechazada automáticamente; se corrigió la consulta para mostrar solo estados y utilizar el código sin imprimirlo. [Evidencia y límites](docs/correo-brevo.md). No se publicaron secretos ni cambios en el repositorio del máster.
+
+**Consolidación de contratos:** tras completar la verificación pública se archivaron `public-academic-demo` y `transactional-review-email` y se sincronizaron sus especificaciones vivas. También se actualizó el contrato anterior de acceso del candidato para reflejar ambos transportes y los envíos inciertos, conservando los límites de sesión/código. No se cambió código del producto en este cierre documental.
+
+## Entrega final — Workflow 25: contraste con el checklist y paquete del revisor
+
+**Entrada humana:** Luis compartió el documento final del máster y su gráfico de entrega. Pidió contrastarlos con lo construido y después autorizó avanzar con el cierre propuesto.
+
+**Trabajo con IA:** Codex contrastó instrucciones, plantilla oficial, código, CI, despliegue y documentos. Se identificaron T-04 anunciado sin implementar, diagramas de integraciones previstas, cifras antiguas de pruebas y el nombre de rama distinto al pedido final. Se prepararon README fiel al estado, una guía de revisión con acciones/resultados, variables de ejemplo sin secretos y esta selección de cinco workflows. El historial de entrega 1/2 se conservó. No se creó otra capacidad OpenSpec para cambios documentales.
+
+**Criterio y límites:** el requisito de 3–5 funcionalidades no se usó para retirar silenciosamente T-04 del compromiso original. Se consultó a Luis la decisión entre implementarlo o aplazarlo; mientras se espera, permanece identificado como pendiente. T-09 sigue parcial. La contraseña de demo debe facilitarse por un canal privado y no se leyeron los secretos de Render/Brevo/Atlas.
+
+**Verificación:** `npm run check` correcto, enlaces relativos/anclas y diff comprobados. Se generaron capturas de dashboard, revisión, postulantes y cuestionario móvil recorriendo una base local aislada con una copia del E2E existente. La inspección visual detectó una lista aún cargando y una barra fija que se veía mal en captura de página completa; se esperó la carga/guardado y se usaron capturas de viewport en escritorio. El recorrido final pasó sin cambiar el producto ni las suites versionadas. [Entornos y evidencia](docs/entrega-final-verificacion-2026-11-11.md#cierre-documental-y-capturas-locales-del-1111).
+
+**Estado:** preparación en el fork; consolidación de `final-project-LL`, acceso privado del revisor y Typeform todavía pendientes. El modelo exacto de este turno no se obtuvo del selector y no se atribuye por inferencia. No se convocaron nuevos agentes para esta reconciliación documental.
+
+## Entrega final — Workflow 26: alcance aprobado y rama académica
+
+**Decisiones humanas:** Luis eligió «Aplazar T-04 y documentarlo como pendiente» y confirmó que compartirá la contraseña de `revisor@example.test` por el canal privado de la entrega. No la envió al chat ni al repositorio.
+
+**Trabajo con IA:** se registra la decisión en README, backlog, P-07, guía de revisión y AGENTS.md. Se conservan los criterios originales de HU-02/P-07 para su desarrollo posterior; el hito entrega las cuatro capacidades operativas y mantiene explícito T-09 parcial. No se añade otro cambio OpenSpec porque no se implementa ni modifica una capacidad del producto.
+
+**Verificación y publicación:** el paquete previo `ba4c2a2` pasó CI completo con 71 pruebas, smoke y dos E2E. Este cierre cambia solo documentos: se comprueban enlaces/anclas y diff, se guarda en el fork y se prepara `final-project-LL` desde el mismo estado, conservando `finalproject-LL` de entrega 2. Se distingue la rama académica del PR interno y del envío formal; la referencia remota y su CI se verifican al publicar.
+
+**Límites:** no se modifican código de producto, credenciales, datos de Atlas, configuración de Brevo ni despliegue; continúa la implementación pública ya comprobada. Typeform y la entrega efectiva de la contraseña quedan a cargo de Luis. No se convocaron nuevos agentes ni se atribuye un modelo exacto que no se obtuvo del selector.
+
+## Entrega final — Workflow 27: acceso público separado para el revisor
+
+**Entrada humana:** Luis informó que Typeform no ofrecía un campo para compartir la contraseña y pidió publicar URL, usuario y contraseña en README. Tras señalar que la cuenta anterior contenía la prueba con su correo real, eligió crear una cuenta pública separada. Inició sesión personalmente en Atlas cuando se lo solicitó el navegador.
+
+**Trabajo con IA:** se preparó `demo@example.test`, con una contraseña exclusivamente de demo destinada a publicación. Se usaron la función Argon2id del backend y `UserSchema` para validar el documento antes de crearlo mediante el explorador de datos de Atlas. No se leyeron contraseñas anteriores ni claves de servicios. Se conservó la cuenta anterior y se actualizó README, guía y contexto del agente con la excepción autorizada y los límites de una cuenta compartida.
+
+**Verificación:** login real por HTTPS, listado inicialmente vacío, acceso denegado al SC del usuario anterior y creación/publicación/recarga de un ejemplo ficticio sin postulantes. Se mantuvieron las reglas de scoring y no se enviaron nuevos correos externos. La conversión del editor Atlas de Extended JSON a ObjectId/ISODate se comprobó antes de insertar. El arranque en frío de Render se distinguió de un fallo de credenciales.
+
+**Resultado y límites:** acceso disponible sin un canal privado adicional; la contraseña se publica por autorización expresa como fixture de demo, no como secreto de infraestructura. Se advierte que otros usuarios de esa cuenta pueden ver/modificar sus datos y correos. Mailpit conserva credenciales privadas. No se modificaron código de aplicación, proveedor, red, planes ni tests; el aprovisionamiento fue operativo, no un nuevo módulo. [Registro de acceso](docs/acceso-publico-demo-2026-11-12.md). No se convocaron nuevos agentes ni se reconstruye un modelo no identificado por el selector.

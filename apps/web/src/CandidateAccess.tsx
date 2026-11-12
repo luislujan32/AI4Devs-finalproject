@@ -14,6 +14,7 @@ export function CandidateAccess({ publicId }: { publicId: string }) {
   const [csrf, setCsrf] = useState('');
   const [loading, setLoading] = useState(true);
   const [sent, setSent] = useState(false);
+  const [mailDelivery, setMailDelivery] = useState<'mailpit' | 'email'>('mailpit');
   const [code, setCode] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -60,6 +61,8 @@ export function CandidateAccess({ publicId }: { publicId: string }) {
       const response = await fetch('/api/candidate/access/request', { method: 'POST', cache: 'no-store',
         headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrf }, body: JSON.stringify({ publicId }) });
       if (!response.ok) throw new Error(message(response.status, 'No pudimos enviar el código. Volvé a intentar.'));
+      const result = await response.json() as { mailDelivery: 'mailpit' | 'email' };
+      setMailDelivery(result.mailDelivery);
       setSent(true); setRetryAt(Date.now() + 60000); setSeconds(60);
     } catch (reason) { setError(reason instanceof Error ? reason.message : 'No pudimos conectar.'); }
     finally { setBusy(false); }
@@ -103,7 +106,7 @@ export function CandidateAccess({ publicId }: { publicId: string }) {
             <form className="candidate-code-form" onSubmit={(event) => void verify(event)}><label htmlFor="candidate-code">Código de seis dígitos</label>
               <input id="candidate-code" autoFocus autoComplete="one-time-code" inputMode="numeric" pattern="[0-9]{6}" maxLength={6} required
                 value={code} onChange={(event) => setCode(event.target.value.replace(/\D/g, '').slice(0, 6))} placeholder="000000" />
-              <p className="field-hint">Vence en diez minutos. Encontralo en Mailpit durante esta prueba.</p>
+              <p className="field-hint">{mailDelivery === 'email' ? 'Vence en diez minutos. Revisá tu bandeja de entrada y la carpeta de spam.' : 'Vence en diez minutos. Encontralo en el buzón de prueba.'}</p>
               <button type="submit" disabled={busy || code.length !== 6}>{busy ? 'Verificando…' : 'Continuar'}</button></form>
             <button className="text-action" disabled={busy || seconds > 0} onClick={() => void send()}>
               {seconds > 0 ? `Pedir otro código en ${seconds} s` : 'Pedir otro código'}</button></>}

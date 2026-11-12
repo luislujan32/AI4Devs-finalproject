@@ -75,11 +75,11 @@ export class AuthService implements OnModuleInit {
       throw new ForbiddenException('Solicitud no autorizada.');
     }
   }
-  async consumeLimit(kind: string, identity: string, maximum: number) {
-    const window = Math.floor(Date.now() / WINDOW);
+  async consumeLimit(kind: string, identity: string, maximum: number, duration = WINDOW) {
+    const window = Math.floor(Date.now() / duration);
     const key = this.digest(`limit:${kind}:${identity}:${window}`);
     const filter = { _id: key };
-    const update = { $inc: { count: 1 }, $setOnInsert: { expiresAt: new Date((window + 1) * WINDOW) } };
+    const update = { $inc: { count: 1 }, $setOnInsert: { expiresAt: new Date((window + 1) * duration) } };
     let entry;
     try { entry = await this.limits.findOneAndUpdate(filter, update, { upsert: true, returnDocument: 'after' }); }
     catch (error) {

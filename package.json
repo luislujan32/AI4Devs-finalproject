@@ -17,7 +17,7 @@
     "build": "npm run build --workspaces",
     "start": "npm run start -w @screeningroom/api",
     "typecheck": "npm run typecheck --workspaces",
-    "lint": "eslint apps scripts eslint.config.mjs",
+    "lint": "eslint apps scripts deploy eslint.config.mjs playwright.config.mjs",
     "check": "npm run typecheck && npm run lint && npm run build && npm run spec:validate",
     "smoke": "node --env-file-if-exists=.env scripts/smoke.mjs",
     "test:persistence": "node --env-file-if-exists=.env --test scripts/persistence.test.mjs",
@@ -31,10 +31,13 @@
     "catalog": "npm run build -w @screeningroom/api && node --env-file-if-exists=.env scripts/catalog.mjs",
     "test:screenings": "node --env-file-if-exists=.env --test scripts/screenings.test.mjs",
     "test:candidate": "node --env-file-if-exists=.env --test scripts/candidate.test.mjs",
-    "test:attempt": "node --env-file-if-exists=.env --test scripts/attempt.test.mjs"
+    "test:attempt": "node --env-file-if-exists=.env --test scripts/attempt.test.mjs",
+    "test:e2e": "playwright test",
+    "test:mail": "node --test scripts/mail.test.mjs"
   },
   "devDependencies": {
     "@fission-ai/openspec": "1.4.1",
+    "@playwright/test": "1.65.0",
     "concurrently": "10.0.5",
     "eslint": "10.11.0",
     "mongoose": "9.10.2",

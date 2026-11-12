@@ -35,6 +35,7 @@ export class PersistenceRepository implements OnModuleInit {
         candidateEmail: input.candidateEmail, candidateName: input.candidateName,
         expiresAt: input.expiresAt, purgeAt: input.purgeAt, publicId: randomBytes(32).toString('base64url'),
         emailAccess: { tokenHash: input.emailTokenHash, expiresAt: input.expiresAt },
+        emailDeliveryStatus: 'unconfirmed',
       });
       let current;
       try { current = await this.models.Screening.exists({ _id: screeningId, ownerId, status: 'published',

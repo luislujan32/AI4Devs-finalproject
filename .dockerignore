@@ -1,0 +1,12 @@
+.git
+.env*
+**/.env*
+.local
+.codex
+.agents
+.aws
+**/node_modules
+**/dist
+**/.DS_Store
+coverage
+docs/evidencias

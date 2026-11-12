@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 
 export type CandidateSession = { csrfToken: string; expiresAt: string; publicId: string;
-  invitation: { status: string; candidateName: string | null; expiresAt: string } };
+  invitation: { status: string; candidateName: string | null; expiresAt: string; mailDelivery: 'mailpit' | 'email' } };
 type Question = { id: string; text: string; type: 'boolean' | 'single_choice' | 'text'; required: boolean;
   options: { id: string; label: string }[] };
 type Answer = { questionId: string; kind: 'option' | 'text' | 'unknown'; optionId?: string; text?: string };
@@ -165,7 +165,8 @@ export function CandidateQuestionnaire({ session, onLogout }: { session: Candida
         <div className="actions"><button onClick={() => void exit()}>Descartar y salir</button><button className="outline-button" onClick={() => setConfirmLogout(false)}>Seguir respondiendo</button></div></div>}
       {error && <div className="notice" role="alert"><p>{error}</p>{attempt && !loading && <button className="text-action" onClick={() => dirty ? setReloadRequested(true) : setRefresh((value) => value + 1)}>Recargar versión guardada</button>}</div>}
       <div className="candidate-data-notice"><strong>Uso de tus respuestas</strong>
-        <p>El recruiter de este screening podrá revisarlas. Se conservan hasta 90 días desde la invitación.</p>
+        <p>Esta es una demo académica: respondé con información ficticia. El recruiter de este screening podrá revisar tus respuestas. Se conservan hasta 90 días desde la invitación.</p>
+        {session.invitation.mailDelivery === 'email' && <p>Tu correo se usa para la invitación y los códigos de acceso mediante Brevo. Tus respuestas no se envían al proveedor de correo.</p>}
         <p>El sistema no verifica tu identidad ni decide por el recruiter.</p></div>
     </section><footer>Screeningroom · Proyecto final AI4Devs · Luis Lujan</footer></main>;
 }

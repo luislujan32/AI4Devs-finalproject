@@ -1,6 +1,6 @@
 # API implementada — entrega 2
 
-Estado al 19/10/2026. [README](../readme.md) · [OpenAPI representativo](openapi.yaml) · [Ejecución local](desarrollo.md).
+Índice actualizado al 11/11/2026, incluida la integración de correo Brevo pendiente de activación pública. [README](../readme.md) · [OpenAPI representativo](openapi.yaml) · [Ejecución local](desarrollo.md).
 
 Este índice reúne las **33 operaciones implementadas** y sus entradas principales. OpenAPI conserva las tres operaciones representativas de la plantilla; este anexo completa el contexto de implementación. No hay endpoints de sugerencias IA ni de borrado anticipado de invitaciones en esta entrega.
 
@@ -20,7 +20,7 @@ Las mutaciones requieren `Origin` permitido y `X-CSRF-Token`. Login, solicitud/v
 | 409 | Revisión/estado incompatible, correo ya invitado o informe todavía sin envío |
 | 422 | Entrada, filtro o configuración inválidos |
 | 429 | Límite temporal de solicitudes |
-| 503 | Mailpit o MongoDB no disponibles, según operación |
+| 503 | Transporte de correo o MongoDB no disponibles, según operación |
 
 Los errores comunes de Nest incluyen `message`, `statusCode` y, según el caso, `error`. Los errores de publicación/envío pueden devolver `{message, issues: string[]}`; un límite de reenvío puede incluir `retryAfterSeconds`. No hay contrato implementado de `{code, fields}` ni respuesta 410. La sesión candidata caducada se rechaza con 401; una invitación no disponible también puede dar 404 según el punto del recorrido.
 
@@ -70,21 +70,23 @@ La identidad del SC y la lista de postulantes se conservan. Cada invitación man
 
 | Operación | Sesión | Entrada y resultado principal |
 | --- | --- | --- |
-| `GET /api/screenings/:id/invitations` | Recruiter | Invitaciones propias no purgadas, filtros, total y resumen; ver parámetros abajo |
-| `POST /api/screenings/:id/invitations` | Recruiter | `{candidateEmail, candidateName?}`; solo SC publicado y correo ficticio `example.test`; 201 con invitación y `emailSent:true` después de aceptar Mailpit |
+| `GET /api/screenings/:id/invitations` | Recruiter | Invitaciones propias no purgadas, filtros, total, resumen y `mailDelivery:mailpit/email`; cada invitación incluye `emailDeliveryStatus:accepted/unconfirmed` |
+| `POST /api/screenings/:id/invitations` | Recruiter | `{candidateEmail, candidateName?}`; solo SC publicado. Por defecto exige `example.test`; Brevo admite correo real. 201 con invitación, estado de correo y `emailSent`; un envío incierto conserva la invitación sin confirmar |
 | `GET /api/invitations/:invitationId/report` | Recruiter | 200 con nombre/correo del candidato, `configurationVersion`, informe y revisión vigente; disponible en SC cerrado dentro de retención |
 | `PUT /api/invitations/:invitationId/review` | Recruiter | `{expectedRevision, decision, reason?}` → 200 con `review`; nuevas decisiones `continue`/`do_not_continue`; continuar contra resultado negativo/pendiente exige motivo |
 
 Un mismo correo tiene una invitación por SC, incluyendo sus versiones. Un fallo de preparación/entrega no debe presentarse como envío correcto. La lista devuelve resumen del resultado y decisión, sin todas las respuestas; el detalle está en el informe. Los registros antiguos `clarify` siguen legibles, pero no se admiten como nueva decisión. [Acceso](candidatos-acceso.md) · [Resultados y cierre](resultados-recruiter.md).
 
+`accepted` indica aceptación del transporte, no llegada a bandeja ni lectura. Timeout/5xx/recibo inválido de Brevo conserva la invitación como `unconfirmed`; rechazo explícito elimina el registro intacto para reintentar. Se comparten 50 intentos externos por día UTC, además de límites de acceso existentes. [Contrato y configuración del correo](correo-brevo.md).
+
 ## Acceso y respuestas del candidato
 
 | Operación | Sesión | Entrada y resultado principal |
 | --- | --- | --- |
-| `POST /api/candidate/access/request` | Preacceso | `{publicId}` → 200 con `status:sent`, espera de reenvío; entrega código solo al correo registrado |
+| `POST /api/candidate/access/request` | Preacceso | `{publicId}` → 200 con `status:sent`, espera de reenvío y `mailDelivery:mailpit/email`; entrega código solo al correo registrado |
 | `POST /api/candidate/access/verify` | Preacceso | `{publicId, code}` → 200, consume código y crea cookie candidata con CSRF/vencimiento |
 | `POST /api/candidate/access/email-link` | Preacceso | `{publicId, token}` → 200, consume una vez el token del correo y crea sesión sin código adicional |
-| `GET /api/candidate/session` | Candidato | CSRF, vencimiento, identificador público y resumen de su invitación |
+| `GET /api/candidate/session` | Candidato | CSRF, vencimiento, identificador público y resumen de su invitación con modo de correo; sin clave del proveedor ni dirección del destinatario |
 | `POST /api/candidate/logout` | Candidato | 200, revoca solo esta sesión candidata |
 | `GET /api/candidate/attempt` | Candidato | Preguntas visibles, respuestas, `answerRevision`, estado y recibo si ya envió; sin puntajes, pesos, umbral, excluyentes ni informe |
 | `PUT /api/candidate/attempt/answers` | Candidato | `{expectedRevision, answers}` → 200 con conjunto confirmado y nueva `answerRevision`; permite incompletos, impide editar tras envío |

@@ -18,7 +18,7 @@ await new Promise((resolve) => probe.close(resolve));
 const origin = `http://127.0.0.1:${port}`;
 const api = spawn(process.execPath, ['apps/api/dist/main.js'], {
   cwd: fileURLToPath(new URL('../', import.meta.url)),
-  env: { ...process.env, API_PORT: String(port), MONGODB_URI: uri, SESSION_SECRET: randomBytes(32).toString('base64url'), NODE_ENV: 'test' },
+  env: { ...process.env, API_PORT: String(port), MONGODB_URI: uri, SESSION_SECRET: randomBytes(32).toString('base64url'), NODE_ENV: 'test', MAIL_PROVIDER: 'mailpit' },
   stdio: 'ignore',
 });
 let connection;
